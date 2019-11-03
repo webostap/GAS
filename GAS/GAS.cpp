@@ -2,28 +2,49 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include "Swarm.h"
 
 
-int main()
-{
 
-	ps::Swarm main_swarm = ps::Swarm();
+int main() {
 
-	
-	main_swarm.Test(100);
+
+
+	ps::Swarm::Params swarm_params;
+	swarm_params.csvFolder = "C:/Users/prive/Documents/csv/";
+
+
+	//remove all files from csv directory
+	for (size_t i = 0; ; ++i) {
+		if (std::remove((swarm_params.csvFolder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
+			std::cout << i;
+			break;
+		}
+	}
+
+
+	ps::Swarm main_swarm = ps::Swarm(swarm_params);
+	main_swarm.Test(10);
 
 	auto first_partile = main_swarm.m_particle_list.begin();
-	(*first_partile).setBurn();
-	main_swarm.m_burn_list.push_back(&*first_partile);
 
 
-	for (size_t i = 0; i < 100; i++)
+	for (size_t i = 0; i < 30; i++)
 	{
-		main_swarm.Step();
 
-		
-		std::cout << main_swarm.m_burn_list.size();
+		main_swarm.Step();
+		main_swarm.PrintStep(i);
+
+		if (i == 10) {
+
+			(*first_partile).setBurn();
+			main_swarm.m_burn_list.push_back(&*first_partile);
+		}
+
+		if (!main_swarm.m_particle_list.size()) break;
+
+		//std::cout << main_swarm.m_burn_list.size();
 		//std::cin.get();
 	}
 }

@@ -1,9 +1,27 @@
 #include "Swarm.h"
-//#include <iostream>
+#include <fstream>
+
 
 namespace ps {
 
-	Swarm::Swarm() { }
+	Swarm::Swarm(Params aParams) : m_params(aParams) {}
+
+	const void Swarm::PrintStep(size_t num)
+	{
+		//if (!m_particle_list.size()) return;
+
+		std::ofstream csv(m_params.csvFolder + "gas.csv." + std::to_string(num));
+
+		csv << "x,y,burn";
+
+		for (auto& particle : m_particle_list) {
+			csv << '\n' << particle._x() << ','
+				<< particle._y() << ','
+				<< (particle.isBurn() ? '1' : '0');
+		}
+
+		csv.close();
+	}
 	
 	void Swarm::Test(size_t size) {
 		for (size_t i = 0; i < size; i++)
@@ -44,6 +62,7 @@ namespace ps {
 		m_died_list.clear();
 	}
 
+
 	void Swarm::ClearBurnList() {
 		if (m_died_list.empty()) return;
 
@@ -63,8 +82,7 @@ namespace ps {
 
 	void Swarm::Step() {
 
-
-
+		size_t step_num = 0;
 		for (auto it = m_particle_list.begin(); it != m_particle_list.end(); ++it)
 		{
 
@@ -90,6 +108,8 @@ namespace ps {
 
 		m_burn_list.merge(m_will_burn_list);
 
+		//PrintStep(step_num);
+		//++step_num;
 	}
 
 

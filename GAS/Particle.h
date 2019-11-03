@@ -27,6 +27,7 @@ namespace ps {
 		//get state
 		const State getState();
 
+		const bool isBurn();
 		void setBurn();
 
 		void Step();

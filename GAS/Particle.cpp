@@ -28,6 +28,11 @@ namespace ps {
 	}
 
 
+	const bool Particle::isBurn()
+	{
+		return m_state == State::BURN;
+	}
+
 	void Particle::setBurn() {
 		m_state = State::BURN;
 	}
