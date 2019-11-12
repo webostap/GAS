@@ -5,7 +5,7 @@ namespace ps {
 	// Particle constructor. Assigns particle initial position (center of window), as well
 	// as giving it a unique speed (-1 to 1) and a unique angular direction (0 to 2 pi)
 	Particle::Particle() : m_x_cord(0), m_y_cord(0) {
-		initialize();
+		//initialize();
 	}
 
 
@@ -24,7 +24,7 @@ namespace ps {
 	}
 
 	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
-		initialize();
+		//initialize();
 	}
 
 
@@ -50,13 +50,16 @@ namespace ps {
 
 		++m_steps;
 
-		m_direction += (m_steps * 0.005);
+		m_x_cord += 0.025;
+
+
+		/*m_direction += (m_steps * 0.005);
 
 		m_x_vector = m_speed * sin(m_direction);
 		m_y_vector = m_speed * cos(m_direction);
 
 		m_x_cord += m_x_vector * m_steps;
-		m_y_cord += m_y_vector * m_steps;
+		m_y_cord += m_y_vector * m_steps;*/
 
 	}
 

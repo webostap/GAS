@@ -24,9 +24,13 @@ namespace ps {
 	}
 	
 	void Swarm::Test(size_t size) {
+
+		std::random_device rd;
+		std::uniform_real_distribution<double> y_dist(0, 1);
+
 		for (size_t i = 0; i < size; i++)
 			for (size_t j = 0; j < size; j++)
-				m_particle_list.emplace_back(i/100.,j/100.);
+				m_particle_list.emplace_back(0, y_dist(rd));
 	}
 
 	void Swarm::Erasing() {
@@ -42,8 +46,10 @@ namespace ps {
 
 
 	void Swarm::Fill(size_t count) {
+		std::random_device rd;
+		std::uniform_real_distribution<double> y_dist(0, 0.2);
 		for (size_t i = 0; i < count; ++i) {
-			m_particle_list.emplace_back();
+			m_particle_list.emplace_back(0, y_dist(rd));
 		}
 	}
 
@@ -81,6 +87,13 @@ namespace ps {
 
 
 	void Swarm::Step() {
+
+
+		std::random_device rd;
+		std::uniform_real_distribution<double> count_dist(5, 10);
+
+		Fill(count_dist(rd));
+
 
 		size_t step_num = 0;
 		for (auto it = m_particle_list.begin(); it != m_particle_list.end(); ++it)

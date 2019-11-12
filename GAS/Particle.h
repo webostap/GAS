@@ -7,7 +7,7 @@ namespace ps {
 
 
 	const int BURN_TIME = 5;
-	const double BURN_RADIUS = 0.03;
+	const double BURN_RADIUS = 0.06;
 
 	class Particle {
 
