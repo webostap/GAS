@@ -5,14 +5,14 @@ namespace ps {
 	// Particle constructor. Assigns particle initial position (center of window), as well
 	// as giving it a unique speed (-1 to 1) and a unique angular direction (0 to 2 pi)
 	Particle::Particle() : m_x_cord(0), m_y_cord(0) {
-		//initialize();
+		initialize();
 	}
 
 
 	void Particle::initialize() {
 		std::random_device rd;
-		std::uniform_real_distribution<double> speed_dist(-0.001, 0.001);
-		std::uniform_real_distribution<double> angle_dist(0, 2 * M_PI);
+		std::uniform_real_distribution<double> speed_dist(0.02, 0.03);
+		//std::uniform_real_distribution<double> angle_dist(0, 2 * M_PI);
 
 
 		// Generate random particle speed. Speed is squared causing
@@ -20,11 +20,14 @@ namespace ps {
 		m_speed = speed_dist(rd);
 
 		// Generate random particle direction between 0 and 2 Pi.
-		m_direction = angle_dist(rd);
+		//m_direction = angle_dist(rd);
 	}
 
 	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
-		//initialize();
+		//initialize(x,y);
+		std::random_device rd;
+		std::uniform_real_distribution<double> speed_dist(0.03, 0.05);
+		m_speed = speed_dist(rd) - abs(0.1 - m_y_cord)/5;
 	}
 
 
@@ -50,7 +53,7 @@ namespace ps {
 
 		++m_steps;
 
-		m_x_cord += 0.025;
+		m_x_cord += m_speed;
 
 
 		/*m_direction += (m_steps * 0.005);

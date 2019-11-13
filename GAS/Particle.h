@@ -6,8 +6,8 @@
 namespace ps {
 
 
-	const int BURN_TIME = 5;
-	const double BURN_RADIUS = 0.06;
+	const int BURN_TIME = 4;
+	const double BURN_RADIUS = 0.025;
 
 	class Particle {
 
@@ -34,7 +34,6 @@ namespace ps {
 		const double Distance(const Particle &);
 		const bool Cross(const Particle &);
 
-	private:
 		State m_state = State::OK;
 		size_t m_burn_counter = 0;
 		size_t m_steps = 0;

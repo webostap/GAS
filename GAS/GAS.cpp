@@ -12,7 +12,7 @@ int main() {
 
 
 	ps::Swarm::Params swarm_params;
-	swarm_params.csvFolder = "C:/Users/prive/Documents/csv/";
+	swarm_params.csvFolder = "C:/Users/ostap/Desktop/csv/";
 
 
 
@@ -33,13 +33,13 @@ int main() {
 	//auto first_partile = main_swarm.m_particle_list.begin();
 
 
-	for (size_t i = 0; i < 300; i++)
+	for (size_t i = 0; i < 500; i++)
 	{
 
 		main_swarm.Step();
 		main_swarm.PrintStep(i);
 
-		if (i == 20) {
+		if (i == 30) {
 
 			(*main_swarm.m_particle_list.begin()).setBurn();
 			main_swarm.m_burn_list.push_back(&*(main_swarm.m_particle_list.begin()));

@@ -17,7 +17,7 @@ namespace ps {
 		for (auto& particle : m_particle_list) {
 			csv << '\n' << particle._x() << ','
 				<< particle._y() << ','
-				<< (particle.isBurn() ? '1' : '0');
+				<< particle.m_burn_counter;
 		}
 
 		csv.close();
@@ -90,7 +90,7 @@ namespace ps {
 
 
 		std::random_device rd;
-		std::uniform_real_distribution<double> count_dist(5, 10);
+		std::uniform_int_distribution<int> count_dist(100, 200);
 
 		Fill(count_dist(rd));
 
