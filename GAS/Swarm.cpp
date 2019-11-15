@@ -1,16 +1,16 @@
 #include "Swarm.h"
-#include <fstream>
+
 
 
 namespace ps {
 
-	Swarm::Swarm(Params aParams) : m_params(aParams) {}
+	Swarm::Swarm() {}
 
 	const void Swarm::PrintStep(size_t num)
 	{
 		//if (!m_particle_list.size()) return;
 
-		std::ofstream csv(m_params.csvFolder + "gas.csv." + std::to_string(num));
+		std::ofstream csv(P::csv_folder + "gas.csv." + std::to_string(num));
 
 		csv << "x,y,burn";
 
@@ -21,6 +21,8 @@ namespace ps {
 		}
 
 		csv.close();
+
+		m_front_line.Print(num);
 	}
 	
 	void Swarm::Test(size_t size) {
@@ -47,7 +49,7 @@ namespace ps {
 
 	void Swarm::Fill(size_t count) {
 		std::random_device rd;
-		std::uniform_real_distribution<double> y_dist(0, 0.2);
+		std::uniform_real_distribution<double> y_dist(P::area_beg, P::area_end);
 		for (size_t i = 0; i < count; ++i) {
 			m_particle_list.emplace_back(0, y_dist(rd));
 		}
@@ -90,7 +92,7 @@ namespace ps {
 
 
 		std::random_device rd;
-		std::uniform_int_distribution<int> count_dist(100, 200);
+		std::uniform_int_distribution<int> count_dist(P::particles_at_step.min, P::particles_at_step.max);
 
 		Fill(count_dist(rd));
 
@@ -116,6 +118,12 @@ namespace ps {
 			}
 
 		}
+
+		m_front_line.Calc(m_will_burn_list);
+
+
+
+
 		ClearBurnList();
 		ClearParticleList();
 

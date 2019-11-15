@@ -1,23 +1,19 @@
 #pragma once
+#include "Params.inl"
 #include "Particle.h"
+#include "FrontLine.h"
 #include <list>
 #include <vector>
-#include <string>
+#include <fstream>
 
 namespace ps {
 
 	class Swarm {
 
 	public:
-		struct Params {
-			std::string csvFolder;
-		};
-
-	private:
-		Params m_params;
 
 	public:
-		Swarm(Params);
+		Swarm();
 		void Erasing();
 		void Test(size_t);
 		void Fill(size_t);
@@ -38,6 +34,8 @@ namespace ps {
 
 		std::vector<std::list<Particle>::iterator> m_died_list;
 		//std::vector<std::list<Particle>::iterator> m_died_list;
+
+		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::area_beg, P::area_end);
 	};
 
 

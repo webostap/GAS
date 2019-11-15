@@ -11,35 +11,31 @@ int main() {
 
 
 
-	ps::Swarm::Params swarm_params;
-	swarm_params.csvFolder = "C:/Users/ostap/Desktop/csv/";
-
-
 
 
 
 	//remove all files from csv directory
 	for (size_t i = 0; ; ++i) {
-		if (std::remove((swarm_params.csvFolder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
+		if (std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
 			std::cout << i;
 			break;
 		}
 	}
 
 
-	ps::Swarm main_swarm = ps::Swarm(swarm_params);
+	ps::Swarm main_swarm = ps::Swarm();
 	//main_swarm.Test(10);
 
 	//auto first_partile = main_swarm.m_particle_list.begin();
 
 
-	for (size_t i = 0; i < 500; i++)
+	for (size_t i = 0; i < P::steps; i++)
 	{
 
 		main_swarm.Step();
 		main_swarm.PrintStep(i);
 
-		if (i == 30) {
+		if (i == P::burn_at_step) {
 
 			(*main_swarm.m_particle_list.begin()).setBurn();
 			main_swarm.m_burn_list.push_back(&*(main_swarm.m_particle_list.begin()));

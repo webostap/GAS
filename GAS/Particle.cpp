@@ -26,8 +26,8 @@ namespace ps {
 	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
 		//initialize(x,y);
 		std::random_device rd;
-		std::uniform_real_distribution<double> speed_dist(0.03, 0.05);
-		m_speed = speed_dist(rd) - abs(0.1 - m_y_cord)/5;
+		std::uniform_real_distribution<double> speed_dist(P::particle_speed.min, P::particle_speed.max);
+		m_speed = speed_dist(rd) + (P::area_size / 2 - abs(P::area_size / 2 - m_y_cord))/10;
 	}
 
 
@@ -43,10 +43,15 @@ namespace ps {
 
 	void Particle::Step() {
 
+		if(m_x_cord >= P::max_x) {
+			m_state = State::DIED;
+			return;
+		}
+
 
 		if (m_state == State::BURN) ++m_burn_counter;
 
-		if (m_burn_counter == BURN_TIME) {
+		if (m_burn_counter == P::burn_time) {
 			m_state = State::DIED;
 			return;
 		}
@@ -88,7 +93,7 @@ namespace ps {
 		return (m_x_cord - p.m_x_cord)*(m_x_cord - p.m_x_cord) + (m_y_cord - p.m_y_cord)*(m_y_cord - p.m_y_cord);
 	}
 	const bool Particle::Cross(const Particle &p) {
-		return Distance(p) < BURN_RADIUS*BURN_RADIUS;
+		return Distance(p) < P::burn_radius * P::burn_radius;
 	}
 
 } /* namespace ps */

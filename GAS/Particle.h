@@ -1,13 +1,12 @@
 #pragma once
+#include "Params.inl"
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <random>
 
 namespace ps {
 
-
-	const int BURN_TIME = 4;
-	const double BURN_RADIUS = 0.025;
 
 	class Particle {
 
