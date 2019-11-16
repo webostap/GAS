@@ -22,13 +22,14 @@ namespace P {
 
 	const double max_x = 25;
 
-	const MinMax<unsigned> particles_at_step(300, 500);
-	const MinMax<double> particle_speed(0.02, 0.04);
+	const MinMax<unsigned> particles_at_step(600, 1000);
+	const MinMax<double> particle_speed(0.02, 0.05);
 
 	const double burn_radius = 0.035;
 	const unsigned burn_time = 3;
 
 	const int front_line_steps = 100;
-	const double front_line_window = 0.02;
+	const unsigned front_line_h = 12;
+	const double front_line_window = area_size / 10;
 
 }

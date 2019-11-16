@@ -35,7 +35,7 @@ namespace ps {
 		std::vector<std::list<Particle>::iterator> m_died_list;
 		//std::vector<std::list<Particle>::iterator> m_died_list;
 
-		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::area_beg, P::area_end);
+		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::front_line_h, P::area_beg, P::area_end);
 	};
 
 

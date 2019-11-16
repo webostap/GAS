@@ -2,18 +2,19 @@
 
 namespace ps {
 
-	FrontLine::FrontLine(int steps, double window, double area_start, double area_end) {
-		Init(steps, window, area_start, area_end);
+	FrontLine::FrontLine(int steps, double window, unsigned h, double area_start, double area_end) {
+		Init(steps, window, h, area_start, area_end);
 	}
 		
-	void FrontLine::Init(int aSteps, double window, double area_start, double area_end) {
+	void FrontLine::Init(int a_steps, double window, unsigned a_h, double area_start, double area_end) {
 
-		steps = aSteps;
+		steps = a_steps;
 		radius = window / 2;
+		h = a_h;
 		steps_start = area_start + radius;
 		steps_end = area_end - radius;
 		steps_area = steps_end - steps_start;
-		step_size = steps_area / (aSteps - 1);
+		step_size = steps_area / (steps - 1.);
 
 		front_line_points = new front_line_point[steps];
 
@@ -47,19 +48,40 @@ namespace ps {
 		for (int i = 0; i < steps; ++i) {
 			front_line_points[i].x = front_line_points[i].sum / front_line_points[i].count;
 		}
+
+		FivePointStencil();
 	}
 
 	void FrontLine::Print(unsigned num) {
 		std::ofstream csv(P::csv_folder + "line.csv." + std::to_string(num));
 
-		csv << "x,y";
+		csv << "x,y,div";
 
 		for (int i = 0; i < steps; ++i) {
 			if (front_line_points[i].count) {
-				csv << '\n' << front_line_points[i].x << ',' << front_line_points[i].y;
+				csv << '\n' << front_line_points[i].x << ',' << front_line_points[i].y << ',' << front_line_points[i].div;
 			}
 		}
 
 		csv.close();
 	}
+
+	void FrontLine::FivePointStencil() {
+		for (unsigned i = h*2; i < steps-h*2-1; ++i) {
+
+			//skip point if it doesn't have 4 neighbors
+			for (unsigned j = i - h*2; j <= i + h*2; j+= h) {
+				if (!front_line_points[j].count) {
+					continue;
+				}
+			}
+
+			front_line_points[i].div = front_line_points[i-h*2].x - front_line_points[i+h*2].x +
+				8 * (front_line_points[i+h].x - front_line_points[i-h].x);
+
+			front_line_points[i].div /= h * step_size * 12;
+			
+		}
+	}
 }
+

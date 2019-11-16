@@ -15,10 +15,12 @@ int main() {
 
 
 	//remove all files from csv directory
+	bool one_out = 0;
 	for (size_t i = 0; ; ++i) {
-		if (std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
-			std::cout << i;
-			break;
+		if (std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0 ||
+			std::remove((P::csv_folder + "line.csv." + std::to_string(i)).c_str()) != 0) {
+			if (one_out) break;
+			else one_out = 1;
 		}
 	}
 
