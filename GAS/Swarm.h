@@ -21,9 +21,14 @@ namespace ps {
 		void ClearBurnList();
 		void ClearParticleList();
 
+		void StepParticle(std::list<Particle>::iterator&);
+
 		const void PrintStep(size_t);
 
 		size_t size();
+
+		double m_burn_from = 0;
+		void UpdateBurnFrom();
 
 
 	//private:

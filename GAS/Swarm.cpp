@@ -1,4 +1,7 @@
 #include "Swarm.h"
+#include <string>
+#include <fmt/format.h>
+#include <omp.h>
 
 
 
@@ -12,14 +15,12 @@ namespace ps {
 
 		std::ofstream csv(P::csv_folder + "gas.csv." + std::to_string(num));
 
-		csv << "x,y,burn";
+		std::string output = "x,y,burn";
 
 		for (auto& particle : m_particle_list) {
-			csv << '\n' << particle._x() << ','
-				<< particle._y() << ','
-				<< particle.m_burn_counter;
+			output += fmt::format("\n{},{},{}", particle._x(), particle._y(), particle.m_burn_counter);
 		}
-
+		csv << output;
 		csv.close();
 
 		m_front_line.Print(num);
@@ -87,41 +88,55 @@ namespace ps {
 
 	}
 
+	void Swarm::UpdateBurnFrom() {
+
+		if (!m_burn_list.empty()) {
+			m_burn_from = m_burn_list.front()->_x();
+		}
+		for (auto& burn_i : m_burn_list) {
+			if (burn_i->_x() < m_burn_from) {
+				m_burn_from = burn_i->_x();
+			}
+		}
+
+	}
+
+	void Swarm::StepParticle(std::list<Particle>::iterator&p) {
+		//if particle doesn't burn check cross with burned particles
+		if ((*p).getState() == Particle::State::OK && (*p)._x() >= m_burn_from - P::burn_radius) {
+			for (auto& burn_it : m_burn_list)
+				if ((*p).Cross(*burn_it)) {
+					(*p).setBurn();
+					m_will_burn_list.push_back(&(*p));
+					break;
+				}
+		}
+
+		(*p).Step();
+
+		if ((*p).getState() == Particle::State::DIED) {
+			m_died_list.push_back(p);
+		}
+	}
+
 
 	void Swarm::Step() {
 
 
-		std::random_device rd;
-		std::uniform_int_distribution<int> count_dist(P::particles_at_step.min, P::particles_at_step.max);
-
-		Fill(count_dist(rd));
+		UpdateBurnFrom();
 
 
-		size_t step_num = 0;
+
+		//size_t step_num = 0;
+
 		for (auto it = m_particle_list.begin(); it != m_particle_list.end(); ++it)
 		{
-
-			//if particle doesn't burn check cross with burned particles
-			if ((*it).getState() == Particle::State::OK) {
-				for (auto& burn_it : m_burn_list)
-					if ((*it).Cross(*burn_it)) {
-						(*it).setBurn();
-						m_will_burn_list.push_back(&*it);
-						break;
-					}
-			}
-
-			(*it).Step();
-
-			if ((*it).getState() == Particle::State::DIED) {
-				m_died_list.push_back(it);
-			}
-
+			StepParticle(it);
 		}
 
+
+
 		m_front_line.Calc(m_will_burn_list);
-
-
 
 
 		ClearBurnList();

@@ -94,6 +94,12 @@ namespace ps {
 	}
 	const bool Particle::Cross(const Particle &p) {
 		return Distance(p) < P::burn_radius * P::burn_radius;
+
+		if (m_y_cord <= p.m_y_cord + P::burn_radius && m_y_cord >= p.m_y_cord - P::burn_radius)
+			if (m_x_cord <= p.m_x_cord + P::burn_radius && m_x_cord >= p.m_x_cord - P::burn_radius)
+				return true;
+		return false;
+
 	}
 
 } /* namespace ps */

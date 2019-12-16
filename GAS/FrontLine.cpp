@@ -55,14 +55,15 @@ namespace ps {
 	void FrontLine::Print(unsigned num) {
 		std::ofstream csv(P::csv_folder + "line.csv." + std::to_string(num));
 
-		csv << "x,y,div";
+		std::string output = "x,y,div";
 
 		for (int i = 0; i < steps; ++i) {
 			if (front_line_points[i].count) {
-				csv << '\n' << front_line_points[i].x << ',' << front_line_points[i].y << ',' << front_line_points[i].div;
+				output += fmt::format("\n{},{},{}", front_line_points[i].x, front_line_points[i].y, front_line_points[i].div);
+				//output+= '\n' + std::to_string(front_line_points[i].x) + ',' + std::to_string(front_line_points[i].y) + ',' + std::to_string(front_line_points[i].div);
 			}
 		}
-
+		csv << output;
 		csv.close();
 	}
 

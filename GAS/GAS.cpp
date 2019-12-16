@@ -1,8 +1,10 @@
 ﻿// GAS.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
+// compile with: /openmp
 #include <iostream>
 #include <fstream>
+#include <omp.h>
 #include "Swarm.h"
 
 
@@ -34,8 +36,17 @@ int main() {
 	for (size_t i = 0; i < P::steps; i++)
 	{
 
-		main_swarm.Step();
+
+		std::random_device rd;
+		std::uniform_int_distribution<int> count_dist(P::particles_at_step.min, P::particles_at_step.max);
+
+		//if (!i) 
+			main_swarm.Fill(count_dist(rd));
+
 		main_swarm.PrintStep(i);
+
+		main_swarm.Step();
+		//main_swarm.PrintStep(i);
 
 		if (i == P::burn_at_step) {
 
@@ -47,5 +58,6 @@ int main() {
 
 		//std::cout << main_swarm.m_burn_list.size();
 		//std::cin.get();
+		//std::cout << i << '\n';
 	}
 }
