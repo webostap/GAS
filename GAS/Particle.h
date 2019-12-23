@@ -38,10 +38,10 @@ namespace ps {
 		size_t m_steps = 0;
 
 		double m_x_cord, m_y_cord;
-		double m_x_vector, m_y_vector;
+		//double m_x_vector, m_y_vector;
 
 		double m_speed;
-		double m_direction;
+		//double m_direction;
 
 		void initialize();
 	};

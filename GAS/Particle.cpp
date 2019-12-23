@@ -27,7 +27,10 @@ namespace ps {
 		//initialize(x,y);
 		std::random_device rd;
 		std::uniform_real_distribution<double> speed_dist(P::particle_speed.min, P::particle_speed.max);
-		m_speed = speed_dist(rd) + (P::area_size / 2 - abs(P::area_size / 2 - m_y_cord))/10;
+		//m_speed = speed_dist(rd) + (P::area_size / 2 - abs(P::area_size / 2 - m_y_cord))/40;
+		//m_speed = speed_dist(rd) + (P::area_size / 2 - abs(P::area_size / 2 - m_y_cord))/40;
+		double center_percentage = (1 - abs(1 - m_y_cord / P::area_size * 2));
+		m_speed = speed_dist(rd) + P::particle_speed.mid * center_percentage * P::center_speed_increase;
 	}
 
 
@@ -95,10 +98,10 @@ namespace ps {
 	const bool Particle::Cross(const Particle &p) {
 		return Distance(p) < P::burn_radius * P::burn_radius;
 
-		if (m_y_cord <= p.m_y_cord + P::burn_radius && m_y_cord >= p.m_y_cord - P::burn_radius)
+		/*if (m_y_cord <= p.m_y_cord + P::burn_radius && m_y_cord >= p.m_y_cord - P::burn_radius)
 			if (m_x_cord <= p.m_x_cord + P::burn_radius && m_x_cord >= p.m_x_cord - P::burn_radius)
 				return true;
-		return false;
+		return false;*/
 
 	}
 

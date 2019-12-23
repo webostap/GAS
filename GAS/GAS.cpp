@@ -43,10 +43,10 @@ int main() {
 		//if (!i) 
 			main_swarm.Fill(count_dist(rd));
 
-		main_swarm.PrintStep(i);
+		//main_swarm.PrintStep(i);
 
 		main_swarm.Step();
-		//main_swarm.PrintStep(i);
+		main_swarm.PrintStep(i);
 
 		if (i == P::burn_at_step) {
 
@@ -56,8 +56,8 @@ int main() {
 
 		if (!main_swarm.m_particle_list.size()) break;
 
-		//std::cout << main_swarm.m_burn_list.size();
-		//std::cin.get();
+		std::cout << i << ") " << main_swarm.m_particle_list.size() << '\n';
+		//if (i%10 == 0) std::cin.get();
 		//std::cout << i << '\n';
 	}
 }

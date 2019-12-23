@@ -17,8 +17,12 @@ namespace ps {
 
 		std::string output = "x,y,burn";
 
+		//double print_from = m_burn_from - P::particle_speed.max;
+
 		for (auto& particle : m_particle_list) {
-			output += fmt::format("\n{},{},{}", particle._x(), particle._y(), particle.m_burn_counter);
+			//if (particle._x() >= print_from) {
+				output += fmt::format("\n{},{},{}", particle._x(), particle._y(), particle.m_burn_counter);
+			//}
 		}
 		csv << output;
 		csv.close();
