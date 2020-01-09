@@ -23,7 +23,7 @@ namespace ps {
 		//m_direction = angle_dist(rd);
 	}
 
-	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
+	/*Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
 		//initialize(x,y);
 		std::random_device rd;
 		std::uniform_real_distribution<double> speed_dist(P::particle_speed.min, P::particle_speed.max);
@@ -31,6 +31,25 @@ namespace ps {
 		//m_speed = speed_dist(rd) + (P::area_size / 2 - abs(P::area_size / 2 - m_y_cord))/40;
 		double center_percentage = (1 - abs(1 - m_y_cord / P::area_size * 2));
 		m_speed = speed_dist(rd) + P::particle_speed.mid * center_percentage * P::center_speed_increase;
+	}*/
+
+	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
+
+
+		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size * 2));
+		double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
+		m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+	}
+
+	Particle::Particle(double y) : m_y_cord(y) {
+
+		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size * 2));
+		double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
+		m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+
+		std::random_device rd;
+		std::uniform_real_distribution<double> x_dist(0, m_speed);
+		m_x_cord = x_dist(rd);
 	}
 
 

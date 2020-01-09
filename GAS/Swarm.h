@@ -17,10 +17,13 @@ namespace ps {
 		void Erasing();
 		void Test(size_t);
 		void Fill(size_t);
+		void Lighter(size_t);
 		void Step();
 		void ClearBurnList();
 		void ClearParticleList();
 
+		int GetBurnIndex(double y);
+		void BurnParticle(std::list<Particle>::iterator&);
 		void StepParticle(std::list<Particle>::iterator&);
 
 		const void PrintStep(size_t);
@@ -29,6 +32,7 @@ namespace ps {
 
 		double m_burn_from = 0;
 		void UpdateBurnFrom();
+		void UpdateBurnIndex();
 
 
 	//private:
@@ -38,6 +42,10 @@ namespace ps {
 		std::list <Particle*> m_will_burn_list;
 
 		std::vector<std::list<Particle>::iterator> m_died_list;
+		
+		
+		double m_burn_index[P::burn_index_steps];
+
 		//std::vector<std::list<Particle>::iterator> m_died_list;
 
 		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::front_line_h, P::area_beg, P::area_end);

@@ -16,6 +16,7 @@ namespace ps {
 		enum class State { OK, BURN, DIED };
 
 		Particle();
+		Particle(double y);
 		Particle(double x, double y);
 		virtual ~Particle() {};
 

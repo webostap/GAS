@@ -31,17 +31,21 @@ int main() {
 	//main_swarm.Test(10);
 
 	//auto first_partile = main_swarm.m_particle_list.begin();
-
+	double point;
 
 	for (size_t i = 0; i < P::steps; i++)
 	{
+
+		std::cin >> point;
+		std::cout << main_swarm.GetBurnIndex(point) << '\n';
+		continue;
 
 
 		std::random_device rd;
 		std::uniform_int_distribution<int> count_dist(P::particles_at_step.min, P::particles_at_step.max);
 
 		//if (!i) 
-			main_swarm.Fill(count_dist(rd));
+			main_swarm.Fill(P::base_particles);
 
 		//main_swarm.PrintStep(i);
 
@@ -49,9 +53,7 @@ int main() {
 		main_swarm.PrintStep(i);
 
 		if (i == P::burn_at_step) {
-
-			(*main_swarm.m_particle_list.begin()).setBurn();
-			main_swarm.m_burn_list.push_back(&*(main_swarm.m_particle_list.begin()));
+			main_swarm.Lighter(P::light_count);
 		}
 
 		if (!main_swarm.m_particle_list.size()) break;
