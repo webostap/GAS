@@ -52,6 +52,9 @@ namespace ps {
 		m_x_cord = x_dist(rd);
 	}
 
+	Particle::Particle(double x, double y, double speed) : m_x_cord(x), m_y_cord(y), m_speed(speed) { }
+
+
 
 	const bool Particle::isBurn()
 	{

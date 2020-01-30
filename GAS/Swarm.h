@@ -17,8 +17,10 @@ namespace ps {
 		void Erasing();
 		void Test(size_t);
 		void Fill(size_t);
+		void Fill_New(size_t);
 		void Lighter(size_t);
 		void Step();
+		void Step_New();
 		void ClearBurnList();
 		void ClearParticleList();
 
@@ -32,10 +34,17 @@ namespace ps {
 
 		double m_burn_from = 0;
 		void UpdateBurnFrom();
+		void UpdateBurnFrom_New();
 		void UpdateBurnIndex();
 
 
 	//private:
+		double burn_from [P::segment_count];
+		std::list <Particle> particle_list [P::segment_count];
+		std::list <Particle*> burn_list [P::segment_count];
+		std::list <Particle*> will_burn_list [P::segment_count];
+		std::vector<std::list<Particle>::iterator> died_list[P::segment_count];
+
 
 		std::list <Particle> m_particle_list;
 		std::list <Particle*> m_burn_list;

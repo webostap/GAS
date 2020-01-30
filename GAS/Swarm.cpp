@@ -21,7 +21,7 @@ namespace ps {
 
 		for (auto& particle : m_particle_list) {
 			//if (particle._x() >= print_from) {
-				output += fmt::format("\n{},{},{}", particle._x(), particle._y(), particle.m_burn_counter);
+			output += fmt::format("\n{},{},{}", particle._x(), particle._y(), particle.m_burn_counter);
 			//}
 		}
 		csv << output;
@@ -29,7 +29,7 @@ namespace ps {
 
 		m_front_line.Print(num);
 	}
-	
+
 	/*void Swarm::Test(size_t size) {
 
 		std::random_device rd;
@@ -43,11 +43,11 @@ namespace ps {
 	void Swarm::Erasing() {
 		for (size_t i = 0; i < 10; i++)
 			for (size_t j = 0; j < 10; j++)
-				m_particle_list.emplace_back(i,j);
+				m_particle_list.emplace_back(i, j);
 
 		for (auto it = m_particle_list.begin(); it != m_particle_list.end(); ++it)
 			m_died_list.push_back(it);
-	
+
 		ClearParticleList();
 	}
 
@@ -83,7 +83,7 @@ namespace ps {
 			particles_at_step+= count_multipler;
 		}
 
-		
+
 	}*/
 
 	void Swarm::Fill(size_t base_count) {
@@ -91,7 +91,7 @@ namespace ps {
 
 		std::uniform_real_distribution<double> y_dist;
 
-		double count_multipler = base_count * P::particle_distribution_multiple / (P::particle_distribution_steps-1);
+		double count_multipler = base_count * P::particle_distribution_multiple / (P::particle_distribution_steps - 1);
 		unsigned particles_at_step = base_count;
 
 		double window_step = P::area_size / P::particle_distribution_steps;
@@ -100,19 +100,46 @@ namespace ps {
 		for (size_t di = 0; di < P::particle_distribution_steps; ++di) {
 
 
-			y_dist = std::uniform_real_distribution<double> (current_window, current_window + window_step);
+			y_dist = std::uniform_real_distribution<double>(current_window, current_window + window_step);
 			for (size_t pi = 0; pi < particles_at_step; ++pi) {
 				m_particle_list.emplace_back(y_dist(rd));
 			}
 
 			current_window += window_step;
 
-			particles_at_step+= count_multipler;
+			particles_at_step += count_multipler;
 			//particles_at_step*= P::particle_count_multiple;
 		}
 
-		
+
 	}
+
+
+	void Swarm::Fill_New(size_t base_count) {
+
+		std::random_device rd;
+		std::uniform_real_distribution<double> y_dist;
+
+		unsigned particles_at_step = base_count;
+		double count_multipler = base_count * P::center_speed_increase / (P::segment_count - 1);
+
+		double current_window = P::area_beg;
+
+		for (size_t si = 0; si < P::segment_count; si++)
+		{
+
+			y_dist = std::uniform_real_distribution<double>(current_window, current_window + P::segment_size);
+
+			for (size_t pi = 0; pi < particles_at_step; ++pi) {
+				particle_list[si].emplace_back(y_dist(rd));
+			}
+
+			current_window += P::segment_size;
+			particles_at_step += count_multipler;
+		}
+
+	}
+
 	void Swarm::Lighter(size_t count_to_burn) {
 		auto it = m_particle_list.begin();
 
@@ -151,10 +178,9 @@ namespace ps {
 		while (burn_it != m_burn_list.end()) {
 			if ((*burn_it)->getState() == ps::Particle::State::DIED) {
 				died_it = burn_it;
-				++burn_it;
 				m_burn_list.erase(died_it);
 			}
-			else ++burn_it;
+			++burn_it;
 		}
 
 	}
@@ -167,6 +193,22 @@ namespace ps {
 		for (auto& burn_i : m_burn_list) {
 			if (burn_i->_x() < m_burn_from) {
 				m_burn_from = burn_i->_x();
+			}
+		}
+
+	}
+	void Swarm::UpdateBurnFrom_New() {
+
+
+		for (size_t si = 0; si < P::segment_count; si++)
+		{
+
+			burn_from[si] = burn_list[si].empty() ? 0 : burn_list[si].front()->_x();
+
+			for (auto& burn_i : burn_list[si]) {
+				if (burn_i->_x() < burn_from[si]) {
+					burn_from[si] = burn_i->_x();
+				}
 			}
 		}
 
@@ -197,7 +239,7 @@ namespace ps {
 
 	}
 
-	void Swarm::StepParticle(std::list<Particle>::iterator&p) {
+	void Swarm::StepParticle(std::list<Particle>::iterator& p) {
 		//if particle doesn't burn check cross with burned particles
 		if ((*p).getState() == Particle::State::OK && (*p)._x() <= GetBurnIndex((*p)._y())) {
 			for (auto& burn_it : m_burn_list)
@@ -243,7 +285,26 @@ namespace ps {
 		//++step_num;
 	}
 
+	void Swarm::Step_New() {
+
+		UpdateBurnFrom_New();
 
 
+		for (size_t si = 0; si < P::segment_count; si++)
+		{
+			for (auto& particle_i : particle_list[si]) {
 
-} /* namespace ps */
+				burn_from[si] = burn_list[si].empty() ? 0 : burn_list[si].front()->_x();
+
+				for (auto& burn_i : burn_list[si]) {
+					if (burn_i->_x() < burn_from[si]) {
+						burn_from[si] = burn_i->_x();
+					}
+				}
+			}
+
+		}
+
+	}
+
+}/*namespace ps */

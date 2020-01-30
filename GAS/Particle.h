@@ -18,6 +18,7 @@ namespace ps {
 		Particle();
 		Particle(double y);
 		Particle(double x, double y);
+		Particle(double x, double y, double speed);
 		virtual ~Particle() {};
 
 		//get coordinates

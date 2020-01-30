@@ -101,7 +101,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -158,12 +158,14 @@
     <ClInclude Include="FrontLine.h" />
     <ClInclude Include="Params.inl" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Segments.h" />
     <ClInclude Include="Swarm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FrontLine.cpp" />
     <ClCompile Include="GAS.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="Segments.cpp" />
     <ClCompile Include="Swarm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
