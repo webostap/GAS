@@ -33,26 +33,28 @@ namespace ps {
 		m_speed = speed_dist(rd) + P::particle_speed.mid * center_percentage * P::center_speed_increase;
 	}*/
 
-	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y) {
+	Particle::Particle(double x, double y) : m_x_cord(x), m_y_cord(y), m_cords(x*x+y*y) {
 
 
 		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size * 2));
-		double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
-		m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
+		//m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+		m_speed = P::speed_distribution(m_y_cord);
 	}
 
 	Particle::Particle(double y) : m_y_cord(y) {
 
 		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size * 2));
-		double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
-		m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+		//double center_percentage = (1 - abs(1 - (m_y_cord - P::area_beg) / P::area_size));
+		//m_speed = P::base_speed * (1 + center_percentage * P::center_speed_increase);
+		m_speed = P::speed_distribution(m_y_cord);
 
 		std::random_device rd;
 		std::uniform_real_distribution<double> x_dist(0, m_speed);
 		m_x_cord = x_dist(rd);
 	}
 
-	Particle::Particle(double x, double y, double speed) : m_x_cord(x), m_y_cord(y), m_speed(speed) { }
+	Particle::Particle(double x, double y, double speed) : m_x_cord(x), m_y_cord(y), m_speed(speed), m_cords(x* x + y * y) { }
 
 
 
@@ -83,16 +85,11 @@ namespace ps {
 
 		++m_steps;
 
+
+	}
+	void Particle::Move() {
+
 		m_x_cord += m_speed;
-
-
-		/*m_direction += (m_steps * 0.005);
-
-		m_x_vector = m_speed * sin(m_direction);
-		m_y_vector = m_speed * cos(m_direction);
-
-		m_x_cord += m_x_vector * m_steps;
-		m_y_cord += m_y_vector * m_steps;*/
 
 	}
 
@@ -116,9 +113,15 @@ namespace ps {
 	const double Particle::Distance(const Particle &p)
 	{
 		return (m_x_cord - p.m_x_cord)*(m_x_cord - p.m_x_cord) + (m_y_cord - p.m_y_cord)*(m_y_cord - p.m_y_cord);
+
+
+		//return m_x_cord * m_x_cord + m_y_cord * m_y_cord + p.m_x_cord * p.m_x_cord + p.m_y_cord * p.m_y_cord - 2 * m_x_cord * p.m_x_cord - 2 * m_y_cord * p.m_y_cord;
+
+
+		//return m_cords + p.m_cords - 2 * m_x_cord * p.m_x_cord - 2 * m_y_cord * p.m_y_cord;
 	}
 	const bool Particle::Cross(const Particle &p) {
-		return Distance(p) < P::burn_radius * P::burn_radius;
+		return Distance(p) < P::burn_radius_2;
 
 		/*if (m_y_cord <= p.m_y_cord + P::burn_radius && m_y_cord >= p.m_y_cord - P::burn_radius)
 			if (m_x_cord <= p.m_x_cord + P::burn_radius && m_x_cord >= p.m_x_cord - P::burn_radius)

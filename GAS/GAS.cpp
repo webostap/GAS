@@ -34,28 +34,36 @@ int main() {
 	//double point;
 
 	double start_time = clock();
-
-
 	for (size_t i = 0; i < P::steps; i++)
 	{
-
-		main_swarm.Fill();
 
 		if (i == P::burn_at_step) {
 			main_swarm.Lighter();
 		}
 
+		
+
 		main_swarm.Step();
 
-		//if (i % 10 == 0) 
+		main_swarm.Fill();
+
+		
+
+
+
+
+		if (i % 10 == 0) 
+		//if (i >= P::burn_at_step)
 		{
-			main_swarm.PrintStep(i);
-			//main_swarm.PrintStep(i / 10);
+			//main_swarm.PrintStep(i - P::burn_at_step);
+			main_swarm.PrintStep(i / 10);
+			//main_swarm.PrintStep(i);
 		}
 
 
-		std::cout << i << '\n';
+
+		std::cout << i << ")\t" << main_swarm.all_list.size() << '\n';
 	}
 
-	std::cout << clock() - start_time;
+	std::cout << (clock() - start_time)/1000 << "s";
 }

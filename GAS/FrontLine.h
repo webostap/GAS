@@ -12,8 +12,8 @@ namespace ps {
 	class FrontLine
 	{
 	public:
-		FrontLine(int steps, double window, unsigned h, double area_start, double area_end);
-		void Init(int steps, double window, unsigned h, double area_start, double area_end);
+		FrontLine(int steps, double window, double area_start, double area_end);
+		void Init(int steps, double window, double area_start, double area_end);
 
 		void Calc(std::list <Particle*>& particle_list);
 		void FivePointStencil();
@@ -22,11 +22,13 @@ namespace ps {
 	private:
 
 		struct front_line_point {
-			double x, y, div = 0, sum = 0;
+			double x, y, div = 0, sum = 0, diff2 = 0, div2 = 0;
 			unsigned count = 0;
 		};
 
 		front_line_point* front_line_points;
+
+		double* Vx, * Vx2;
 
 		int steps;
 		unsigned h;

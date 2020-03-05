@@ -31,7 +31,9 @@ namespace ps {
 		const bool isBurn();
 		void setBurn();
 
+		//void Step();
 		void Step();
+		void Move();
 		const double Distance(const Particle &);
 		const bool Cross(const Particle &);
 
@@ -39,7 +41,7 @@ namespace ps {
 		size_t m_burn_counter = 0;
 		size_t m_steps = 0;
 
-		double m_x_cord, m_y_cord;
+		double m_x_cord, m_y_cord, m_cords;
 		//double m_x_vector, m_y_vector;
 
 		double m_speed;

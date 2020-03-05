@@ -20,7 +20,8 @@ namespace ps {
 		void Fill();
 		void Lighter();
 		void UpdateBurnFrom();
-		void StepParticles();
+		void BurnParticles();
+		void MoveParticles();
 		void ClearBurnList();
 		void ClearParticleList();
 
@@ -35,11 +36,6 @@ namespace ps {
 		unsigned GetSegmentIndex(Particle& p);
 
 
-		void StepParticlesAll();
-		void ClearBurnListAll();
-		void BurnParticleAll(Particle& p);
-		void LighterAll();
-		void StepAll();
 
 
 		//private:
@@ -64,7 +60,7 @@ namespace ps {
 		//std::vector<std::list<Particle>::iterator> died_list;
 
 
-		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::front_line_h, P::area_beg, P::area_end);
+		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::area_beg, P::area_end);
 	};
 
 
