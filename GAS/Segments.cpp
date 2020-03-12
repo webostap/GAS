@@ -67,7 +67,7 @@ namespace ps {
 		for (size_t si = 0; si < P::segment_count; si++)
 		{
 
-			particles_double = (1 - fabs(1-2*(window_beg + P::segment_size/2)/P::L))*P::base_particles;
+			particles_double = P::speed_distribution(window_beg + P::segment_size/2)*P::base_particles;
 			particles_at_step = round(particles_double * particles_double + 5);
 
 			y_dist = std::uniform_real_distribution<double> (window_beg, window_end);

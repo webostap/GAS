@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <cmath>
 
 
 
@@ -14,10 +15,10 @@ namespace P {
 
 	const std::string csv_folder ("C:/Users/prive/Desktop/csv/");
 
-	const unsigned steps = 200;
+	const unsigned steps = 500;
 	const unsigned burn_at_step = 5;
 	const unsigned light_count = 2000; 
-	const unsigned particles_sum = 3160;
+	const unsigned particles_sum = 592;
 
 	const bool edge_burners = false;
 
@@ -25,6 +26,7 @@ namespace P {
 	const double area_beg = 0;
 	const double area_end = 10;
 	const double area_size = area_end - area_beg;
+	const double area_center = area_size / 2;
 	const double L = area_size;
 
 
@@ -46,7 +48,7 @@ namespace P {
 
 
 	const double DSR = L*40;
-	const unsigned base_particles = 10;
+	const unsigned base_particles = 20;
 
 	const double particle_distribution_multiple = 0.1;
 	const unsigned particle_distribution_steps = 10;
@@ -68,9 +70,17 @@ namespace P {
 	//const double base_speed = 3.7122 * L / DSR;
 
 
-	static double speed_distribution(const double x) {
-		return P::base_speed * P::center_percentage(x);
+	static double stream_center(const double x) {
+		return fabs(x - area_center);
 	}
+
+	static double speed_distribution(const double x) {
+		return 0.25 * log(area_center + 1 - fabs(stream_center(x)) );
+	}
+	
+	/*static double speed_distribution(const double x) {
+		return 0.02 * (area_center * area_center - stream_center(x) * stream_center(x));
+	}*/
 
 	const double burn_radius_2 = burn_radius * burn_radius;
 
@@ -90,7 +100,7 @@ namespace P {
 	const double front_line_window = area_size / 25;
 
 
-	const Interval<double> front_line_h(10, 20);
+	const Interval<double> front_line_h(4, 20);
 	const bool front_line_horizontal = true;
 
 

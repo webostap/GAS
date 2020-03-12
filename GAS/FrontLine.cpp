@@ -28,7 +28,7 @@ namespace ps {
 
 		for (size_t i = 0; i < steps; i++)
 		{
-			Vx[i] = (1 - abs(1 - (front_line_points[i].y - P::area_beg) / P::area_size * 2)) * P::base_speed * 6.5;
+			Vx[i] = P::speed_distribution(front_line_points[i].y) * 6.6;
 			Vx2[i] = Vx[i] * Vx[i];
 		}
 
