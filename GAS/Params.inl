@@ -1,10 +1,16 @@
 #pragma once
 #include <string>
+#define _USE_MATH_DEFINES 
 #include <cmath>
+
+#define M_PI 3.14159265358979323846
 
 
 
 namespace P {
+
+
+
 
 	template <typename T>
 	struct Interval {
@@ -13,12 +19,12 @@ namespace P {
 	};
 
 
-	const std::string csv_folder ("C:/Users/prive/Desktop/csv/");
+	const std::string csv_folder ("z:/csv/");
 
-	const unsigned steps = 500;
+	const unsigned steps = 100;
 	const unsigned burn_at_step = 5;
 	const unsigned light_count = 2000; 
-	const unsigned particles_sum = 592;
+	const unsigned particles_sum = 5000;
 
 	const bool edge_burners = false;
 
@@ -27,6 +33,15 @@ namespace P {
 	const double area_end = 10;
 	const double area_size = area_end - area_beg;
 	const double area_center = area_size / 2;
+
+	const double area_height = area_size*3;
+
+
+	const double stream_radius = 5;
+	const double stream_width = stream_radius * 2;
+
+
+
 	const double L = area_size;
 
 
@@ -38,17 +53,17 @@ namespace P {
 	const unsigned segment_count = 40;
 	const double segment_size = area_size / segment_count;
 
-	const unsigned burn_index_steps = 100;
+	const unsigned burn_index_steps = 80;
 	const double burn_index_window = P::area_size / P::burn_index_steps;
 
 
-	const double max_x = L*25;
+	const double max_x = 20.;
 
 	const Interval<unsigned> particles_at_step(200, 300);
 
 
 	const double DSR = L*40;
-	const unsigned base_particles = 20;
+	const unsigned base_particles = 50;
 
 	const double particle_distribution_multiple = 0.1;
 	const unsigned particle_distribution_steps = 10;
@@ -58,25 +73,16 @@ namespace P {
 	//const double particle_count_multiple = 1.1;
 
 
-	const Interval<double> particle_speed(L/40, L/20);
 
 	//speed increases linearly as it approaches the center of the stream
 	//speed = base_speed + P::particle_speed.mid * center_percentage * P::center_speed_increase;
 
 
 	const double center_speed_increase = .5;
-	const double burn_radius =  7.5 * L / DSR;
-	const double base_speed  =  25  * L / DSR;
+	const double burn_radius =  5 * L / DSR;
 	//const double base_speed = 3.7122 * L / DSR;
 
 
-	static double stream_center(const double x) {
-		return fabs(x - area_center);
-	}
-
-	static double speed_distribution(const double x) {
-		return 0.25 * log(area_center + 1 - fabs(stream_center(x)) );
-	}
 	
 	/*static double speed_distribution(const double x) {
 		return 0.02 * (area_center * area_center - stream_center(x) * stream_center(x));
@@ -85,13 +91,21 @@ namespace P {
 	const double burn_radius_2 = burn_radius * burn_radius;
 
 
+	const unsigned grid_count_x = area_size / burn_radius;// *10;
+	const unsigned grid_count_z = area_height / burn_radius;// *10;
+	const unsigned grid_count = grid_count_x * grid_count_z;
+
+	const double grid_count_x_percent = grid_count_x / area_size;
+	const double grid_count_z_percent = grid_count_z / area_height;
+
+
 
 	//const unsigned particles_sum = base_particles * segment_count + base_particles * center_speed_increase * (segment_count / 2);
 	
 	//const unsigned particles_sum = 2594;
 
 
-	const unsigned burn_time = 7;
+	const unsigned burn_time = 5;
 
 	//num of points in the front line
 	const int front_line_steps = 200;
@@ -100,8 +114,43 @@ namespace P {
 	const double front_line_window = area_size / 25;
 
 
-	const Interval<double> front_line_h(4, 20);
+	const Interval<double> front_line_h(5, 25);
 	const bool front_line_horizontal = true;
+
+
+
+
+
+	static double from_center(const double x) {
+		return x - area_center;
+	}
+
+	const double base_speed = .5;
+	const double burn_speed = 10.5;
+
+
+	static double linear_stream(const double x) {
+		return 1 - fabs(from_center(x)) / area_center;
+	}
+	static double log_stream(const double x) {
+		return log(area_center + 1 - fabs(from_center(x))) / log(area_center + 1);
+	}
+	static double x2_stream(const double x) {
+		return 1 - from_center(x) * from_center(x) / area_center / area_center;
+	}
+
+
+	static double stream_function(const double x) {
+		return linear_stream(x);
+	}
+
+	static double particle_count (const double x) {
+		return base_particles * stream_function(x);
+	}
+
+	static double particle_speed (const double x) {
+		return base_speed * stream_function(x);
+	}
 
 
 

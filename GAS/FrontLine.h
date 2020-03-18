@@ -22,7 +22,7 @@ namespace ps {
 	private:
 
 		struct front_line_point {
-			double x, y, div = 0, sum = 0, diff2 = 0, div2 = 0;
+			double x, z, div = 0, sum = 0, diff2 = 0, div2 = 0;
 			unsigned count = 0;
 		};
 

@@ -1,19 +1,134 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <ctime> 
+#include "Screen.h"
 #include "Segments.h"
 
+void print_files(ps::Segments& swarm);
+void print_final(ps::Segments&, int);
+void clear_csv_files();
 
 
+Uint32 startTime = 0;
+Uint32 endTime = 0;
+Uint32 delta = 0;
+short fps = 60;
+short timePerFrame = 1000 / fps; // miliseconds
+
+#undef main
 int main() {
 
-	//std::cout << P::particles_sum;
-	//return 0;
 
-	//remove all files from csv directory
+	ps::Segments main_swarm;
+	//print_files(main_swarm);
+	//clear_csv_files();
+	print_final(main_swarm, 2);
+	return 0;
+
+
+	ps::Screen screen;
+	bool burned = false;
+	int ii = 0;
+	
+	while (!screen.quit_program()) {
+
+		if (!startTime) {
+			// get the time in ms passed from the moment the program started
+			startTime = SDL_GetTicks();
+		}
+		else {
+			delta = endTime - startTime; // how many ms for a frame
+		}
+
+		// if less than 16ms, delay
+		if (delta < timePerFrame) {
+			SDL_Delay(timePerFrame - delta);
+		}
+
+		if (!burned && ++ii == P::burn_at_step) {
+			burned = true;
+			main_swarm.Lighter();
+		}
+
+		main_swarm.Step();
+
+		main_swarm.Fill();
+
+		// Load current particle swarm.
+		screen.load_swarm(main_swarm.all_list);
+
+		// Update SDL window with new particle positions and colors.
+		screen.update();
+
+
+
+		// Manipulate particle positions for next iteration. 
+		// Ticks are used to ensure consistent/proportional movement.
+		//swarm.move(SDL_GetTicks());
+		//std::cout<<SDL_GetTicks()<<std::endl;
+
+		// Apply gaussian blur effect.
+		//screen.box_blur();
+
+		//if (endTime > 2000)
+			//swarm.burn_step();
+
+
+		// if delta is bigger than 16ms between frames, get the actual fps
+		if (delta > timePerFrame) {
+			fps = 1000 / delta;
+		}
+
+		printf("FPS is: %i \n", fps);
+
+		startTime = endTime;
+		endTime = SDL_GetTicks();
+
+		//std::cout << main_swarm.all_list.size() << '\n';
+	}
+
+	return 0;
+
+
+	
+
+}
+
+void print_files(ps::Segments &swarm) {
+
+	for (size_t i = 0; i < P::steps; i++)
+	{
+
+		if (i == P::burn_at_step) swarm.Lighter();
+
+		swarm.Step();
+
+		if (i % 10 == 0)
+		{
+			swarm.PrintStep(i / 10);
+			//main_swarm.PrintStep(i);
+		}
+
+		std::cout << i << ")\t" << swarm.all_list.size() << '\n';
+	}
+}
+void print_final(ps::Segments &swarm, int num = 0) {
+
+	for (size_t i = 0; i < P::steps; i++)
+	{
+
+		if (i == P::burn_at_step) swarm.Lighter();
+
+		swarm.Step();
+
+	}
+	swarm.PrintStep(num);
+}
+
+void clear_csv_files() {
 	bool gas_out = 0, line_out = 0;
 
-	for (size_t i = 0;; ++i) 
+	for (size_t i = 0;; ++i)
 	{
 		if (!gas_out && std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
 			gas_out = 1;
@@ -22,48 +137,7 @@ int main() {
 			line_out = 1;
 		}
 
-		if (gas_out && line_out) break;
+		if (gas_out && line_out) return;
 
 	}
-
-
-	ps::Segments main_swarm = ps::Segments();
-	//main_swarm.Test(10);
-
-	//auto first_partile = main_swarm.m_particle_list.begin();
-	//double point;
-
-	double start_time = clock();
-	for (size_t i = 0; i < P::steps; i++)
-	{
-
-		if (i == P::burn_at_step) {
-			main_swarm.Lighter();
-		}
-
-		
-
-		main_swarm.Step();
-
-		main_swarm.Fill();
-
-		
-
-
-
-
-		if (i % 10 == 0) 
-		//if (i >= P::burn_at_step)
-		{
-			//main_swarm.PrintStep(i - P::burn_at_step);
-			main_swarm.PrintStep(i / 10);
-			//main_swarm.PrintStep(i);
-		}
-
-
-
-		std::cout << i << ")\t" << main_swarm.all_list.size() << '\n';
-	}
-
-	std::cout << (clock() - start_time)/1000 << "s";
 }
