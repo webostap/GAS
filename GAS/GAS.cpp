@@ -3,6 +3,7 @@
 #include <ctime> 
 #include "Screen.h"
 #include "Segments.h"
+#include <conio.h>
 
 void print_files(ps::Segments& swarm);
 void print_final(ps::Segments&, int);
@@ -18,12 +19,14 @@ short timePerFrame = 1000 / fps; // miliseconds
 #undef main
 int main() {
 
+	char c;
+
 
 	ps::Segments main_swarm;
 	//print_files(main_swarm);
 	//clear_csv_files();
-	print_final(main_swarm, 2);
-	return 0;
+	//print_final(main_swarm, 2);
+	//return 0;
 
 
 	ps::Screen screen;
@@ -45,14 +48,13 @@ int main() {
 			SDL_Delay(timePerFrame - delta);
 		}
 
-		if (!burned && ++ii == P::burn_at_step) {
+		if (!burned && ii == P::burn_at_step) {
 			burned = true;
 			main_swarm.Lighter();
 		}
 
 		main_swarm.Step();
 
-		main_swarm.Fill();
 
 		// Load current particle swarm.
 		screen.load_swarm(main_swarm.all_list);
@@ -75,7 +77,8 @@ int main() {
 
 
 		// if delta is bigger than 16ms between frames, get the actual fps
-		if (delta > timePerFrame) {
+		if (delta > timePerFrame) 
+		{
 			fps = 1000 / delta;
 		}
 
@@ -84,7 +87,17 @@ int main() {
 		startTime = endTime;
 		endTime = SDL_GetTicks();
 
-		//std::cout << main_swarm.all_list.size() << '\n';
+		//if (!ii)
+		{
+			//std::cout << main_swarm.all_list.size() << '\n';
+		}
+		if (burned) 
+		{
+			//_getch();
+		}
+		
+
+		++ii;
 	}
 
 	return 0;

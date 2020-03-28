@@ -22,9 +22,11 @@ namespace P {
 	const std::string csv_folder ("z:/csv/");
 
 	const unsigned steps = 100;
-	const unsigned burn_at_step = 5;
+	const unsigned burn_at_step = 500;
 	const unsigned light_count = 2000; 
-	const unsigned particles_sum = 5000;
+	const unsigned particles_sum = 1000;
+
+	const unsigned base_particles = 1000;
 
 	const bool edge_burners = false;
 
@@ -50,7 +52,7 @@ namespace P {
 	}
 
 
-	const unsigned segment_count = 40;
+	const unsigned segment_count = 36;
 	const double segment_size = area_size / segment_count;
 
 	const unsigned burn_index_steps = 80;
@@ -59,11 +61,9 @@ namespace P {
 
 	const double max_x = 20.;
 
-	const Interval<unsigned> particles_at_step(200, 300);
 
 
 	const double DSR = L*40;
-	const unsigned base_particles = 50;
 
 	const double particle_distribution_multiple = 0.1;
 	const unsigned particle_distribution_steps = 10;
@@ -79,8 +79,9 @@ namespace P {
 
 
 	const double center_speed_increase = .5;
-	const double burn_radius =  5 * L / DSR;
-	//const double base_speed = 3.7122 * L / DSR;
+	const double burn_radius = 7.5 * L / DSR;
+	const double base_speed = .5;
+	const double burn_speed = 10.5;
 
 
 	
@@ -91,8 +92,8 @@ namespace P {
 	const double burn_radius_2 = burn_radius * burn_radius;
 
 
-	const unsigned grid_count_x = area_size / burn_radius;// *10;
-	const unsigned grid_count_z = area_height / burn_radius;// *10;
+	const unsigned grid_count_x = area_size / burn_radius;
+	const unsigned grid_count_z = area_height / burn_radius;
 	const unsigned grid_count = grid_count_x * grid_count_z;
 
 	const double grid_count_x_percent = grid_count_x / area_size;
@@ -125,8 +126,6 @@ namespace P {
 		return x - area_center;
 	}
 
-	const double base_speed = .5;
-	const double burn_speed = 10.5;
 
 
 	static double linear_stream(const double x) {
@@ -141,11 +140,11 @@ namespace P {
 
 
 	static double stream_function(const double x) {
-		return linear_stream(x);
+		return log_stream(x);
 	}
 
 	static double particle_count (const double x) {
-		return base_particles * stream_function(x);
+		return base_particles * stream_function(x) / segment_count;
 	}
 
 	static double particle_speed (const double x) {

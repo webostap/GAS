@@ -18,6 +18,7 @@ namespace ps {
 		void Step();
 
 		void Fill();
+		void Fill_2();
 		void Lighter();
 		void UpdateBurnFrom();
 		void BurnParticles();

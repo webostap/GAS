@@ -62,12 +62,11 @@ namespace ps {
 
 	void Segments::Fill() {
 
-		std::random_device rd_x, rd_z;
+		std::random_device rd;
 		std::uniform_real_distribution<double> x_dist, z_dist;
 
-		double particles_double = P::base_particles;
-		unsigned particles_at_step = round(particles_double);
-		double count_multipler = P::base_particles * P::center_speed_increase / (P::segment_count / 2);
+		double particles_double; 
+		int particles_at_step;
 
 		double window_beg = P::area_beg;
 		double window_end = P::area_beg + P::segment_size;
@@ -76,19 +75,19 @@ namespace ps {
 		for (size_t si = 0; si < P::segment_count; si++)
 		{
 
-			particles_double = P::particle_count(window_beg + P::segment_size/2);
+			particles_double = P::particle_count(window_beg + P::segment_size/2.);
 			particles_at_step = round(particles_double);
 
 			x_dist = std::uniform_real_distribution<double> (window_beg, window_end);
 
 			for (size_t pi = 0; pi < particles_at_step; ++pi) {
 
-				p_x_cord = x_dist(rd_x);
+				p_x_cord = x_dist(rd);
 
 				p_speed = P::particle_speed(p_x_cord);
 
 				z_dist = std::uniform_real_distribution<double> (0, p_speed);
-				p_z_cord = z_dist(rd_z);
+				p_z_cord = z_dist(rd);
 				
 				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
 
@@ -101,6 +100,27 @@ namespace ps {
 			window_end += P::segment_size;
 
 			
+		}
+
+	}
+	void Segments::Fill_2() {
+
+		std::random_device rd;
+		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, P::particle_speed(P::area_center));
+
+		double p_x_cord, p_z_cord, p_speed;
+
+		for (size_t pi = 0; pi < P::base_particles; ++pi) {
+
+			p_x_cord = dist_x(rd);
+			p_z_cord = dist_z(rd);
+			p_speed = P::particle_speed(p_x_cord);
+
+			if (p_z_cord < p_speed) {
+				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
+			}
+			else --pi;
+
 		}
 
 	}
@@ -157,6 +177,8 @@ namespace ps {
 		//{
 			//ParticleInBurnSegment(p);
 		//}
+
+		if (burn_segments.empty()) return;
 
 		
 		for (size_t j = 0; j < P::grid_count_z; j++)
@@ -238,7 +260,7 @@ namespace ps {
 		{
 			for (size_t j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
 			{
-				for (auto& burn_i : grid[i][j].burn_list)
+				if (grid[i][j].has_burn) for (auto& burn_i : grid[i][j].burn_list)
 				{
 					if (particle.Cross(*burn_i))
 					{
@@ -412,7 +434,7 @@ namespace ps {
 
 		all_will_burn.clear();
 
-		UpdateBurnFrom();
+		//UpdateBurnFrom();
 
 		UpdateSegments();
 
@@ -424,7 +446,7 @@ namespace ps {
 
 		ClearParticleList();
 
-		Fill();
+		Fill_2();
 	}
 
 }
