@@ -17,26 +17,6 @@ namespace ps {
 
 
 
-
-
-
-		segment_beg[0] = P::area_beg;
-		segment_end[0] = P::area_beg + P::burn_index_window;
-
-		segment_cross_beg[0] = P::area_beg;
-		segment_cross_end[0] = segment_end[0] - P::burn_radius;
-
-		for (size_t si = 1; si < P::burn_index_steps; si++)
-		{
-			segment_beg[si] = segment_beg[si - 1] + P::burn_index_window;
-			segment_end[si] = segment_end[si - 1] + P::burn_index_window;
-
-			segment_cross_beg[si] = segment_beg[si] + P::burn_radius;
-			segment_cross_end[si] = segment_end[si] - P::burn_radius;
-		}
-
-		segment_cross_end[P::burn_index_steps -1] = P::area_end;
-
 	}
 
 	const void Segments::PrintStep(size_t num)
@@ -59,6 +39,7 @@ namespace ps {
 		m_front_line.Print(num);
 
 	}
+
 
 	void Segments::Fill() {
 
@@ -91,9 +72,9 @@ namespace ps {
 				
 				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
 
-				if (P::edge_burners && (si == 0 || si == P::segment_count - 1)) {
+				/*if (P::edge_burners && (si == 0 || si == P::segment_count - 1)) {
 					BurnParticle(all_list.back());
-				}
+				}*/
 			}
 
 			window_beg += P::segment_size;
@@ -126,61 +107,14 @@ namespace ps {
 	}
 	
 
-	void Segments::UpdateBurnFrom() {
-
-
-		for (size_t si = 0; si < P::burn_index_steps; si++)
-		{ //walk over all segments
-
-			burn_from[si] = burn_list[si].empty() ? P::area_height : burn_list[si].front()->_z();
-
-			for (auto& burn_i : burn_list[si]) {
-				if (burn_i->_z() < burn_from[si]) {
-					burn_from[si] = burn_i->_z();
-				}
-			}
-			burn_from[si]-= P::burn_radius;
-		}
-
-	}
-
 
 	void Segments::BurnParticles()
 	{
-		unsigned burn_index; //walk over all segments
 
-		for (auto& particle_i : all_list)
-		{ //walk over all particles in segment
-			if (particle_i.getState() == Particle::State::OK)
-			{ //if particle doesn't burn
-				burn_index = GetSegmentIndex(particle_i);
+		if (!is_burn) return;
 
-				if (particle_i._z() >= burn_from[burn_index])
-				{ //if particle being close to burn line
-					for (auto& burn_i : burn_list[burn_index])
-					{ //walk over all burning particles in current segment
-						if (/*(*burn_i).m_burn_counter > 1 && */particle_i.Cross(*burn_i))
-						{ //if particle cross with burning particle
-							BurnParticle(particle_i);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
+		all_will_burn.clear();
 
-	void Segments::BurnParticles_2()
-	{
-
-		//for (auto& p : all_list)
-		//{
-			//ParticleInBurnSegment(p);
-		//}
-
-		if (burn_segments.empty()) return;
-
-		
 		for (size_t j = 0; j < P::grid_count_z; j++)
 		{
 			for (size_t i = 0; i < P::grid_count_x; i++)
@@ -196,28 +130,6 @@ namespace ps {
 		}
 		
 		
-		/*for (auto& burn_segment : burn_segments)
-		{
-
-			int seg_x = burn_segment.first;
-			int seg_z = burn_segment.second;
-
-			for (auto& particle_i : grid[seg_x][seg_z].ok_list)
-			{
-				ParticleInBurnSegment(*particle_i, seg_x, seg_z);
-			}
-		}*/
-
-		/*for (size_t j = 0; j < P::grid_count_z; j++)
-		{
-			for (size_t i = 0; i < P::grid_count_x; i++)
-			{
-				for (auto& burn_i : grid[i][j].burn_list)
-				{
-					ParticleInBurnSegment_2(*burn_i, i, j);
-				}
-			}
-		}*/
 	}
 
 
@@ -238,22 +150,6 @@ namespace ps {
 
 	}
 
-	void Segments::ParticleInBurnSegment_2(Particle& burn_i, int seg_x, int seg_z)
-	{
-		for (size_t i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
-		{
-			for (size_t j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
-			{
-				for (auto& particle_i : grid[i][j].ok_list)
-				{
-					if (burn_i.Cross(*particle_i))
-					{
-						BurnParticle_2(*particle_i);
-					}
-				}
-			}
-		}
-	}
 	void Segments::ParticleInBurnSegment(Particle& particle, int seg_x, int seg_z)
 	{
 		for (size_t i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
@@ -264,24 +160,7 @@ namespace ps {
 				{
 					if (particle.Cross(*burn_i))
 					{
-						BurnParticle_2(particle);
-						return;
-					}
-				}
-			}
-		}
-	}
-	void Segments::ParticleInBurnSegment(Particle& p)
-	{
-		for (size_t i = p.seg_x ? p.seg_x - 1 : 0; i < (p.seg_x < P::grid_count_x - 1 ? p.seg_x + 2 : P::grid_count_x); i++)
-		{
-			for (size_t j = p.seg_z ? p.seg_z - 1 : 0; j < (p.seg_z < P::grid_count_z - 1 ? p.seg_z + 2 : P::grid_count_z); j++)
-			{
-				for (auto& burn_i : grid[i][j].burn_list)
-				{
-					if (p.Cross(*burn_i))
-					{
-						BurnParticle_2(p);
+						BurnParticle(particle);
 						return;
 					}
 				}
@@ -299,41 +178,6 @@ namespace ps {
 	}
 
 
-	void Segments::ClearBurnList() {
-		
-		for (size_t si = 0; si < P::burn_index_steps; si++)
-		{
-			if (!burn_list[si].empty())
-			{
-				auto burn_it = burn_list[si].begin();
-				auto died_it = burn_it;
-				while (burn_it != burn_list[si].end()) {
-					if ((*burn_it)->getState() != Particle::State::BURN) {
-						died_it = burn_it;
-						++burn_it;
-						burn_list[si].erase(died_it);
-					}
-					else ++burn_it;
-				}
-			}
-			if (!will_burn_list[si].empty())
-			{
-				auto burn_it = will_burn_list[si].begin();
-				auto died_it = burn_it;
-				while (burn_it != will_burn_list[si].end()) {
-					if ((*burn_it)->getState() != Particle::State::BURN) {
-						died_it = burn_it;
-						++burn_it;
-						will_burn_list[si].erase(died_it);
-					}
-					else ++burn_it;
-				}
-			}
-
-			burn_list[si].splice(burn_list[si].end(), will_burn_list[si]);
-		}
-
-	}
 
 	void Segments::ClearParticleList() {
 
@@ -352,24 +196,26 @@ namespace ps {
 
 
 
-	unsigned Segments::GetSegmentIndex(Particle& p)
+
+	unsigned Segments::GetSegmentX(const double x)
 	{
-		return floor((p._x() - P::area_beg) / P::area_size * P::burn_index_steps);
+		return floor(x * P::grid_count_x_percent);
+	}
+	unsigned Segments::GetSegmentZ(const double z)
+	{
+		return floor(z * P::grid_count_z_percent);
+	}
+	Segments::Segment* Segments::GetSegment(const double x, const double z)
+	{
+		return &grid[GetSegmentX(x)][GetSegmentZ(z)];
 	}
 
-	unsigned Segments::GetParticleSegmentX(Particle& p)
-	{
-		return floor(p.x * P::grid_count_x_percent);
-	}
-	unsigned Segments::GetParticleSegmentZ(Particle& p)
-	{
-		return floor(p.z * P::grid_count_z_percent);
-	}
 
 
 
 	void Segments::UpdateSegments()
 	{
+		is_burn = false;
 		burn_segments.clear();
 
 		for (size_t i = 0; i < P::grid_count; i++)
@@ -380,17 +226,19 @@ namespace ps {
 		}
 
 		for (auto& p : all_list) {
-			unsigned seg_x = GetParticleSegmentX(p);
-			unsigned seg_z = GetParticleSegmentZ(p);
+
+			unsigned seg_x = GetSegmentX(p.x);
+			unsigned seg_z = GetSegmentZ(p.z);
+			Segment *segment = &grid[seg_x][seg_z];
+			//Segment *segment = GetSegment(p.x, p.z);
 
 			if (p.isBurn()) {
-				if (!grid[seg_x][seg_z].has_burn) {
-					burn_segments.emplace_back(seg_x,seg_z);
-				}
-				grid[seg_x][seg_z].has_burn = 1;
-				grid[seg_x][seg_z].burn_list.push_back(&p);
+				burn_segments.emplace_back(seg_x, seg_z);
+				is_burn = 1;
+				segment->has_burn = 1;
+				segment->burn_list.push_back(&p);
 			}
-			else grid[seg_x][seg_z].ok_list.push_back(&p);
+			else segment->ok_list.push_back(&p);
 		}
 	}
 
@@ -406,47 +254,46 @@ namespace ps {
 	}
 
 
-	void Segments::BurnParticle(Particle& particle) {
-
-		particle.setBurn();
-
-		unsigned burn_index = GetSegmentIndex(particle);
-
-		will_burn_list[burn_index].push_back(&particle);
-		all_will_burn.push_back(&particle);
-
-		if (particle._x() <= segment_cross_beg[burn_index]) {
-			will_burn_list[burn_index - 1].push_back(&particle);
+	void Segments::LightsOut()
+	{
+		//all_will_burn.clear();
+		is_burn = false;
+		for (auto& xz : burn_segments)
+		{
+			Segment* segment = &grid[xz.first][xz.second];
+			for (auto& particle : segment->burn_list)
+			{
+				particle->state = Particle::State::DIED;
+			}
+			segment->burn_list.clear();
 		}
-		if (particle._x() >= segment_cross_end[burn_index]) {
-			will_burn_list[burn_index + 1].push_back(&particle);
-		}
-
 	}
-	void Segments::BurnParticle_2(Particle& particle) {
+
+	void Segments::BurnParticle(Particle& particle) {
 		particle.setBurn();
 		all_will_burn.push_back(&particle);
+	}
+
+	void Segments::BurnSegment(Segment& segment) {
+		for (auto& particle : segment.ok_list) {
+			BurnParticle(*particle);
+		}
 	}
 
 	
 
 	void Segments::Step() {
 
-		all_will_burn.clear();
-
-		//UpdateBurnFrom();
-
 		UpdateSegments();
 
-		BurnParticles_2();
+		BurnParticles();
 
 		MoveParticles();
-
-		//ClearBurnList();
 
 		ClearParticleList();
 
 		Fill_2();
 	}
+
 
 }

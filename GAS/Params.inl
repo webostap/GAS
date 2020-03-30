@@ -10,6 +10,9 @@
 namespace P {
 
 
+	const unsigned screen_width = 400;
+	const unsigned screen_height = 600;
+	const unsigned screen_bottom_gap = 0;
 
 
 	template <typename T>
@@ -22,7 +25,7 @@ namespace P {
 	const std::string csv_folder ("z:/csv/");
 
 	const unsigned steps = 100;
-	const unsigned burn_at_step = 500;
+	const unsigned burn_at_step = 50;
 	const unsigned light_count = 2000; 
 	const unsigned particles_sum = 1000;
 
@@ -36,11 +39,21 @@ namespace P {
 	const double area_size = area_end - area_beg;
 	const double area_center = area_size / 2;
 
-	const double area_height = area_size*3;
+	const double area_height = area_size / screen_width * screen_height;
 
 
 	const double stream_radius = 5;
 	const double stream_width = stream_radius * 2;
+
+	const double screen_x_proportion = area_size / screen_width;
+	const double screen_y_proportion = area_height / screen_height;
+
+	static double screen_to_area_x (const int x) {
+		return x * screen_x_proportion;
+	}
+	static double screen_to_area_y (const int y) {
+		return area_height - y * screen_y_proportion;
+	}
 
 
 
@@ -128,6 +141,9 @@ namespace P {
 
 
 
+	static double const_stream(const double x) {
+		return .4;
+	}
 	static double linear_stream(const double x) {
 		return 1 - fabs(from_center(x)) / area_center;
 	}
@@ -140,7 +156,7 @@ namespace P {
 
 
 	static double stream_function(const double x) {
-		return log_stream(x);
+		return const_stream(x);
 	}
 
 	static double particle_count (const double x) {

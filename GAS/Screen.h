@@ -18,6 +18,9 @@ namespace ps {
         void box_blur();
         void load_swarm(std::list <Particle>& particle_list);
         bool quit_program();
+        SDL_Window* GetWindow() {
+            return m_window;
+        }
 
     private:
         void init_SDL();
@@ -29,8 +32,8 @@ namespace ps {
         void get_avg_color(int, int, Uint8&, Uint8&, Uint8&);
 
     private:
-        const static int SCREEN_WIDTH{ 500 };
-        const static int SCREEN_HEIGHT{ 800 };
+        const static int SCREEN_WIDTH{ P::screen_width };
+        const static int SCREEN_HEIGHT{ P::screen_height };
         SDL_Window* m_window{ nullptr };
         SDL_Renderer* m_renderer{ nullptr };
         SDL_Texture* m_texture{ nullptr };

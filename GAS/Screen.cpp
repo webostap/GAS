@@ -151,7 +151,7 @@ namespace ps {
             }
 
             int x = static_cast<int>(particle._x() * SCREEN_WIDTH / 10);
-            int y = SCREEN_HEIGHT - 10 - static_cast<int>(particle._z() * SCREEN_WIDTH / 10);
+            int y = SCREEN_HEIGHT - P::screen_bottom_gap - static_cast<int>(particle._z() * SCREEN_WIDTH / 10);
 
             set_pixel_color(x, y, red, green, blue);
 

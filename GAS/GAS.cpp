@@ -10,19 +10,25 @@ void print_final(ps::Segments&, int);
 void clear_csv_files();
 
 
-Uint32 startTime = 0;
-Uint32 endTime = 0;
-Uint32 delta = 0;
-short fps = 60;
-short timePerFrame = 1000 / fps; // miliseconds
-
 #undef main
 int main() {
+
+
+
+	Uint32 startTime = 0;
+	Uint32 endTime = 0;
+	Uint32 delta = 0;
+	short fps = 60;
+	short timePerFrame = 1000 / fps; // miliseconds
+	//SDL_Event event;
+	const Uint8* key_state;
+
 
 	char c;
 
 
 	ps::Segments main_swarm;
+	ps::Segments::Segment* segment;
 	//print_files(main_swarm);
 	//clear_csv_files();
 	//print_final(main_swarm, 2);
@@ -32,8 +38,12 @@ int main() {
 	ps::Screen screen;
 	bool burned = false;
 	int ii = 0;
+
+	int mouse_x, mouse_y;
 	
 	while (!screen.quit_program()) {
+
+
 
 		if (!startTime) {
 			// get the time in ms passed from the moment the program started
@@ -48,12 +58,37 @@ int main() {
 			SDL_Delay(timePerFrame - delta);
 		}
 
-		if (!burned && ii == P::burn_at_step) {
+		/*if (!burned && ii == P::burn_at_step) {
 			burned = true;
 			main_swarm.Lighter();
+		}*/
+
+		//main_swarm.Step();
+
+
+		main_swarm.UpdateSegments();
+
+		SDL_PumpEvents();
+		if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+			//printf("%f\t%f\n", P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
+			segment = main_swarm.GetSegment(P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
+			main_swarm.BurnSegment(*segment);
 		}
 
-		main_swarm.Step();
+		key_state = SDL_GetKeyboardState(NULL);
+		if (key_state[SDL_SCANCODE_SPACE]) {
+			main_swarm.LightsOut();
+		}
+
+		main_swarm.BurnParticles();
+
+		main_swarm.MoveParticles();
+
+		main_swarm.ClearParticleList();
+
+		main_swarm.Fill_2();
+
+		//main_swarm.Step();
 
 
 		// Load current particle swarm.
@@ -82,7 +117,7 @@ int main() {
 			fps = 1000 / delta;
 		}
 
-		printf("FPS is: %i \n", fps);
+		//printf("FPS is: %i \n", fps);
 
 		startTime = endTime;
 		endTime = SDL_GetTicks();
@@ -129,11 +164,8 @@ void print_final(ps::Segments &swarm, int num = 0) {
 
 	for (size_t i = 0; i < P::steps; i++)
 	{
-
 		if (i == P::burn_at_step) swarm.Lighter();
-
 		swarm.Step();
-
 	}
 	swarm.PrintStep(num);
 }
@@ -154,3 +186,4 @@ void clear_csv_files() {
 
 	}
 }
+
