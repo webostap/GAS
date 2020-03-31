@@ -233,13 +233,15 @@ namespace ps {
 			Segment *segment = &grid[seg_x][seg_z];
 			//Segment *segment = GetSegment(p.x, p.z);
 
-			if (p.isBurn()) {
+			if (p.state == Particle::State::BURN) {
 				burn_segments.emplace_back(seg_x, seg_z);
 				is_burn = 1;
 				segment->has_burn = 1;
 				segment->burn_list.push_back(&p);
 			}
-			else segment->ok_list.push_back(&p);
+			else if (p.state == Particle::State::OK) {
+				segment->ok_list.push_back(&p);
+			}
 		}
 	}
 
@@ -264,7 +266,7 @@ namespace ps {
 			Segment* segment = &grid[xz.first][xz.second];
 			for (auto& particle : segment->burn_list)
 			{
-				particle->state = Particle::State::DIED;
+				particle->state = Particle::State::SAGE;
 			}
 			segment->burn_list.clear();
 		}

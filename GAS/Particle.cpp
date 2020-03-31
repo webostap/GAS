@@ -20,9 +20,14 @@ namespace ps {
 
 	void Particle::Step() {
 
-		if (state == State::BURN) ++burn_counter;
+		if (state == State::BURN) {
+			++burn_counter;
 
-		if (burn_counter == P::burn_time) state = State::DIED;
+			if (burn_counter == P::burn_time) {
+				state = State::SAGE;
+			}
+		}
+
 
 	}
 	void Particle::Move() {

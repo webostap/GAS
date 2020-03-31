@@ -143,11 +143,13 @@ namespace ps {
             if (particle.getState() == Particle::State::BURN) {
                 red = 150; green = 80, blue = 80;
             }
-            if (particle.getState() == Particle::State::SAGE) {
-                red = 70; green = 80; blue = 80;
-            }
+
             if (particle.burn_counter == 1) {
                 red = 80; green = 150; blue = 80;
+            }
+
+            if (particle.getState() == Particle::State::SAGE) {
+                red = 30; green = 30; blue = 40;
             }
 
             int x = static_cast<int>(particle._x() * SCREEN_WIDTH / 10);
