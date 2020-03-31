@@ -14,9 +14,10 @@ namespace ps {
 			grid[i] = (grid_mem + i * P::grid_count_z);
 		}
 
+	}
 
-
-
+	const double Segments::particle_speed(const double x) {
+		return P::base_speed * stream_func(x);
 	}
 
 	const void Segments::PrintStep(size_t num)
@@ -87,7 +88,7 @@ namespace ps {
 	void Segments::Fill_2() {
 
 		std::random_device rd;
-		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, P::particle_speed(P::area_center));
+		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, particle_speed(P::area_center));
 
 		double p_x_cord, p_z_cord, p_speed;
 
@@ -95,7 +96,7 @@ namespace ps {
 
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);
-			p_speed = P::particle_speed(p_x_cord);
+			p_speed = particle_speed(p_x_cord);
 
 			if (p_z_cord < p_speed) {
 				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);

@@ -79,6 +79,13 @@ int main() {
 			main_swarm.LightsOut();
 		}
 
+		if (key_state[SDL_SCANCODE_1]) main_swarm.stream_func = P::linear_stream;
+		if (key_state[SDL_SCANCODE_2]) main_swarm.stream_func = P::log_stream;
+		if (key_state[SDL_SCANCODE_3]) main_swarm.stream_func = P::x2_stream;
+		if (key_state[SDL_SCANCODE_4]) main_swarm.stream_func = P::const_stream;
+
+
+
 		main_swarm.BurnParticles();
 
 		main_swarm.MoveParticles();

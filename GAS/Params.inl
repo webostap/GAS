@@ -142,7 +142,7 @@ namespace P {
 
 
 	static double const_stream(const double x) {
-		return .4;
+		return .5;
 	}
 	static double linear_stream(const double x) {
 		return 1 - fabs(from_center(x)) / area_center;
@@ -155,8 +155,9 @@ namespace P {
 	}
 
 
+
 	static double stream_function(const double x) {
-		return const_stream(x);
+		return log_stream(x);
 	}
 
 	static double particle_count (const double x) {
@@ -166,6 +167,7 @@ namespace P {
 	static double particle_speed (const double x) {
 		return base_speed * stream_function(x);
 	}
+
 
 
 

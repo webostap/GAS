@@ -37,7 +37,9 @@ namespace ps {
 		bool CheckSegmentBurn(int seg_x, int seg_z);
 
 
+		double(*stream_func)(double) = P::log_stream;
 
+		const double particle_speed(const double x);
 
 
 		struct Segment {
