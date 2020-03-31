@@ -3,7 +3,6 @@
 #include <ctime> 
 #include "Screen.h"
 #include "Segments.h"
-#include <conio.h>
 
 void print_files(ps::Segments& swarm);
 void print_final(ps::Segments&, int);
