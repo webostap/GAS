@@ -42,7 +42,7 @@ namespace ps {
 	}
 
 
-	void Segments::Fill() {
+	void Segments::Fill_Ziggurat() {
 
 		std::random_device rd;
 		std::uniform_real_distribution<double> x_dist, z_dist;
@@ -85,25 +85,25 @@ namespace ps {
 		}
 
 	}
-	void Segments::Fill_2() {
+	void Segments::Fill_Sampling() {
 
 		std::random_device rd;
 		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, particle_speed(P::area_center));
 
 		double p_x_cord, p_z_cord, p_speed;
-
-		for (size_t pi = 0; pi < P::base_particles; ++pi) {
-
+		int pi = P::base_particles;
+		while (pi)
+		{
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);
 			p_speed = particle_speed(p_x_cord);
 
 			if (p_z_cord < p_speed) {
 				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
+				--pi;
 			}
-			else --pi;
-
 		}
+
 
 	}
 	
@@ -124,7 +124,7 @@ namespace ps {
 				{
 					for (auto& particle_i : grid[i][j].ok_list)
 					{
-						ParticleInBurnSegment(*particle_i, i, j);
+						ParticleInBurnSegment(particle_i, i, j);
 					}
 				}
 			}
@@ -151,7 +151,7 @@ namespace ps {
 
 	}
 
-	void Segments::ParticleInBurnSegment(Particle& particle, int seg_x, int seg_z)
+	void Segments::ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z)
 	{
 		for (size_t i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
 		{
@@ -159,7 +159,7 @@ namespace ps {
 			{
 				if (grid[i][j].has_burn) for (auto& burn_i : grid[i][j].burn_list)
 				{
-					if (particle.Cross(*burn_i))
+					if (particle->Cross(*burn_i))
 					{
 						BurnParticle(particle);
 						return;
@@ -212,19 +212,22 @@ namespace ps {
 	}
 
 
-
-
-	void Segments::UpdateSegments()
+	void Segments::ClearSegments()
 	{
-		is_burn = false;
-		burn_segments.clear();
-
 		for (size_t i = 0; i < P::grid_count; i++)
 		{
 			grid_mem[i].has_burn = false;
 			grid_mem[i].burn_list.clear();
 			grid_mem[i].ok_list.clear();
 		}
+	}
+
+
+	void Segments::UpdateSegments()
+	{
+		is_burn = false;
+		burn_segments.clear();
+		ClearSegments();
 
 		for (auto& p : all_list) {
 
@@ -250,7 +253,7 @@ namespace ps {
 	void Segments::Lighter() {
 		int i = 0, limit = P::particles_sum;
 		for (auto& particle_i : all_list) {
-			BurnParticle(particle_i);
+			BurnParticle(&particle_i);
 			if (++i == limit) break;
 		}
 
@@ -272,14 +275,14 @@ namespace ps {
 		}
 	}
 
-	void Segments::BurnParticle(Particle& particle) {
-		particle.setBurn();
-		all_will_burn.push_back(&particle);
+	void Segments::BurnParticle(Particle* particle) {
+		particle->setBurn();
+		all_will_burn.push_back(particle);
 	}
 
-	void Segments::BurnSegment(Segment& segment) {
-		for (auto& particle : segment.ok_list) {
-			BurnParticle(*particle);
+	void Segments::BurnSegment(Segment* segment) {
+		for (auto& particle : segment->ok_list) {
+			BurnParticle(particle);
 		}
 	}
 
@@ -295,7 +298,7 @@ namespace ps {
 
 		ClearParticleList();
 
-		Fill_2();
+		Fill_Sampling();
 	}
 
 

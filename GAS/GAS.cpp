@@ -71,7 +71,7 @@ int main() {
 		if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 			//printf("%f\t%f\n", P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
 			segment = main_swarm.GetSegment(P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
-			main_swarm.BurnSegment(*segment);
+			main_swarm.BurnSegment(segment);
 		}
 
 		key_state = SDL_GetKeyboardState(NULL);
@@ -92,7 +92,7 @@ int main() {
 
 		main_swarm.ClearParticleList();
 
-		main_swarm.Fill_2();
+		main_swarm.Fill_Sampling();
 
 		//main_swarm.Step();
 

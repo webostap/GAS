@@ -18,21 +18,21 @@ namespace ps {
 
 		void Step();
 
-		void Fill();
-		void Fill_2();
+		void Fill_Ziggurat();
+		void Fill_Sampling();
+
 		void Lighter();
 		void BurnParticles();
 		void MoveParticles();
 		void ClearParticleList();
 
-		void BurnParticle(Particle &p);
+		void BurnParticle(Particle *p);
 
 
 		const void PrintStep(size_t);
 
 		void LightsOut();
 
-		void ParticleInBurnSegment(Particle& particle, int seg_x, int seg_z);
 
 		bool CheckSegmentBurn(int seg_x, int seg_z);
 
@@ -53,11 +53,16 @@ namespace ps {
 
 		std::vector<std::pair<int,int>> burn_segments;
 
+
+		void UpdateSegments();
+		void ClearSegments();
+
 		unsigned GetSegmentX(const double x);
 		unsigned GetSegmentZ(const double z);
 		Segment* GetSegment(const double x, const double z);
-		void BurnSegment(Segment&);
-		void UpdateSegments();
+
+		void ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z);
+		void BurnSegment(Segment*);
 
 
 
