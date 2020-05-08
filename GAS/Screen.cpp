@@ -150,7 +150,6 @@ namespace ps {
             }
 
             if (particle.getState() == Particle::State::SAGE) {
-
                 {
                     red = 200 - particle.sage_counter * 10;
                     green = 100 - particle.sage_counter * 5;
@@ -161,9 +160,13 @@ namespace ps {
             }
 
             if (particle.getState() == Particle::State::WARM) {
-                green = 80;
-                red = 80 + particle.warm_counter * 12;
-                blue = 200 - particle.warm_counter * 10;
+                red = 255; green = 255, blue = 255;
+                if (0)
+                {
+                    green = 80;
+                    red = 80 + particle.warm_counter * 12;
+                    blue = 200 - particle.warm_counter * 10;
+                }
             }
 
             int x = static_cast<int>(particle._x() * SCREEN_WIDTH / 10);

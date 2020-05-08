@@ -98,7 +98,7 @@ namespace P {
 	const double burn_speed = 10.5;
 
 
-	const unsigned iterations = 3;
+	const unsigned iterations = 4;
 	const double iterate_speed = base_speed / iterations;
 	const double iterate_particles = base_particles / iterations;
 
