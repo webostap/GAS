@@ -13,7 +13,7 @@ namespace ps {
 	public:
 
 
-		enum class State { OK, BURN, SAGE, DIED };
+		enum class State { OK, WARM, BURN, SAGE, DIED };
 
 		Particle(double x, double z, double speed);
 		virtual ~Particle() {};
@@ -35,7 +35,7 @@ namespace ps {
 		const bool Cross(const Particle &);
 
 		State state = State::OK;
-		size_t burn_counter = 0;
+		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
 		double x, z, speed;
 		unsigned seg_x, seg_z;

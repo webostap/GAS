@@ -17,17 +17,19 @@ int main() {
 	Uint32 startTime = 0;
 	Uint32 endTime = 0;
 	Uint32 delta = 0;
-	short fps = 60;
+	short fps = 90;
 	short timePerFrame = 1000 / fps; // miliseconds
 	//SDL_Event event;
 	const Uint8* key_state;
+
+	char buffer[] = "FPS: 00";
 
 
 	char c;
 
 
 	ps::Segments main_swarm;
-	ps::Segments::Segment* segment;
+	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
 	//print_files(main_swarm);
 	//clear_csv_files();
 	//print_final(main_swarm, 2);
@@ -35,10 +37,11 @@ int main() {
 
 
 	ps::Screen screen;
-	bool burned = false;
+	bool burned = false, set_burn = false, lights_out = false;
 	int ii = 0;
 
 	int mouse_x, mouse_y;
+	double burn_x, burn_y;
 	
 	while (!screen.quit_program()) {
 
@@ -65,34 +68,59 @@ int main() {
 		//main_swarm.Step();
 
 
-		main_swarm.UpdateSegments();
-
 		SDL_PumpEvents();
-		if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-			//printf("%f\t%f\n", P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
-			segment = main_swarm.GetSegment(P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
-			main_swarm.BurnSegment(segment);
-		}
-
 		key_state = SDL_GetKeyboardState(NULL);
-		if (key_state[SDL_SCANCODE_SPACE]) {
-			main_swarm.LightsOut();
-		}
 
 		if (key_state[SDL_SCANCODE_1]) main_swarm.stream_func = P::linear_stream;
 		if (key_state[SDL_SCANCODE_2]) main_swarm.stream_func = P::log_stream;
 		if (key_state[SDL_SCANCODE_3]) main_swarm.stream_func = P::x2_stream;
 		if (key_state[SDL_SCANCODE_4]) main_swarm.stream_func = P::const_stream;
 
+		if (key_state[SDL_SCANCODE_SPACE]) {
+			lights_out = true;
+		}
 
 
-		main_swarm.BurnParticles();
+		if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+			//printf("%f\t%f\n", P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
+			//segment = main_swarm.GetSegment(P::screen_to_area_x(mouse_x), P::screen_to_area_y(mouse_y));
+			//main_swarm.BurnSegment(segment);
+			set_burn = true;
+			burn_x = P::screen_to_area_x(mouse_x);
+			burn_y = P::screen_to_area_y(mouse_y);
+			segment = main_swarm.GetSegment(burn_x, burn_y);
+		}
 
-		main_swarm.MoveParticles();
 
-		main_swarm.ClearParticleList();
+		for (int iterate = 0; iterate < 1; ++iterate)
+		{
 
-		main_swarm.Fill_Sampling();
+			main_swarm.UpdateSegments();
+
+			if (set_burn)
+			{
+				main_swarm.BurnSegment(segment);
+			}
+
+			if (lights_out)
+			{
+				main_swarm.LightsOut();
+			}
+
+			main_swarm.BurnParticles();
+
+			main_swarm.MoveParticles();
+
+			main_swarm.ClearParticleList();
+
+			main_swarm.Fill_Sampling();
+		}
+
+		set_burn = false;
+		lights_out = false;
+
+
+
 
 		//main_swarm.Step();
 
@@ -123,7 +151,13 @@ int main() {
 			fps = 1000 / delta;
 		}
 
-		//printf("FPS is: %i \n", fps);
+		//printf("FPS is: %i\t%i\n", fps, main_swarm.all_list.size());
+		if (ii % 10 == 0) 
+		{
+			sprintf_s(buffer, "FPS: %d", fps);
+		}
+		
+		screen.SetTitle(buffer);
 
 		startTime = endTime;
 		endTime = SDL_GetTicks();

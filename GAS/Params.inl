@@ -31,6 +31,7 @@ namespace P {
 
 	const unsigned base_particles = 1000;
 
+
 	const bool edge_burners = false;
 
 
@@ -97,6 +98,11 @@ namespace P {
 	const double burn_speed = 10.5;
 
 
+	const unsigned iterations = 3;
+	const double iterate_speed = base_speed / iterations;
+	const double iterate_particles = base_particles / iterations;
+
+
 	
 	/*static double speed_distribution(const double x) {
 		return 0.02 * (area_center * area_center - stream_center(x) * stream_center(x));
@@ -119,7 +125,8 @@ namespace P {
 	//const unsigned particles_sum = 2594;
 
 
-	const unsigned burn_time = 5;
+	const unsigned burn_time = 5*iterations;
+	const unsigned sage_time = 2*iterations;
 
 	//num of points in the front line
 	const int front_line_steps = 200;
@@ -161,11 +168,11 @@ namespace P {
 	}
 
 	static double particle_count (const double x) {
-		return base_particles * stream_function(x) / segment_count;
+		return iterate_particles * stream_function(x) / segment_count;
 	}
 
 	static double particle_speed (const double x) {
-		return base_speed * stream_function(x);
+		return iterate_speed * stream_function(x);
 	}
 
 

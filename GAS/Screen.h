@@ -18,6 +18,9 @@ namespace ps {
         void box_blur();
         void load_swarm(std::list <Particle>& particle_list);
         bool quit_program();
+
+        void SetTitle(const char* title);
+
         SDL_Window* GetWindow() {
             return m_window;
         }

@@ -141,15 +141,29 @@ namespace ps {
             red = 80, green = 80, blue = 200;
 
             if (particle.getState() == Particle::State::BURN) {
-                red = 150; green = 80, blue = 80;
+
+                red = 200; green = 100, blue = 100;
             }
 
             if (particle.burn_counter == 1) {
-                red = 80; green = 150; blue = 80;
+                //red = 80; green = 200; blue = 80;
             }
 
             if (particle.getState() == Particle::State::SAGE) {
-                red = 30; green = 30; blue = 40;
+
+                {
+                    red = 200 - particle.sage_counter * 10;
+                    green = 100 - particle.sage_counter * 5;
+                    blue = 100 - particle.sage_counter * 5;
+                }
+
+                //red = 30; green = 30; blue = 40;
+            }
+
+            if (particle.getState() == Particle::State::WARM) {
+                green = 80;
+                red = 80 + particle.warm_counter * 12;
+                blue = 200 - particle.warm_counter * 10;
             }
 
             int x = static_cast<int>(particle._x() * SCREEN_WIDTH / 10);
@@ -252,5 +266,10 @@ namespace ps {
         }
         return false;
     }
+
+	void Screen::SetTitle(const char* title)
+	{
+        SDL_SetWindowTitle(m_window, title);
+	}
 
 } /* namespace ps */

@@ -17,7 +17,7 @@ namespace ps {
 	}
 
 	const double Segments::particle_speed(const double x) {
-		return P::base_speed * stream_func(x);
+		return P::iterate_speed * stream_func(x);
 	}
 
 	const void Segments::PrintStep(size_t num)
@@ -91,7 +91,18 @@ namespace ps {
 		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, particle_speed(P::area_center));
 
 		double p_x_cord, p_z_cord, p_speed;
-		int pi = P::base_particles;
+
+		for (int pi = P::iterate_particles; pi; --pi)
+		{
+			p_x_cord = dist_x(rd);
+			p_z_cord = dist_z(rd);
+			p_speed = particle_speed(p_x_cord);
+
+			if (p_z_cord < p_speed) {
+				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
+			}
+		}
+		/*int pi = P::base_particles;
 		while (pi)
 		{
 			p_x_cord = dist_x(rd);
@@ -102,7 +113,7 @@ namespace ps {
 				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
 				--pi;
 			}
-		}
+		}*/
 
 
 	}
@@ -277,7 +288,7 @@ namespace ps {
 
 	void Segments::BurnParticle(Particle* particle) {
 		particle->setBurn();
-		all_will_burn.push_back(particle);
+		//all_will_burn.push_back(particle);
 	}
 
 	void Segments::BurnSegment(Segment* segment) {

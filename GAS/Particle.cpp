@@ -14,19 +14,44 @@ namespace ps {
 	}
 
 	void Particle::setBurn() {
-		state = State::BURN;
+		state = State::WARM;
 	}
 
 
 	void Particle::Step() {
 
-		if (state == State::BURN) {
-			++burn_counter;
+		switch (state)
+		{
+		case State::WARM:
 
-			if (burn_counter == P::burn_time) {
-				state = State::SAGE;
+			if (++warm_counter == P::iterations)
+			{
+				state = State::BURN;
+				++burn_counter;
 			}
+			break;
+
+		case State::BURN:
+
+			if (++burn_counter == P::burn_time)
+			{
+				state = State::SAGE;
+				++sage_counter;
+			}
+			break;
+
+		case State::SAGE:
+
+			if (++sage_counter == P::sage_time)
+			{
+				state = State::DIED;
+			}
+			break;
+
+		default:
+			break;
 		}
+
 
 
 	}
