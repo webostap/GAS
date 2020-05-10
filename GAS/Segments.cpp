@@ -271,7 +271,16 @@ namespace ps {
 	}
 
 
-	void Segments::LightsOut()
+
+	void Segments::LightsOut() {
+		for (auto& p : all_list) {
+			if (p.state != Particle::State::OK)
+			{
+				p.state = Particle::State::SAGE;
+			}
+		}
+	}
+	/*void Segments::LightsOut_OLD()
 	{
 		//all_will_burn.clear();
 		is_burn = false;
@@ -284,7 +293,7 @@ namespace ps {
 			}
 			segment->burn_list.clear();
 		}
-	}
+	}*/
 
 	void Segments::BurnParticle(Particle* particle) {
 		particle->setBurn();

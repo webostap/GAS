@@ -48,7 +48,7 @@ int main() {
 	while (!quit) {
 
 
-		while (SDL_PollEvent(&e))
+		while (!quit && SDL_PollEvent(&e))
 		{
 
 			switch (e.type)
@@ -74,6 +74,7 @@ int main() {
 				
 			break;
 			}
+			if (quit) break;
 		}
 
 
@@ -116,8 +117,14 @@ int main() {
 		}
 
 
-		for (int iterate = 0; iterate < P::iterations; ++iterate)
+		//for (int iterate = 0; iterate < P::iterations; ++iterate)
+		for (int iterate = 0; iterate < 1; ++iterate)
 		{
+
+			if (lights_out)
+			{
+				main_swarm.LightsOut();
+			}
 
 			main_swarm.UpdateSegments();
 
@@ -126,10 +133,6 @@ int main() {
 				main_swarm.BurnSegment(segment);
 			}
 
-			if (lights_out)
-			{
-				main_swarm.LightsOut();
-			}
 
 			main_swarm.BurnParticles();
 
@@ -181,7 +184,7 @@ int main() {
 			sprintf_s(buffer, "FPS: %d", fps);
 		}
 		
-		screen.SetTitle("Hello");
+		screen.SetTitle(buffer);
 
 		startTime = endTime;
 		endTime = SDL_GetTicks();

@@ -146,6 +146,7 @@ namespace ps {
             }
 
             if (particle.burn_counter == 1) {
+				red = 255; green = 255, blue = 255;
                 //red = 80; green = 200; blue = 80;
             }
 
