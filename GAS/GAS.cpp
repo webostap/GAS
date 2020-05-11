@@ -17,7 +17,7 @@ int main() {
 	Uint32 startTime = 0;
 	Uint32 endTime = 0;
 	Uint32 delta = 0;
-	short fps = 90;
+	short fps = 60;
 	short timePerFrame = 1000 / fps; // miliseconds
 	SDL_Event e;
 	const Uint8* key_state;
@@ -37,23 +37,36 @@ int main() {
 
 
 	ps::Screen screen;
-	bool burned = false, set_burn = false, lights_out = false;
+	bool sdl_quit = false, 
+		set_burn = false, 
+		lights_out = false, 
+		pause = false;
 	int ii = 0;
 
 	int mouse_x, mouse_y;
 	double burn_x, burn_y;
 
-	bool quit = false;
 	
-	while (!quit) {
+	while (!sdl_quit) {
 
 
-		while (!quit && SDL_PollEvent(&e))
+		if (!startTime) startTime = SDL_GetTicks();
+		else delta = endTime - startTime;
+
+		if (delta < timePerFrame) SDL_Delay(timePerFrame - delta);
+
+
+		/*----- INPUT EVENTS ------*/
+
+		sdl_quit = false;
+		set_burn = false;
+		lights_out = false;
+
+		while (SDL_PollEvent(&e))
 		{
-
 			switch (e.type)
 			{
-			case SDL_QUIT: quit = true;
+			case SDL_QUIT: sdl_quit = true;
 				break;
 
 			case SDL_KEYDOWN:
@@ -69,42 +82,21 @@ int main() {
 						break;
 					case SDLK_SPACE: lights_out = true;
 						break;
+					case SDLK_p: pause = !pause;
+						break;
 				}
 				break;
 				
 			break;
 			}
-			if (quit) break;
+			// break SDL_PollEvent
+			if (sdl_quit) break;
 		}
 
 
+		// break sdl loop if window closed //
+		if (sdl_quit) break;
 		///////////////////
-		if (quit) break;
-		///////////////////
-
-
-
-		if (!startTime) {
-			// get the time in ms passed from the moment the program started
-			startTime = SDL_GetTicks();
-		}
-		else {
-			delta = endTime - startTime; // how many ms for a frame
-		}
-
-		// if less than 16ms, delay
-		if (delta < timePerFrame) {
-			SDL_Delay(timePerFrame - delta);
-		}
-
-		/*if (!burned && ii == P::burn_at_step) {
-			burned = true;
-			main_swarm.Lighter();
-		}*/
-
-		//main_swarm.Step();
-
-
 
 
 		if (SDL_BUTTON(SDL_BUTTON_LEFT) && SDL_GetMouseState(&mouse_x, &mouse_y)) {
@@ -116,87 +108,49 @@ int main() {
 
 		}
 
-
-		//for (int iterate = 0; iterate < P::iterations; ++iterate)
-		for (int iterate = 0; iterate < 1; ++iterate)
+		if (!pause) // main action
 		{
-
-			if (lights_out)
+			//for (int iterate = 0; iterate < P::iterations; ++iterate)
 			{
-				main_swarm.LightsOut();
+
+				if (lights_out) main_swarm.LightsOut();
+
+				main_swarm.UpdateSegments();
+
+				if (set_burn) main_swarm.BurnSegment(segment);
+
+				main_swarm.CrossParticles();
+				main_swarm.MoveParticles();
+				main_swarm.ClearParticleList();
+				main_swarm.Fill_Sampling();
 			}
 
-			main_swarm.UpdateSegments();
 
-			if (set_burn)
-			{
-				main_swarm.BurnSegment(segment);
-			}
+			screen.load_swarm(main_swarm.all_list);
+			screen.update();
 
+			// Apply gaussian blur effect.
+			//screen.box_blur();
 
-			main_swarm.BurnParticles();
-
-			main_swarm.MoveParticles();
-
-			main_swarm.ClearParticleList();
-
-			main_swarm.Fill_Sampling();
 		}
 
-		set_burn = false;
-		lights_out = false;
 
 
 
-
-		//main_swarm.Step();
-
-
-		// Load current particle swarm.
-		screen.load_swarm(main_swarm.all_list);
-
-		// Update SDL window with new particle positions and colors.
-		screen.update();
+		if (delta > timePerFrame) fps = 1000 / delta;
 
 
-
-		// Manipulate particle positions for next iteration. 
-		// Ticks are used to ensure consistent/proportional movement.
-		//swarm.move(SDL_GetTicks());
-		//std::cout<<SDL_GetTicks()<<std::endl;
-
-		// Apply gaussian blur effect.
-		//screen.box_blur();
-
-		//if (endTime > 2000)
-			//swarm.burn_step();
-
-
-		// if delta is bigger than 16ms between frames, get the actual fps
-		if (delta > timePerFrame) 
-		{
-			fps = 1000 / delta;
-		}
-
-		//printf("FPS is: %i\t%i\n", fps, main_swarm.all_list.size());
 		if (ii % 10 == 0) 
 		{
 			sprintf_s(buffer, "FPS: %d", fps);
+			screen.SetTitle(buffer);
 		}
 		
-		screen.SetTitle(buffer);
 
 		startTime = endTime;
 		endTime = SDL_GetTicks();
 
-		//if (!ii)
-		{
-			//std::cout << main_swarm.all_list.size() << '\n';
-		}
-		if (burned) 
-		{
-			//_getch();
-		}
+
 		
 
 		++ii;

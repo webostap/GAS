@@ -120,7 +120,7 @@ namespace ps {
 	
 
 
-	void Segments::BurnParticles()
+	void Segments::CrossParticles()
 	{
 
 		if (!is_burn) return;
@@ -312,7 +312,7 @@ namespace ps {
 
 		UpdateSegments();
 
-		BurnParticles();
+		CrossParticles();
 
 		MoveParticles();
 

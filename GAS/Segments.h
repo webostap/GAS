@@ -22,7 +22,7 @@ namespace ps {
 		void Fill_Sampling();
 
 		void Lighter();
-		void BurnParticles();
+		void CrossParticles();
 		void MoveParticles();
 		void ClearParticleList();
 
