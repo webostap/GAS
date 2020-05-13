@@ -53,4 +53,9 @@
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Help.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

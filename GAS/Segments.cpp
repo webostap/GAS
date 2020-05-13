@@ -7,31 +7,49 @@
 
 namespace ps {
 
-	Segments::Segments() 
+	Segments::Segments(const Params& aParams) : params(aParams)
 	{
+		UpdateParams();
 
 		for (size_t i = 0; i < P::grid_count_x; i++) {
 			grid[i] = (grid_mem + i * P::grid_count_z);
 		}
 
 	}
+	void Segments::LoadParams(const Params& aParams)
+	{
+		params = aParams;
+		UpdateParams();
+	}
+	void Segments::UpdateParams()
+	{
+		iterate_speed = params.base_speed / params.iterations;
+		iterate_particles = params.base_particles / params.iterations;
+	}
 
 	const double Segments::particle_speed(const double x) {
 		return P::iterate_speed * stream_func(x);
 	}
 
-	const void Segments::PrintStep(size_t num)
+	const void Segments::PrintStep(int num)
 	{
+		all_will_burn.clear();
 
-		std::ofstream csv(P::csv_folder + "gas.csv." + std::to_string(num));
+		std::string output;
 
-		std::string output = "x,z,burn";
+		output += "#base_particles " + std::to_string(params.base_particles);
 
-	
+		output += "\nx,z,burn";
 		for (auto& particle : all_list) {
 			output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
+
+			if (particle.burn_counter == 1 || particle.getState() == Particle::State::WARM)
+			{
+				all_will_burn.push_back(&particle);
+			}
 		}
-		
+
+		std::ofstream csv(P::csv_folder + "gas.csv." + std::to_string(num));
 		csv << output;
 		csv.close();
 
@@ -40,6 +58,7 @@ namespace ps {
 		m_front_line.Print(num);
 
 	}
+
 
 
 	void Segments::Fill_Ziggurat() {
@@ -92,7 +111,7 @@ namespace ps {
 
 		double p_x_cord, p_z_cord, p_speed;
 
-		for (int pi = P::iterate_particles; pi; --pi)
+		for (int pi = iterate_particles; pi; --pi)
 		{
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);
@@ -180,11 +199,19 @@ namespace ps {
 		}
 	}
 
-	void Segments::MoveParticles()
+	void Segments::StepParticles()
 	{
 		for (auto& particle_i : all_list) { 
 
 			particle_i.Step();
+			//particle_i.Move();
+		}
+	}
+	void Segments::MoveParticles()
+	{
+		for (auto& particle_i : all_list) { 
+
+			//particle_i.Step();
 			particle_i.Move();
 		}
 	}
@@ -194,9 +221,10 @@ namespace ps {
 	void Segments::ClearParticleList() {
 
 		auto particle_it = all_list.begin();
+		const auto end = all_list.end();
 		auto died_it = particle_it;
-		while (particle_it != all_list.end()) {
-			if ((*particle_it).getState() == Particle::State::DIED) {
+		while (particle_it != end) {
+			if (particle_it->state == Particle::State::DIED) {
 				died_it = particle_it;
 				++particle_it;
 				all_list.erase(died_it);
@@ -279,6 +307,16 @@ namespace ps {
 				p.state = Particle::State::SAGE;
 			}
 		}
+
+		for (auto& xz : burn_segments)
+		{
+			Segment* segment = &grid[xz.first][xz.second];
+			/*for (auto& particle : segment->burn_list)
+			{
+				particle->state = Particle::State::SAGE;
+			}*/
+			segment->burn_list.clear();
+		}
 	}
 	/*void Segments::LightsOut_OLD()
 	{
@@ -319,6 +357,31 @@ namespace ps {
 		ClearParticleList();
 
 		Fill_Sampling();
+	}
+
+	void Segments::FinalLoop(bool move) {
+
+		auto particle_it = all_list.begin();
+		const auto end = all_list.end();
+		auto died_it = particle_it;
+
+		while (particle_it != end) {
+
+			particle_it->Step();
+
+			if (particle_it->state == Particle::State::DIED) {
+				died_it = particle_it;
+				++particle_it;
+				all_list.erase(died_it);
+				continue;
+			}
+
+			if (move) particle_it->Move();
+
+			++particle_it;
+		} // endLoop
+
+
 	}
 
 

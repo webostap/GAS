@@ -28,14 +28,14 @@ namespace ps {
 
 		for (size_t i = 0; i < steps; i++)
 		{
-			Vx[i] = P::particle_speed(front_line_points[i].x) * P::burn_speed;
+			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
 			Vx2[i] = Vx[i] * Vx[i];
 		}
 
 	}
 
 
-	void FrontLine::Calc(std::list <Particle*>& particle_list) {
+	void FrontLine::Calc(const std::list <Particle*>& particle_list) {
 
 		for (int i = 0; i < steps; ++i) {
 			front_line_points[i].sum = front_line_points[i].count = 0;
@@ -79,16 +79,16 @@ namespace ps {
 	}
 
 	void FrontLine::FivePointStencil() {
-		int h_div = P::front_line_h.max, point_i;
+		int h_div = P::front_line_h.min, point_i;
 		bool no_neighbors = false;
 
 		for (int i = P::front_line_h.min*2; i < steps - P::front_line_h.min * 2; ++i) {
 
 
 
-			h_div = (steps / 4. - fabs(fabs(i - (steps-1) / 2.) - steps / 4.)) / 2;
+			/*h_div = (steps / 4. - fabs(fabs(i - (steps-1) / 2.) - steps / 4.)) / 2;
 			if (h_div < P::front_line_h.min) h_div = P::front_line_h.min;
-			if (h_div > P::front_line_h.max) h_div = P::front_line_h.max;
+			if (h_div > P::front_line_h.max) h_div = P::front_line_h.max;*/
 
 			//std::cout << i+1 << "\t) " << h_div << "\n";
 			//continue;

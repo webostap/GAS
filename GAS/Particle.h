@@ -38,7 +38,7 @@ namespace ps {
 		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
 		double x, z, speed;
-		unsigned seg_x, seg_z;
+		//unsigned seg_x, seg_z;
 	};
 
 } /* namespace ps */

@@ -11,25 +11,64 @@ namespace ps {
 	class Segments {
 
 	public:
-		bool is_burn = false;
+
+		struct Params {
+			int base_particles;
+			double base_speed;
+			double burn_radius;
+
+			int iterations;	
+		};
+
+	/*int base_particles;
+	double burn_radius;
+	double base_speed;
+
+	int iterations;*/
+
+	double iterate_speed;
+	double iterate_particles;
+
+	/*int burn_time = 5 * iterations;
+	int sage_time = 2 * iterations;*/
+
+	/////////
+
+	/*double burn_radius_2 = burn_radius * burn_radius;
+
+	int grid_count_x = P::area_size / burn_radius;
+	int grid_count_z = P::area_height / burn_radius;
+	int grid_count = grid_count_x * grid_count_z;
+
+	double grid_count_x_percent = grid_count_x / P::area_size;
+	double grid_count_z_percent = grid_count_z / P::area_height;*/
+
+	Params params;
 
 	public:
-		Segments();
+		bool is_burn = false;
+
+		Segments(const Params&);
+		void LoadParams(const Params&);
+		void UpdateParams();
 
 		void Step();
+		void FinalLoop(bool move = true);
 
 		void Fill_Ziggurat();
 		void Fill_Sampling();
 
 		void Lighter();
 		void CrossParticles();
+		void StepParticles();
 		void MoveParticles();
 		void ClearParticleList();
 
 		void BurnParticle(Particle *p);
 
 
-		const void PrintStep(size_t);
+		const void PrintStep(int);
+		//const void PrintLine(int);
 
 		void LightsOut();
 

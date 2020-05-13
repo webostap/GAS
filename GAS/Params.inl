@@ -29,7 +29,7 @@ namespace P {
 	const unsigned light_count = 2000; 
 	const unsigned particles_sum = 1000;
 
-	const unsigned base_particles = 1000;
+	const unsigned base_particles = 2000;
 
 
 	const bool edge_burners = false;
@@ -65,12 +65,13 @@ namespace P {
 		return 1 - fabs(1 - (x - P::area_beg) / P::area_size * 2);
 	}
 
-
+	
+	//FILL ZIGGURAT//
 	const unsigned segment_count = 36;
 	const double segment_size = area_size / segment_count;
 
-	const unsigned burn_index_steps = 80;
-	const double burn_index_window = P::area_size / P::burn_index_steps;
+	//const unsigned burn_index_steps = 80;
+	//const double burn_index_window = P::area_size / P::burn_index_steps;
 
 
 	const double max_x = 20.;
@@ -95,10 +96,10 @@ namespace P {
 	const double center_speed_increase = .5;
 	const double burn_radius = 7.5 * L / DSR;
 	const double base_speed = .5;
-	const double burn_speed = 10.5;
+	const double burn_speed = 6;
 
 
-	const unsigned iterations = 4;
+	const unsigned iterations = 3;
 	const double iterate_speed = base_speed / iterations;
 	const double iterate_particles = base_particles / iterations;
 
@@ -135,7 +136,7 @@ namespace P {
 	const double front_line_window = area_size / 25;
 
 
-	const Interval<double> front_line_h(5, 25);
+	const Interval<int> front_line_h(12, 15);
 	const bool front_line_horizontal = true;
 
 
@@ -164,16 +165,20 @@ namespace P {
 
 
 	static double stream_function(const double x) {
-		return log_stream(x);
+		return x2_stream(x);
 	}
 
 	static double particle_count (const double x) {
 		return iterate_particles * stream_function(x) / segment_count;
 	}
 
+	static double system_speed (const double x) {
+		return base_speed * stream_function(x);
+	}
 	static double particle_speed (const double x) {
 		return iterate_speed * stream_function(x);
 	}
+
 
 
 
