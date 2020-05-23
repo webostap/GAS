@@ -8,8 +8,9 @@
 
 #include <nlohmann/json.hpp>
 
+
 #include "Screen.h"
-#include "Segments.h"
+//#include "Segments.h"
 
 void print_files(ps::Segments& swarm);
 void print_final(ps::Segments&, int);
@@ -110,10 +111,13 @@ int main() {
 
 	/* ---- */
 
+	P::test = 5;
+
 	std::cout << "\n-------------\n\n";
 	std::cout << main_swarm.stream_func(5) * P::base_speed << " - center speed\n";
 	std::cout << main_swarm.particle_speed(5) << " - max delta\n";
-	std:: cout << P::burn_radius << " - burn radius\n\n";
+	std::cout << P::burn_radius << " - burn radius\n\n";
+	std::cout << P::test << " - test\n\n";
 
 	
 	while (!Input.sdl_quit) {
@@ -194,7 +198,7 @@ int main() {
 		if (!State.pause || State.pause && Input.step)
 		{
 
-			for (int iterate = 0; iterate < P::iterations; ++iterate)
+			for (int iterate = 0; iterate < swarm_params.iterations; ++iterate)
 			{
 				main_swarm.UpdateSegments();
 

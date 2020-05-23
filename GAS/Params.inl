@@ -9,6 +9,7 @@
 
 namespace P {
 
+	extern int test;
 
 	const unsigned screen_width = 400;
 	const unsigned screen_height = 600;

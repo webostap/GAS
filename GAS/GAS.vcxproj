@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="FrontLine.cpp" />
     <ClCompile Include="GAS.cpp" />
+    <ClCompile Include="Params.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Segments.cpp" />

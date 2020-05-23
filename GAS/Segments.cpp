@@ -28,7 +28,7 @@ namespace ps {
 	}
 
 	const double Segments::particle_speed(const double x) {
-		return P::iterate_speed * stream_func(x);
+		return iterate_speed * stream_func(x);
 	}
 
 	const void Segments::PrintStep(int num)
@@ -111,7 +111,7 @@ namespace ps {
 
 		double p_x_cord, p_z_cord, p_speed;
 
-		for (int pi = iterate_particles; pi; --pi)
+		for (int pi = iterate_particles * stream_func(P::area_center); pi; --pi)
 		{
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);
