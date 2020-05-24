@@ -289,14 +289,14 @@ namespace ps {
 
 
 
-	void Segments::Lighter() {
-		int i = 0, limit = P::particles_sum;
-		for (auto& particle_i : all_list) {
-			BurnParticle(&particle_i);
-			if (++i == limit) break;
-		}
+	//void Segments::Lighter() {
+	//	int i = 0, limit = P::particles_sum;
+	//	for (auto& particle_i : all_list) {
+	//		BurnParticle(&particle_i);
+	//		if (++i == limit) break;
+	//	}
 
-	}
+	//}
 
 
 

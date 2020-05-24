@@ -111,13 +111,11 @@ int main() {
 
 	/* ---- */
 
-	P::test = 5;
 
 	std::cout << "\n-------------\n\n";
 	std::cout << main_swarm.stream_func(5) * P::base_speed << " - center speed\n";
 	std::cout << main_swarm.particle_speed(5) << " - max delta\n";
 	std::cout << P::burn_radius << " - burn radius\n\n";
-	std::cout << P::test << " - test\n\n";
 
 	
 	while (!Input.sdl_quit) {
@@ -256,7 +254,7 @@ int main() {
 		if (delta > timePerFrame) fps = 1000 / delta;
 
 
-		if (ii % 10 == 0) 
+		if (ii % 30 == 0) 
 		{
 			sprintf_s(buffer, "FPS: %d", fps);
 			screen.SetTitle(buffer);
@@ -277,33 +275,33 @@ int main() {
 
 }
 
-void print_files(ps::Segments &swarm) {
-
-	for (size_t i = 0; i < P::steps; i++)
-	{
-
-		if (i == P::burn_at_step) swarm.Lighter();
-
-		swarm.Step();
-
-		if (i % 10 == 0)
-		{
-			swarm.PrintStep(i / 10);
-			//main_swarm.PrintStep(i);
-		}
-
-		std::cout << i << ")\t" << swarm.all_list.size() << '\n';
-	}
-}
-void print_final(ps::Segments &swarm, int num = 0) {
-
-	for (size_t i = 0; i < P::steps; i++)
-	{
-		if (i == P::burn_at_step) swarm.Lighter();
-		swarm.Step();
-	}
-	swarm.PrintStep(num);
-}
+//void print_files(ps::Segments &swarm) {
+//
+//	for (size_t i = 0; i < P::steps; i++)
+//	{
+//
+//		if (i == P::burn_at_step) swarm.Lighter();
+//
+//		swarm.Step();
+//
+//		if (i % 10 == 0)
+//		{
+//			swarm.PrintStep(i / 10);
+//			//main_swarm.PrintStep(i);
+//		}
+//
+//		std::cout << i << ")\t" << swarm.all_list.size() << '\n';
+//	}
+//}
+//void print_final(ps::Segments &swarm, int num = 0) {
+//
+//	for (size_t i = 0; i < P::steps; i++)
+//	{
+//		if (i == P::burn_at_step) swarm.Lighter();
+//		swarm.Step();
+//	}
+//	swarm.PrintStep(num);
+//}
 
 void clear_csv_files() {
 	bool gas_out = 0, line_out = 0;

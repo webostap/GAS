@@ -9,28 +9,27 @@
 
 namespace P {
 
-	extern int test;
-
-	const unsigned screen_width = 400;
-	const unsigned screen_height = 600;
-	const unsigned screen_bottom_gap = 0;
-
-
 	template <typename T>
 	struct Interval {
 		const T min, max, mid;
 		Interval(T aMin, T aMax) : min(aMin), max(aMax), mid((aMax - aMin) / 2.) {}
 	};
 
+	const std::string csv_folder("z:/csv/");
 
-	const std::string csv_folder ("z:/csv/");
+	const int screen_width = 400;
+	const int screen_height = 600;
+	const int screen_bottom_gap = 0;
 
-	const unsigned steps = 100;
-	const unsigned burn_at_step = 50;
-	const unsigned light_count = 2000; 
-	const unsigned particles_sum = 1000;
 
-	const unsigned base_particles = 2000;
+
+
+
+	//const int steps = 100;
+	//const int burn_at_step = 50;
+	//const int light_count = 2000; 
+	//const int particles_sum = 1000;
+
 
 
 	const bool edge_burners = false;
@@ -68,10 +67,10 @@ namespace P {
 
 	
 	//FILL ZIGGURAT//
-	const unsigned segment_count = 36;
+	const int segment_count = 36;
 	const double segment_size = area_size / segment_count;
 
-	//const unsigned burn_index_steps = 80;
+	//const int burn_index_steps = 80;
 	//const double burn_index_window = P::area_size / P::burn_index_steps;
 
 
@@ -82,7 +81,7 @@ namespace P {
 	const double DSR = L*40;
 
 	const double particle_distribution_multiple = 0.1;
-	const unsigned particle_distribution_steps = 10;
+	const int particle_distribution_steps = 10;
 
 
 
@@ -94,15 +93,18 @@ namespace P {
 	//speed = base_speed + P::particle_speed.mid * center_percentage * P::center_speed_increase;
 
 
-	const double center_speed_increase = .5;
-	const double burn_radius = 7.5 * L / DSR;
-	const double base_speed = .5;
-	const double burn_speed = 6;
 
+	//const double center_speed_increase = .5;
+	extern const double burn_radius;
 
-	const unsigned iterations = 3;
-	const double iterate_speed = base_speed / iterations;
-	const double iterate_particles = base_particles / iterations;
+	extern double base_speed;
+	extern double burn_speed;
+
+	extern int base_particles;
+
+	extern int iterations;
+	extern double iterate_speed;
+	extern double iterate_particles;
 
 
 	
@@ -113,22 +115,22 @@ namespace P {
 	const double burn_radius_2 = burn_radius * burn_radius;
 
 
-	const unsigned grid_count_x = area_size / burn_radius;
-	const unsigned grid_count_z = area_height / burn_radius;
-	const unsigned grid_count = grid_count_x * grid_count_z;
+	const int grid_count_x = area_size / burn_radius;
+	const int grid_count_z = area_height / burn_radius;
+	const int grid_count = grid_count_x * grid_count_z;
 
 	const double grid_count_x_percent = grid_count_x / area_size;
 	const double grid_count_z_percent = grid_count_z / area_height;
 
 
 
-	//const unsigned particles_sum = base_particles * segment_count + base_particles * center_speed_increase * (segment_count / 2);
+	//const int particles_sum = base_particles * segment_count + base_particles * center_speed_increase * (segment_count / 2);
 	
-	//const unsigned particles_sum = 2594;
+	//const int particles_sum = 2594;
 
 
-	const unsigned burn_time = 5*iterations;
-	const unsigned sage_time = 2*iterations;
+	extern int burn_time;
+	extern int sage_time;
 
 	//num of points in the front line
 	const int front_line_steps = 200;
