@@ -1,7 +1,6 @@
 {
-    "base_particles": 2000,
+    "base_particles": 1000,
     "base_speed": 0.5,
-    "burn_radius": 1,
 
     "iterations": 3
 }

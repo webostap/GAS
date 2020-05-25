@@ -5,8 +5,9 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-#include "Segments.h"
+#include "Particle.h"
 #include <iostream>
+#include <list>
 
 namespace ps {
 

@@ -10,7 +10,7 @@ namespace ps {
 
 	class Segments {
 
-	public:
+	/*public:
 
 		struct Params {
 			int base_particles;
@@ -18,7 +18,7 @@ namespace ps {
 			double burn_radius;
 
 			int iterations;	
-		};
+		};*/
 
 	/*int base_particles;
 	double burn_radius;
@@ -26,8 +26,8 @@ namespace ps {
 
 	int iterations;*/
 
-	double iterate_speed;
-	double iterate_particles;
+	//double iterate_speed;
+	//double iterate_particles;
 
 	/*int burn_time = 5 * iterations;
 	int sage_time = 2 * iterations;*/
@@ -43,14 +43,15 @@ namespace ps {
 	double grid_count_x_percent = grid_count_x / P::area_size;
 	double grid_count_z_percent = grid_count_z / P::area_height;*/
 
-	Params params;
+	//Params params;
 
 	public:
 		bool is_burn = false;
 
-		Segments(const Params&);
-		void LoadParams(const Params&);
-		void UpdateParams();
+		Segments();
+		//Segments(const Params&);
+		//void LoadParams(const Params&);
+		//void UpdateParams();
 
 		void Step();
 		void FinalLoop(bool move = true);
@@ -58,7 +59,7 @@ namespace ps {
 		void Fill_Ziggurat();
 		void Fill_Sampling();
 
-		void Lighter();
+		//void Lighter();
 		void CrossParticles();
 		void StepParticles();
 		void MoveParticles();
@@ -76,7 +77,7 @@ namespace ps {
 		bool CheckSegmentBurn(int seg_x, int seg_z);
 
 
-		double(*stream_func)(double) = P::x2_stream;
+		//double(*stream_func)(double) = P::x2_stream;
 
 		const double particle_speed(const double x);
 

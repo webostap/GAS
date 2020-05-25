@@ -1,41 +1,31 @@
 ﻿#include <iostream>
 #include <fstream>
-#include <sstream>
-#include <streambuf>
 #include <string>
 #include <ctime> 
 #include <cstdlib>
 
-#include <nlohmann/json.hpp>
-
 
 #include "Screen.h"
-//#include "Segments.h"
+#include "Segments.h"
 
-void print_files(ps::Segments& swarm);
-void print_final(ps::Segments&, int);
+
+void print_speed() {
+	std::cout << "\n-------------\n";
+	std::cout << P::stream_function(P::area_center) * P::base_speed << " - center speed\n";
+	std::cout << P::particle_speed(P::area_center) << " - max delta\n";
+	std::cout << P::burn_radius << " - burn radius\n";
+}
+
 void clear_csv_files();
-std::string file_to_string(const char*);
-void read_params(ps::Segments::Params*);
 
 
 
-
-
-struct State {
-	bool pause = false, move = true;
-};
 
 #undef main
 int main() {
+	print_speed();
 
-
-	ps::Segments::Params swarm_params;
-	read_params(&swarm_params);
-
-
-	ps::Segments main_swarm(swarm_params);
-
+	ps::Segments main_swarm;
 
 	struct {
 		bool sdl_quit	= false,
@@ -72,14 +62,10 @@ int main() {
 	const Uint8* key_state;
 
 	char buffer[] = "FPS: 00";
-
-
 	char c;
 
 
-
 	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
-
 
 	ps::Screen screen;
 
@@ -106,16 +92,14 @@ int main() {
 		std::istreambuf_iterator<char>());
 	help_file.close();*/
 
-	std::string help_text = file_to_string("help.txt");
-	std::cout << help_text;
+	std::string help_text = H::file_to_string("help.txt");
+	//std::cout << help_text;
 
 	/* ---- */
 
 
-	std::cout << "\n-------------\n\n";
-	std::cout << main_swarm.stream_func(5) * P::base_speed << " - center speed\n";
-	std::cout << main_swarm.particle_speed(5) << " - max delta\n";
-	std::cout << P::burn_radius << " - burn radius\n\n";
+	P::read_params();
+	print_speed();
 
 	
 	while (!Input.sdl_quit) {
@@ -141,13 +125,13 @@ int main() {
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-					case SDLK_1: main_swarm.stream_func = P::linear_stream;
+					case SDLK_1: P::stream_function = P::linear_stream;
 						break;
-					case SDLK_2: main_swarm.stream_func = P::log_stream;
+					case SDLK_2: P::stream_function = P::log_stream;
 						break;
-					case SDLK_3: main_swarm.stream_func = P::x2_stream;
+					case SDLK_3: P::stream_function = P::x2_stream;
 						break;
-					case SDLK_4: main_swarm.stream_func = P::const_stream;
+					case SDLK_4: P::stream_function = P::const_stream;
 						break;
 					case SDLK_SPACE: Input.lights_out = true;
 						break;
@@ -164,8 +148,9 @@ int main() {
 					case SDLK_q: std::cout << main_swarm.all_list.size() << " - size\n";
 						break;
 					case SDLK_u: 
-						read_params(&swarm_params);
-						main_swarm.LoadParams(swarm_params);
+						P::read_params();
+						print_speed();
+						//main_swarm.LoadParams(swarm_params);
 						break;
 				}
 				break;
@@ -196,7 +181,7 @@ int main() {
 		if (!State.pause || State.pause && Input.step)
 		{
 
-			for (int iterate = 0; iterate < swarm_params.iterations; ++iterate)
+			for (int iterate = P::iterations; iterate; --iterate)
 			{
 				main_swarm.UpdateSegments();
 
@@ -321,17 +306,5 @@ void clear_csv_files() {
 }
 
 
-std::string file_to_string(const char* file_name)
-{
-	std::ifstream file(file_name);
-	return std::string((std::istreambuf_iterator<char>(file)),
-		std::istreambuf_iterator<char>());
-}
 
-void read_params(ps::Segments::Params *params) {
-	nlohmann::json j = nlohmann::json::parse(file_to_string("params.json"));
-	params->base_particles	= j["base_particles"];
-	params->base_speed		= j["base_speed"];
-	params->burn_radius		= j["burn_radius"];
-	params->iterations		= j["iterations"];
-}
+

@@ -7,16 +7,17 @@
 
 namespace ps {
 
-	Segments::Segments(const Params& aParams) : params(aParams)
+	//Segments::Segments(const Params& aParams) : params(aParams)
+	Segments::Segments()
 	{
-		UpdateParams();
+		//UpdateParams();
 
 		for (size_t i = 0; i < P::grid_count_x; i++) {
 			grid[i] = (grid_mem + i * P::grid_count_z);
 		}
 
 	}
-	void Segments::LoadParams(const Params& aParams)
+	/*void Segments::LoadParams(const Params& aParams)
 	{
 		params = aParams;
 		UpdateParams();
@@ -25,10 +26,10 @@ namespace ps {
 	{
 		iterate_speed = params.base_speed / params.iterations;
 		iterate_particles = params.base_particles / params.iterations;
-	}
+	}*/
 
 	const double Segments::particle_speed(const double x) {
-		return iterate_speed * stream_func(x);
+		return P::iterate_speed * P::stream_function(x);
 	}
 
 	const void Segments::PrintStep(int num)
@@ -37,7 +38,7 @@ namespace ps {
 
 		std::string output;
 
-		output += "#base_particles " + std::to_string(params.base_particles);
+		output += "#base_particles " + std::to_string(P::base_particles);
 
 		output += "\nx,z,burn";
 		for (auto& particle : all_list) {
@@ -111,7 +112,7 @@ namespace ps {
 
 		double p_x_cord, p_z_cord, p_speed;
 
-		for (int pi = iterate_particles * stream_func(P::area_center); pi; --pi)
+		for (int pi = P::base_particles * P::particle_speed(P::area_center); pi; --pi)
 		{
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);

@@ -1,13 +1,28 @@
 #pragma once
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <streambuf>
 #define _USE_MATH_DEFINES 
 #include <cmath>
 
 #define M_PI 3.14159265358979323846
 
 
+namespace H {
+	static std::string file_to_string(const char* file_name)
+	{
+		std::ifstream file(file_name);
+		return std::string((std::istreambuf_iterator<char>(file)),
+			std::istreambuf_iterator<char>());
+	}
+}
 
 namespace P {
+
+
+	extern void read_params();
+
 
 	template <typename T>
 	struct Interval {
@@ -20,8 +35,6 @@ namespace P {
 	const int screen_width = 400;
 	const int screen_height = 600;
 	const int screen_bottom_gap = 0;
-
-
 
 
 
@@ -42,6 +55,14 @@ namespace P {
 
 	const double area_height = area_size / screen_width * screen_height;
 
+	const double L = area_size;
+
+
+	static double from_center(const double x) {
+		return x - area_center;
+	}
+
+
 
 	const double stream_radius = 5;
 	const double stream_width = stream_radius * 2;
@@ -58,7 +79,6 @@ namespace P {
 
 
 
-	const double L = area_size;
 
 
 	static double center_percentage(const double x) {
@@ -74,14 +94,13 @@ namespace P {
 	//const double burn_index_window = P::area_size / P::burn_index_steps;
 
 
-	const double max_x = 20.;
 
 
 
 	const double DSR = L*40;
 
-	const double particle_distribution_multiple = 0.1;
-	const int particle_distribution_steps = 10;
+	//const double particle_distribution_multiple = 0.1;
+	//const int particle_distribution_steps = 10;
 
 
 
@@ -96,6 +115,9 @@ namespace P {
 
 	//const double center_speed_increase = .5;
 	extern const double burn_radius;
+	const double burn_radius_2 = burn_radius * burn_radius;
+
+	extern double(*stream_function)(double);
 
 	extern double base_speed;
 	extern double burn_speed;
@@ -107,12 +129,6 @@ namespace P {
 	extern double iterate_particles;
 
 
-	
-	/*static double speed_distribution(const double x) {
-		return 0.02 * (area_center * area_center - stream_center(x) * stream_center(x));
-	}*/
-
-	const double burn_radius_2 = burn_radius * burn_radius;
 
 
 	const int grid_count_x = area_size / burn_radius;
@@ -146,12 +162,6 @@ namespace P {
 
 
 
-	static double from_center(const double x) {
-		return x - area_center;
-	}
-
-
-
 	static double const_stream(const double x) {
 		return .5;
 	}
@@ -167,9 +177,6 @@ namespace P {
 
 
 
-	static double stream_function(const double x) {
-		return x2_stream(x);
-	}
 
 	static double particle_count (const double x) {
 		return iterate_particles * stream_function(x) / segment_count;
