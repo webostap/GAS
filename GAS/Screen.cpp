@@ -166,8 +166,8 @@ namespace ps {
 
 
 
-            int x = static_cast<int>(particle._x() * SCREEN_WIDTH / 10);
-            int y = SCREEN_HEIGHT - P::screen_bottom_gap - static_cast<int>(particle._z() * SCREEN_WIDTH / 10);
+            int x = static_cast<int>((particle.x - P::area_beg) * P::screen_proportion);
+            int y = SCREEN_HEIGHT - P::screen_bottom_gap - static_cast<int>(particle.z * P::screen_proportion);
 
             set_pixel_color(x, y, red, green, blue);
 
@@ -243,7 +243,7 @@ namespace ps {
 
         m_main_buffer[x + (y * SCREEN_WIDTH)] = color;
 
-        if (x > 0) {
+        /*if (x > 0) {
             m_main_buffer[(x - 1) + (y * SCREEN_WIDTH)] = color;
         }
         if (x < SCREEN_WIDTH - 2) {
@@ -254,7 +254,7 @@ namespace ps {
         }
         if (y < SCREEN_HEIGHT - 2) {
             m_main_buffer[x + ((y + 1) * SCREEN_WIDTH)] = color;
-        }
+        }*/
     }
 
 

@@ -11,9 +11,10 @@
 
 void print_speed() {
 	std::cout << "\n-------------\n";
-	std::cout << P::stream_function(P::area_center) * P::base_speed << " - center speed\n";
+	std::cout << P::stream_function(P::area_center) * P::base_speed << " - base speed\n";
 	std::cout << P::particle_speed(P::area_center) << " - max delta\n";
 	std::cout << P::burn_radius << " - burn radius\n";
+	std::cout << P::burn_speed << " - burn speed\n";
 }
 
 void clear_csv_files();
@@ -56,13 +57,12 @@ int main() {
 	Uint32 startTime = 0;
 	Uint32 endTime = 0;
 	Uint32 delta = 0;
-	short fps = 60;
+	short fps = 30;
 	short timePerFrame = 1000 / fps; // miliseconds
 	SDL_Event e;
-	const Uint8* key_state;
+	//const Uint8* key_state;
 
 	char buffer[] = "FPS: 00";
-	char c;
 
 
 	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
@@ -150,9 +150,16 @@ int main() {
 					case SDLK_u: 
 						P::read_params();
 						print_speed();
+						std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
+						std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
+						//std::cout << P::area_size / P::burn_radius << " - must be\n";
+						//std::cout << main_swarm.Line_Count() << " - line\n";
+						//std::cout << main_swarm.all_list.size() << " - size\n";
 						//main_swarm.LoadParams(swarm_params);
 						break;
 				}
+
+				P::read_params();
 				break;
 				
 			break;
@@ -172,6 +179,8 @@ int main() {
 			Input.set_burn = true;
 			burn_x = P::screen_to_area_x(mouse_x);
 			burn_y = P::screen_to_area_y(mouse_y);
+			//printf("\n%i\t%i", mouse_x, mouse_y);
+			//printf("\n%f\t%f", burn_x, burn_y);
 			segment = main_swarm.GetSegment(burn_x, burn_y);
 
 		}
@@ -181,7 +190,7 @@ int main() {
 		if (!State.pause || State.pause && Input.step)
 		{
 
-			for (int iterate = P::iterations; iterate; --iterate)
+			for (int iterate = P::iterations; iterate /*== P::iterations*/; --iterate)
 			{
 				main_swarm.UpdateSegments();
 
@@ -224,7 +233,9 @@ int main() {
 
 		if (Input.print_step)
 		{
-			main_swarm.PrintStep(print_step_counter);
+			//main_swarm.PrintStep(print_step_counter);
+
+			main_swarm.PrintLine(print_step_counter);
 
 			std::cout << "\nprint - " << print_step_counter;
 
@@ -239,7 +250,7 @@ int main() {
 		if (delta > timePerFrame) fps = 1000 / delta;
 
 
-		if (ii % 30 == 0) 
+		if (ii % 10 == 0) 
 		{
 			sprintf_s(buffer, "FPS: %d", fps);
 			screen.SetTitle(buffer);

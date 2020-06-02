@@ -56,8 +56,10 @@ namespace ps {
 		void Step();
 		void FinalLoop(bool move = true);
 
-		void Fill_Ziggurat();
+		//void Fill_Ziggurat();
 		void Fill_Sampling();
+
+		int Line_Count();
 
 		//void Lighter();
 		void CrossParticles();
@@ -69,7 +71,7 @@ namespace ps {
 
 
 		const void PrintStep(int);
-		//const void PrintLine(int);
+		const void PrintLine(int);
 
 		void LightsOut();
 
@@ -83,7 +85,7 @@ namespace ps {
 
 
 		struct Segment {
-			double beg, end;
+			//double beg, end;
 			bool has_burn = false;
 			std::vector<Particle*> ok_list, burn_list;
 		};
@@ -97,8 +99,8 @@ namespace ps {
 		void UpdateSegments();
 		void ClearSegments();
 
-		unsigned GetSegmentX(const double x);
-		unsigned GetSegmentZ(const double z);
+		int GetSegmentX(const double x);
+		int GetSegmentZ(const double z);
 		Segment* GetSegment(const double x, const double z);
 
 		void ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z);
