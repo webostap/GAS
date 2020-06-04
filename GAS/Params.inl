@@ -20,7 +20,6 @@ namespace H {
 
 namespace P {
 
-
 	extern void read_params();
 
 

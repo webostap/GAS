@@ -75,6 +75,9 @@ namespace ps {
 
 		void LightsOut();
 
+		const void Density_Grid();
+		const void Density_Radius();
+
 
 		bool CheckSegmentBurn(int seg_x, int seg_z);
 

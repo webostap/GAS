@@ -20,11 +20,9 @@ void print_speed() {
 void clear_csv_files();
 
 
-
-
 #undef main
 int main() {
-	print_speed();
+
 
 	ps::Segments main_swarm;
 
@@ -35,6 +33,8 @@ int main() {
 			pause		= false,
 			step		= false,
 			print_step	= false,
+			print_d_grid = false,
+			print_d_radius = false,
 			clear_csv	= false;
 		void Reset() {
 			sdl_quit	= false,
@@ -43,6 +43,8 @@ int main() {
 			pause		= false,
 			step		= false,
 			print_step	= false,
+			print_d_grid = false,
+			print_d_radius = false,
 			clear_csv	= false;
 		}
 	} Input;
@@ -143,6 +145,10 @@ int main() {
 						break;
 					case SDLK_c: Input.print_step = true;
 						break;
+					case SDLK_g: Input.print_d_grid = true;
+						break;
+					case SDLK_r: Input.print_d_radius = true;
+						break;
 					case SDLK_x: Input.clear_csv = true;
 						break;
 					case SDLK_q: std::cout << main_swarm.all_list.size() << " - size\n";
@@ -231,6 +237,24 @@ int main() {
 		}
 
 
+		if (Input.print_d_grid)
+		{
+
+			main_swarm.Density_Grid();
+
+			std::cout << "\nprint - denisty grid";
+
+		}
+
+		if (Input.print_d_radius)
+		{
+
+			main_swarm.Density_Radius();
+
+			std::cout << "\nprint - denisty radius";
+
+		}
+
 		if (Input.print_step)
 		{
 			//main_swarm.PrintStep(print_step_counter);
@@ -273,7 +297,7 @@ int main() {
 
 //void print_files(ps::Segments &swarm) {
 //
-//	for (size_t i = 0; i < P::steps; i++)
+//	for (int i = 0; i < P::steps; i++)
 //	{
 //
 //		if (i == P::burn_at_step) swarm.Lighter();
@@ -291,7 +315,7 @@ int main() {
 //}
 //void print_final(ps::Segments &swarm, int num = 0) {
 //
-//	for (size_t i = 0; i < P::steps; i++)
+//	for (int i = 0; i < P::steps; i++)
 //	{
 //		if (i == P::burn_at_step) swarm.Lighter();
 //		swarm.Step();
@@ -302,7 +326,7 @@ int main() {
 void clear_csv_files() {
 	bool gas_out = 0, line_out = 0;
 
-	for (size_t i = 0;; ++i)
+	for (int i = 0;; ++i)
 	{
 		if (!gas_out && std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
 			gas_out = 1;

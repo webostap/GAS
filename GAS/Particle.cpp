@@ -76,7 +76,7 @@ namespace ps {
 		return state;
 	}
 
-	const double Particle::Distance(const Particle &p)
+	inline const double Particle::Distance(const Particle &p)
 	{
 		return (x - p.x)*(x - p.x) + (z - p.z)*(z - p.z);
 

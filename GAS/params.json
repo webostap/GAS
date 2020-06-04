@@ -1,5 +1,10 @@
 {
-    "base_particles": 20000,
+    "area_beg": -1,
+    "area_end":  1,
+
+    "burn_radius":  5,
+
+    "base_particles": 5000,
     "base_speed": 15,
     "burn_speed": 1.14,
     "const_speed": 0,

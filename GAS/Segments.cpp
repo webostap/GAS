@@ -12,7 +12,7 @@ namespace ps {
 	{
 		//UpdateParams();
 
-		for (size_t i = 0; i < P::grid_count_x; i++) {
+		for (int i = 0; i < P::grid_count_x; i++) {
 			grid[i] = (grid_mem + i * P::grid_count_z);
 		}
 
@@ -81,7 +81,7 @@ namespace ps {
 		double window_end = P::area_beg + P::segment_size;
 		double p_x_cord, p_z_cord, p_speed;
 
-		for (size_t si = 0; si < P::segment_count; si++)
+		for (int si = 0; si < P::segment_count; si++)
 		{
 
 			particles_double = P::particle_count(window_beg + P::segment_size/2.);
@@ -89,7 +89,7 @@ namespace ps {
 
 			x_dist = std::uniform_real_distribution<double> (window_beg, window_end);
 
-			for (size_t pi = 0; pi < particles_at_step; ++pi) {
+			for (int pi = 0; pi < particles_at_step; ++pi) {
 
 				p_x_cord = x_dist(rd);
 
@@ -187,9 +187,9 @@ namespace ps {
 	bool Segments::CheckSegmentBurn(int seg_x, int seg_z)
 	{
 
-		for (size_t i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
+		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
 		{
-			for (size_t j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
+			for (int j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
 			{
 				if (grid[i][j].has_burn)
 				{
@@ -203,9 +203,9 @@ namespace ps {
 
 	void Segments::ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z)
 	{
-		for (size_t i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
+		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
 		{
-			for (size_t j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
+			for (int j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
 			{
 				if (grid[i][j].has_burn) for (auto& burn_i : grid[i][j].burn_list)
 				{
@@ -273,7 +273,7 @@ namespace ps {
 
 	void Segments::ClearSegments()
 	{
-		for (size_t i = 0; i < P::grid_count; i++)
+		for (int i = 0; i < P::grid_count; i++)
 		{
 			grid_mem[i].has_burn = false;
 			grid_mem[i].burn_list.clear();
@@ -337,6 +337,55 @@ namespace ps {
 			}*/
 			segment->burn_list.clear();
 		}
+	}
+	const void Segments::Density_Grid()
+	{
+		std::string output;
+		for (int z = 0; z < P::grid_count_z; z++)
+		{
+			for (int x = 0; x < P::grid_count_x; x++)
+			{
+				output+= fmt::format("{}\n", grid[x][z].ok_list.size());
+			}
+		}
+
+		std::ofstream csv(P::csv_folder + "d_grid.csv");
+		csv << output;
+		csv.close();
+	}
+	const void Segments::Density_Radius()
+	{
+		std::string output;
+		int crossed = 0;
+		for (int z = 1; z < P::grid_count_z-1; z++)
+		{
+			for (int x = 1; x < P::grid_count_x-1; x++)
+			{
+				for (auto& particle_1 : grid[x][z].ok_list)
+				{
+					crossed = 0;
+					for (int i = x - 1; i < x + 2; i++)
+					{
+						for (int j = z - 1; j < z + 2; j++)
+						{
+							for (auto& particle_2 : grid[i][j].ok_list)
+							{
+								if (particle_1->Cross(*particle_2))
+								{
+									++crossed;
+								}
+							}
+						}
+					}
+					output+= fmt::format("{}\n", crossed);
+				}
+				
+			}
+		}
+
+		std::ofstream csv(P::csv_folder + "d_radius.csv");
+		csv << output;
+		csv.close();
 	}
 	/*void Segments::LightsOut_OLD()
 	{

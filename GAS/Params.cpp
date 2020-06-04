@@ -12,7 +12,7 @@ namespace P {
 	const double DSR = L / scale;
 
 	//////
-	const double burn_radius = 4 * DSR;
+	const double burn_radius = 5 * DSR;
 	//////
 
 
@@ -33,7 +33,8 @@ namespace P {
 	int sage_time = 2 * iterations;
 	
 	
-	inline void read_params() {
+	
+	void read_params() {
 		nlohmann::json j = nlohmann::json::parse(H::file_to_string("params.json"));
 
 		base_particles = j["base_particles"];
