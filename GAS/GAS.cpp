@@ -151,7 +151,7 @@ int main() {
 						break;
 					case SDLK_x: Input.clear_csv = true;
 						break;
-					case SDLK_q: std::cout << main_swarm.all_list.size() << " - size\n";
+					case SDLK_q: std::cout << '\n' << main_swarm.all_list.size() << " - size\n";
 						break;
 					case SDLK_u: 
 						P::read_params();

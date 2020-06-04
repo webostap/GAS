@@ -340,12 +340,17 @@ namespace ps {
 	}
 	const void Segments::Density_Grid()
 	{
-		std::string output;
+		std::string output = "count";
+		int size = 0;
 		for (int z = 0; z < P::grid_count_z; z++)
 		{
 			for (int x = 0; x < P::grid_count_x; x++)
 			{
-				output+= fmt::format("{}\n", grid[x][z].ok_list.size());
+				size = grid[x][z].ok_list.size();
+				if (size) {
+					output += fmt::format("\n{}", size);
+				}
+				
 			}
 		}
 
@@ -355,7 +360,7 @@ namespace ps {
 	}
 	const void Segments::Density_Radius()
 	{
-		std::string output;
+		std::string output = "count";
 		int crossed = 0;
 		for (int z = 1; z < P::grid_count_z-1; z++)
 		{
@@ -377,7 +382,7 @@ namespace ps {
 							}
 						}
 					}
-					output+= fmt::format("{}\n", crossed);
+					output+= fmt::format("\n{}", crossed);
 				}
 				
 			}
