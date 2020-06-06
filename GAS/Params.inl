@@ -111,8 +111,8 @@ namespace P {
 
 
 
-	extern const double burn_radius;
-	const double burn_radius_2 = burn_radius * burn_radius;
+	extern double burn_radius;
+	extern double burn_radius_2;
 
 	extern double(*stream_function)(double);
 
@@ -130,12 +130,12 @@ namespace P {
 
 
 
-	const int grid_count_x = (int)floor(area_size / burn_radius);
-	const int grid_count_z = (int)floor(area_height / burn_radius);
-	const int grid_count = grid_count_x * grid_count_z;
+	//const int grid_count_x = (int)floor(area_size / burn_radius);
+	//const int grid_count_z = (int)floor(area_height / burn_radius);
+	//const int grid_count = grid_count_x * grid_count_z;
 
-	const double grid_count_x_percent = grid_count_x / area_size;
-	const double grid_count_z_percent = grid_count_z / area_height;
+	//const double grid_count_x_percent = grid_count_x / area_size;
+	//const double grid_count_z_percent = grid_count_z / area_height;
 
 
 

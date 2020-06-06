@@ -5,14 +5,15 @@
 
 namespace P {
 
-	const double area_beg = -1;
-	const double area_end =  1;
+	const double area_beg =  0;
+	const double area_end =  10;
 
 	const double scale = 400;
 	const double DSR = L / scale;
 
 	//////
-	const double burn_radius = 5 * DSR;
+	double burn_radius = 5 * DSR; 
+	double burn_radius_2 = burn_radius * burn_radius;
 	//////
 
 
@@ -37,10 +38,13 @@ namespace P {
 	void read_params() {
 		nlohmann::json j = nlohmann::json::parse(H::file_to_string("params.json"));
 
+		burn_radius = j["burn_radius"] * DSR; 
+		burn_radius_2 = burn_radius * burn_radius;
+
 		base_particles = j["base_particles"];
 
 		base_speed = j["base_speed"];
-		base_speed*= DSR;
+		base_speed*= burn_radius;
 
 		burn_speed = j["burn_speed"];
 		burn_speed/= burn_radius;
@@ -53,7 +57,7 @@ namespace P {
 
 		iterate_speed = base_speed / iterations;
 		iterate_const = const_speed / iterations;
-		iterate_particles = (int)round(base_particles / iterations * P::stream_function(P::area_center));
+		iterate_particles = (int)round(base_particles * P::particle_speed(P::area_center) / burn_radius_2 * L / 10 * 3);
 
 		burn_time = 5 * iterations;
 		sage_time = 2 * iterations;

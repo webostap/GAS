@@ -2,12 +2,12 @@
     "area_beg": -1,
     "area_end":  1,
 
-    "burn_radius":  5,
+    "burn_radius":  2.5,
 
-    "base_particles": 4000,
-    "base_speed": 15,
+    "base_particles": 200,
+    "base_speed": 3,
     "burn_speed": 1.14,
     "const_speed": 0,
 
-    "iterations": 4
+    "iterations": 3
 }

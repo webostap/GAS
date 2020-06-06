@@ -46,8 +46,8 @@ namespace ps {
 		for (const auto& particle : particle_list) {
 			//auto particle = *particle_it;
 
-			int beg_i = (int)ceil((particle->_x() - steps_start - radius) / step_size);
-			int end_i =	(int)	 ((particle->_x() - steps_start + radius) / step_size);
+			int beg_i = (int) ceil((particle->_x() - steps_start - radius) / step_size);
+			int end_i =	(int)floor((particle->_x() - steps_start + radius) / step_size);
 			if (beg_i < 0) beg_i = 0;
 			if (end_i > steps - 1) end_i = steps - 1;
 

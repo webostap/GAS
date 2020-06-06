@@ -12,11 +12,40 @@ namespace ps {
 	{
 		//UpdateParams();
 
-		for (int i = 0; i < P::grid_count_x; i++) {
+		SetGrid(P::burn_radius);
+
+
+		/*for (int i = 0; i < P::grid_count_x; i++) {
 			grid[i] = (grid_mem + i * P::grid_count_z);
+		}*/
+
+	}
+
+	void Segments::SetBurnRadius(double _burn_radius)
+	{
+		burn_radius = _burn_radius;
+		SetGrid(burn_radius);
+	}
+
+	void Segments::SetGrid(double seg_size)
+	{
+		grid_count_x = (int)floor(P::area_size / seg_size);
+		grid_count_z = (int)floor(P::area_height / seg_size);
+		grid_count = grid_count_x * grid_count_z;
+
+		grid_count_x_percent = grid_count_x / P::area_size;
+		grid_count_z_percent = grid_count_z / P::area_height;
+
+
+		grid = new Segment* [grid_count_x];
+		grid_mem = new Segment [grid_count];
+
+		for (size_t i = 0; i < grid_count_x; i++) {
+			grid[i] = grid_mem + i * grid_count_z;
 		}
 
 	}
+
 	/*void Segments::LoadParams(const Params& aParams)
 	{
 		params = aParams;
@@ -126,7 +155,7 @@ namespace ps {
 			p_speed = P::particle_speed(p_x_cord);
 
 			if (p_z_cord < p_speed) {
-				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
+				all_list.emplace_back(p_x_cord, p_z_cord, p_speed, burn_radius);
 			}
 		}
 		/*int pi = P::base_particles;
@@ -148,9 +177,9 @@ namespace ps {
 	int Segments::Line_Count()
 	{
 		int sum = 0;
-		for (int i = 0; i < P::grid_count_x; i++)
+		for (int xi = 0; xi < grid_count_x; xi++)
 		{
-			sum+= (int)grid[i][0].ok_list.size();
+			sum+= (int)grid[xi][0].ok_list.size();
 		}
 		return sum;
 	}
@@ -166,15 +195,15 @@ namespace ps {
 
 		all_will_burn.clear();
 
-		for (int j = 0; j < P::grid_count_z; j++)
+		for (int zi = 0; zi < grid_count_z; zi++)
 		{
-			for (int i = 0; i < P::grid_count_x; i++)
+			for (int i = 0; i < grid_count_x; i++)
 			{
-				if (CheckSegmentBurn(i, j))
+				if (CheckSegmentBurn(i, zi))
 				{
-					for (auto& particle_i : grid[i][j].ok_list)
+					for (auto& particle_i : grid[i][zi].ok_list)
 					{
-						ParticleInBurnSegment(particle_i, i, j);
+						ParticleInBurnSegment(particle_i, i, zi);
 					}
 				}
 			}
@@ -187,11 +216,11 @@ namespace ps {
 	bool Segments::CheckSegmentBurn(int seg_x, int seg_z)
 	{
 
-		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
+		for (int xi = seg_x ? seg_x - 1 : 0; xi < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); xi++)
 		{
-			for (int j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
+			for (int zi = seg_z ? seg_z - 1 : 0; zi < (seg_z < grid_count_z - 1 ? seg_z + 2 : grid_count_z); zi++)
 			{
-				if (grid[i][j].has_burn)
+				if (grid[xi][zi].has_burn)
 				{
 					return true;
 				}
@@ -203,13 +232,13 @@ namespace ps {
 
 	void Segments::ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z)
 	{
-		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < P::grid_count_x - 1 ? seg_x + 2 : P::grid_count_x); i++)
+		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); i++)
 		{
-			for (int j = seg_z ? seg_z - 1 : 0; j < (seg_z < P::grid_count_z - 1 ? seg_z + 2 : P::grid_count_z); j++)
+			for (int zi = seg_z ? seg_z - 1 : 0; zi < (seg_z < grid_count_z - 1 ? seg_z + 2 : grid_count_z); zi++)
 			{
-				if (grid[i][j].has_burn) for (auto& burn_i : grid[i][j].burn_list)
+				if (grid[i][zi].has_burn) for (auto& burn_i : grid[i][zi].burn_list)
 				{
-					if (particle->Cross(*burn_i))
+					if (particle->CrossBurn(*burn_i))
 					{
 						BurnParticle(particle);
 						return;
@@ -259,11 +288,11 @@ namespace ps {
 
 	int Segments::GetSegmentX(const double x)
 	{
-		return (int)floor((x - P::area_beg) * P::grid_count_x_percent);
+		return (int)floor((x - P::area_beg) * grid_count_x_percent);
 	}
 	int Segments::GetSegmentZ(const double z)
 	{
-		return (int)floor(z * P::grid_count_z_percent);
+		return (int)floor(z * grid_count_z_percent);
 	}
 	Segments::Segment* Segments::GetSegment(const double x, const double z)
 	{
@@ -273,7 +302,7 @@ namespace ps {
 
 	void Segments::ClearSegments()
 	{
-		for (int i = 0; i < P::grid_count; i++)
+		for (int i = 0; i < grid_count; i++)
 		{
 			grid_mem[i].has_burn = false;
 			grid_mem[i].burn_list.clear();
@@ -342,11 +371,11 @@ namespace ps {
 	{
 		std::string output = "count";
 		int size = 0;
-		for (int z = 0; z < P::grid_count_z; z++)
+		for (int zi = 0; zi < grid_count_z; zi++)
 		{
-			for (int x = 0; x < P::grid_count_x; x++)
+			for (int xi = 0; xi < grid_count_x; xi++)
 			{
-				size = grid[x][z].ok_list.size();
+				size = (int)grid[xi][zi].ok_list.size();
 				if (size) {
 					output += fmt::format("\n{}", size);
 				}
@@ -362,16 +391,16 @@ namespace ps {
 	{
 		std::string output = "count";
 		int crossed = 0;
-		for (int z = 1; z < P::grid_count_z-1; z++)
+		for (int zi = 1; zi < grid_count_z-1; zi++)
 		{
-			for (int x = 1; x < P::grid_count_x-1; x++)
+			for (int xi = 1; xi < grid_count_x-1; xi++)
 			{
-				for (auto& particle_1 : grid[x][z].ok_list)
+				for (auto& particle_1 : grid[xi][zi].ok_list)
 				{
 					crossed = 0;
-					for (int i = x - 1; i < x + 2; i++)
+					for (int i = xi - 1; i < xi + 2; i++)
 					{
-						for (int j = z - 1; j < z + 2; j++)
+						for (int j = zi - 1; j < zi + 2; j++)
 						{
 							for (auto& particle_2 : grid[i][j].ok_list)
 							{

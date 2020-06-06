@@ -23,6 +23,8 @@ void clear_csv_files();
 #undef main
 int main() {
 
+	P::read_params();
+	print_speed();
 
 	ps::Segments main_swarm;
 
@@ -100,8 +102,6 @@ int main() {
 	/* ---- */
 
 
-	P::read_params();
-	print_speed();
 
 	
 	while (!Input.sdl_quit) {
@@ -155,9 +155,10 @@ int main() {
 						break;
 					case SDLK_u: 
 						P::read_params();
+						main_swarm.SetBurnRadius(P::burn_radius);
 						print_speed();
-						std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
-						std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
+						//std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
+						//std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
 						//std::cout << P::area_size / P::burn_radius << " - must be\n";
 						//std::cout << main_swarm.Line_Count() << " - line\n";
 						//std::cout << main_swarm.all_list.size() << " - size\n";
@@ -165,7 +166,7 @@ int main() {
 						break;
 				}
 
-				P::read_params();
+				//P::read_params();
 				break;
 				
 			break;
@@ -196,7 +197,7 @@ int main() {
 		if (!State.pause || State.pause && Input.step)
 		{
 
-			for (int iterate = P::iterations; iterate /*== P::iterations*/; --iterate)
+			for (int iterate = P::iterations; iterate/* == P::iterations*/; --iterate)
 			{
 				main_swarm.UpdateSegments();
 

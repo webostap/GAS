@@ -17,6 +17,7 @@ namespace ps {
 		enum class State { OK, WARM, BURN, SAGE, DIED };
 
 		Particle(double x, double z, double speed);
+		Particle(double x, double z, double speed, double burn_radius);
 		virtual ~Particle() {};
 
 		//get coordinates
@@ -34,11 +35,13 @@ namespace ps {
 		void Move();
 		const double Distance(const Particle &);
 		const bool Cross(const Particle &);
+		const bool CrossBurn(const Particle &);
 
 		State state = State::OK;
 		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
 		double x, z, speed;
+		double burn_radius, burn_radius_2;
 		//unsigned seg_x, seg_z;
 	};
 

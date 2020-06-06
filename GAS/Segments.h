@@ -52,7 +52,7 @@ namespace ps {
 		//Segments(const Params&);
 		//void LoadParams(const Params&);
 		//void UpdateParams();
-
+		
 		void Step();
 		void FinalLoop(bool move = true);
 
@@ -93,12 +93,19 @@ namespace ps {
 			std::vector<Particle*> ok_list, burn_list;
 		};
 
-		Segment** grid = new Segment*[P::grid_count_x];
-		Segment* grid_mem = new Segment[P::grid_count];
+		Segment** grid;
+		Segment* grid_mem;
 
 		std::vector<std::pair<int,int>> burn_segments;
 
+		double burn_radius = P::burn_radius;
+		double burn_radius_2 = P::burn_radius * P::burn_radius;
 
+		int grid_count_x, grid_count_z, grid_count;
+		double grid_count_x_percent, grid_count_z_percent;
+
+		void SetBurnRadius(double _burn_radius);
+		void SetGrid(double seg_size);
 		void UpdateSegments();
 		void ClearSegments();
 
