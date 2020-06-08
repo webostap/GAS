@@ -57,7 +57,7 @@ namespace P {
 
 		iterate_speed = base_speed / iterations;
 		iterate_const = const_speed / iterations;
-		iterate_particles = (int)round(base_particles * P::particle_speed(P::area_center) / burn_radius_2 * L / 10 * 3);
+		iterate_particles = (int)round(base_particles * P::particle_speed(P::area_center) / burn_radius_2 * L / M_PI);
 
 		burn_time = 5 * iterations;
 		sage_time = 2 * iterations;
