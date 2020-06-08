@@ -2,9 +2,9 @@
     "area_beg": -1,
     "area_end":  1,
 
-    "burn_radius":  4,
+    "burn_radius":  3,
 
-    "base_particles": 100,
+    "base_particles": 30,
     "base_speed": 3,
     "burn_speed": 1.14,
     "const_speed": 0,

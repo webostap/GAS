@@ -128,12 +128,16 @@ int main() {
 				switch (e.key.keysym.sym)
 				{
 					case SDLK_1: P::stream_function = P::linear_stream;
+						P::read_params();
 						break;
 					case SDLK_2: P::stream_function = P::log_stream;
+						P::read_params();
 						break;
 					case SDLK_3: P::stream_function = P::x2_stream;
+						P::read_params();
 						break;
 					case SDLK_4: P::stream_function = P::const_stream;
+						P::read_params();
 						break;
 					case SDLK_SPACE: Input.lights_out = true;
 						break;
