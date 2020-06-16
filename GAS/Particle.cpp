@@ -4,12 +4,12 @@
 
 namespace ps {
 
-
+	
 	Particle::Particle(double _x, double _z, double _speed) : 
 		x(_x), z(_z), speed(_speed){}
 
-	Particle::Particle(double _x, double _z, double _speed, double _burn_radius = P::burn_radius) : 
-		x(_x), z(_z), speed(_speed), burn_radius(_burn_radius), burn_radius_2(burn_radius*burn_radius){}
+	Particle::Particle(double _x, double _z, double _speed, double _burn_radius) : 
+		x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
 
 
 
@@ -28,7 +28,7 @@ namespace ps {
 		{
 		case State::WARM:
 
-			if (++warm_counter == P::iterations)
+			if (++warm_counter >= P::iterations)
 			{
 				state = State::BURN;
 				++burn_counter;
@@ -37,7 +37,7 @@ namespace ps {
 
 		case State::BURN:
 
-			if (++burn_counter == P::burn_time)
+			if (++burn_counter >= P::burn_time)
 			{
 				state = State::SAGE;
 				++sage_counter;
@@ -46,7 +46,7 @@ namespace ps {
 
 		case State::SAGE:
 
-			if (++sage_counter == P::sage_time)
+			if (++sage_counter >= P::sage_time)
 			{
 				state = State::DIED;
 			}

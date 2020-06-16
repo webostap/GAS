@@ -2,7 +2,8 @@
 //#include "Params.inl"
 //#include "Particle.h"
 #include "FrontLine.h"
-#include <list>
+#include <forward_list>
+//#include <list>
 #include <vector>
 #include <fstream>
 
@@ -10,9 +11,9 @@ namespace ps {
 
 	class Segments {
 
-	/*public:
+	public:
 
-		struct Params {
+		/*struct Params {
 			int base_particles;
 			double base_speed;
 			double burn_radius;
@@ -20,30 +21,15 @@ namespace ps {
 			int iterations;	
 		};*/
 
-	/*int base_particles;
-	double burn_radius;
-	double base_speed;
+		double area_beg = P::area_beg, area_end = P::area_end;
 
-	int iterations;*/
 
-	//double iterate_speed;
-	//double iterate_particles;
+		double burn_radius = P::burn_radius;
+		double burn_radius_2 = P::burn_radius * P::burn_radius;
 
-	/*int burn_time = 5 * iterations;
-	int sage_time = 2 * iterations;*/
+		int grid_count_x, grid_count_z, grid_count;
+		double grid_count_x_percent, grid_count_z_percent;
 
-	/////////
-
-	/*double burn_radius_2 = burn_radius * burn_radius;
-
-	int grid_count_x = P::area_size / burn_radius;
-	int grid_count_z = P::area_height / burn_radius;
-	int grid_count = grid_count_x * grid_count_z;
-
-	double grid_count_x_percent = grid_count_x / P::area_size;
-	double grid_count_z_percent = grid_count_z / P::area_height;*/
-
-	//Params params;
 
 	public:
 		bool is_burn = false;
@@ -58,6 +44,18 @@ namespace ps {
 
 		//void Fill_Ziggurat();
 		void Fill_Sampling();
+		void Fill_Grid();
+
+		void SetFillGrid(double);
+
+		double particles_dist, *last_particles = 0;
+		int fill_grid_count;
+
+
+		void (Segments::*fill_func)(void) = 0;
+		void Fill();
+		void Toggle_Fill();
+		bool _fill_one = 0;
 
 		int Line_Count();
 
@@ -77,6 +75,7 @@ namespace ps {
 
 		const void Density_Grid();
 		const void Density_Radius();
+		const void Max_Radius();
 
 
 		bool CheckSegmentBurn(int seg_x, int seg_z);
@@ -93,16 +92,10 @@ namespace ps {
 			std::vector<Particle*> ok_list, burn_list;
 		};
 
-		Segment** grid;
-		Segment* grid_mem;
+		Segment **grid = 0, *grid_mem = 0;
 
 		std::vector<std::pair<int,int>> burn_segments;
 
-		double burn_radius = P::burn_radius;
-		double burn_radius_2 = P::burn_radius * P::burn_radius;
-
-		int grid_count_x, grid_count_z, grid_count;
-		double grid_count_x_percent, grid_count_z_percent;
 
 		void SetBurnRadius(double _burn_radius);
 		void SetGrid(double seg_size);
@@ -118,9 +111,15 @@ namespace ps {
 
 
 
-		std::list <Particle> all_list;
+		std::forward_list <Particle> all_list;
 		//std::list <Particle*> all_burn;
-		std::list <Particle*> all_will_burn;
+		std::vector <Particle*> all_will_burn;
+
+		~Segments() {
+			delete[]grid;
+			delete[]grid_mem;
+			delete[]last_particles;
+		}
 
 
 

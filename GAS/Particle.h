@@ -41,7 +41,8 @@ namespace ps {
 		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
 		double x, z, speed;
-		double burn_radius, burn_radius_2;
+		double burn_radius = 0;
+		double burn_radius_2 = burn_radius*burn_radius;
 		//unsigned seg_x, seg_z;
 	};
 

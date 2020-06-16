@@ -127,7 +127,7 @@ namespace ps {
     }
 
 
-    void Screen::load_swarm(std::list <Particle>& particle_list) {
+    void Screen::load_swarm(std::forward_list <Particle>& particle_list) {
 
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
             m_main_buffer[i] = 0;

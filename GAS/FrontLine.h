@@ -15,7 +15,7 @@ namespace ps {
 		FrontLine(int steps, double window, double area_start, double area_end);
 		void Init(int steps, double window, double area_start, double area_end);
 
-		void Calc(const std::list <Particle*>& particle_list);
+		void Calc(const std::vector <Particle*>& particle_list);
 		void FivePointStencil();
 		void Print(unsigned num);
 
@@ -38,5 +38,12 @@ namespace ps {
 		double steps_area;
 		double step_size;
 
+	public:
+		~FrontLine() {
+			delete[]Vx;
+			delete[]Vx2;
+			delete[]front_line_points;
+		}
 	};
+
 }

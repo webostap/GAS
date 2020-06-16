@@ -4,9 +4,10 @@
 #include <ctime> 
 #include <cstdlib>
 
-
 #include "Screen.h"
 #include "Segments.h"
+
+
 
 
 void print_speed() {
@@ -20,42 +21,44 @@ void print_speed() {
 void clear_csv_files();
 
 
+
+class input : public H::Singleton<input>
+{ friend class Singleton<input>;
+
+public:
+	bool sdl_quit = 0,
+		set_burn = 0,
+		lights_out = 0,
+		pause = 0,
+		step = 0,
+		toggle_fill = 0,
+		print_step = 0,
+		print_denisty = 0,
+		clear_csv = 0;
+private:
+	input() {}
+};
+
+
 #undef main
 int main() {
+
+
 
 	P::read_params();
 	print_speed();
 
 	ps::Segments main_swarm;
 
-	struct {
-		bool sdl_quit	= false,
-			set_burn	= false,
-			lights_out	= false,
-			pause		= false,
-			step		= false,
-			print_step	= false,
-			print_d_grid = false,
-			print_d_radius = false,
-			clear_csv	= false;
-		void Reset() {
-			sdl_quit	= false,
-			set_burn	= false,
-			lights_out	= false,
-			pause		= false,
-			step		= false,
-			print_step	= false,
-			print_d_grid = false,
-			print_d_radius = false,
-			clear_csv	= false;
-		}
-	} Input;
 
 	struct {
 		bool move = true,
 			pause = false;
 			
 	} State;
+
+
+	input Input = input::instance();
 
 
 	Uint32 startTime = 0;
@@ -115,7 +118,7 @@ int main() {
 
 		/*----- INPUT EVENTS ------*/
 
-		Input.Reset();
+		Input = input::instance();
 
 		while (SDL_PollEvent(&e))
 		{
@@ -147,19 +150,19 @@ int main() {
 						break;
 					case SDLK_m: State.move = !State.move;
 						break;
+					case SDLK_f: main_swarm.Toggle_Fill();
+						std::cout << "\nToggle Fill";
+						break;
 					case SDLK_c: Input.print_step = true;
 						break;
-					case SDLK_g: Input.print_d_grid = true;
-						break;
-					case SDLK_r: Input.print_d_radius = true;
+					case SDLK_d: Input.print_denisty = true;
 						break;
 					case SDLK_x: Input.clear_csv = true;
-						break;
-					case SDLK_q: std::cout << '\n' << main_swarm.all_list.size() << " - size\n";
 						break;
 					case SDLK_u: 
 						P::read_params();
 						main_swarm.SetBurnRadius(P::burn_radius);
+						main_swarm.SetFillGrid(P::particles_dist);
 						print_speed();
 						//std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
 						//std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
@@ -210,7 +213,7 @@ int main() {
 
 				main_swarm.CrossParticles();
 				main_swarm.FinalLoop(State.move);
-				if (State.move) main_swarm.Fill_Sampling();
+				if (State.move) main_swarm.Fill();
 
 
 				/*main_swarm.CrossParticles();
@@ -242,23 +245,17 @@ int main() {
 		}
 
 
-		if (Input.print_d_grid)
+		if (Input.print_denisty)
 		{
 
 			main_swarm.Density_Grid();
-
-			std::cout << "\nprint - denisty grid";
-
-		}
-
-		if (Input.print_d_radius)
-		{
-
 			main_swarm.Density_Radius();
+			main_swarm.Max_Radius();
 
-			std::cout << "\nprint - denisty radius";
+			std::cout << "\nprint - denisty";
 
 		}
+
 
 		if (Input.print_step)
 		{

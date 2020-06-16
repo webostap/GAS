@@ -16,6 +16,20 @@ namespace H {
 		return std::string((std::istreambuf_iterator<char>(file)),
 			std::istreambuf_iterator<char>());
 	}
+	template <typename T>
+	class Singleton
+	{
+	public:
+		static T& instance() {
+			static T inst;
+			return inst;
+		}
+		
+	protected:
+		Singleton() {};
+	};
+
+
 }
 
 namespace P {
@@ -126,6 +140,8 @@ namespace P {
 	extern double iterate_speed;
 	extern double iterate_const;
 	extern int iterate_particles;
+
+	extern double particles_dist;
 
 
 

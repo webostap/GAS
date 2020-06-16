@@ -35,7 +35,7 @@ namespace ps {
 	}
 
 
-	void FrontLine::Calc(const std::list <Particle*>& particle_list) {
+	void FrontLine::Calc(const std::vector <Particle*>& particle_list) {
 
 		for (int i = 0; i < steps; ++i) {
 			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;

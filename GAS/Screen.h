@@ -7,7 +7,7 @@
 #include <SDL2/SDL_timer.h>
 #include "Particle.h"
 #include <iostream>
-#include <list>
+#include <forward_list>
 
 namespace ps {
 
@@ -17,7 +17,7 @@ namespace ps {
         virtual ~Screen();
         void update();
         void box_blur();
-        void load_swarm(std::list <Particle>& particle_list);
+        void load_swarm(std::forward_list <Particle>& particle_list);
         bool quit_program();
 
         void SetTitle(const char*);
