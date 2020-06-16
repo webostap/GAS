@@ -5,10 +5,10 @@
 namespace ps {
 
 	
-	Particle::Particle(double _x, double _z, double _speed) : 
+	Particle::Particle(float _x, float _z, float _speed) : 
 		x(_x), z(_z), speed(_speed){}
 
-	Particle::Particle(double _x, double _z, double _speed, double _burn_radius) : 
+	Particle::Particle(float _x, float _z, float _speed, float _burn_radius) : 
 		x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
 
 
@@ -68,11 +68,11 @@ namespace ps {
 
 
 
-	const double Particle::_x() {
+	const float Particle::_x() {
 		return x;
 	}
 
-	const double Particle::_z() {
+	const float Particle::_z() {
 		return z;
 	}
 
@@ -80,7 +80,7 @@ namespace ps {
 		return state;
 	}
 
-	inline const double Particle::Distance(const Particle &p)
+	inline const float Particle::Distance(const Particle &p)
 	{
 		return (x - p.x)*(x - p.x) + (z - p.z)*(z - p.z);
 

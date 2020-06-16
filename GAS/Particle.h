@@ -16,13 +16,13 @@ namespace ps {
 
 		enum class State { OK, WARM, BURN, SAGE, DIED };
 
-		Particle(double x, double z, double speed);
-		Particle(double x, double z, double speed, double burn_radius);
+		Particle(float x, float z, float speed);
+		Particle(float x, float z, float speed, float burn_radius);
 		virtual ~Particle() {};
 
 		//get coordinates
-		const double _x();
-		const double _z();
+		const float _x();
+		const float _z();
 
 		//get state
 		const State getState();
@@ -33,16 +33,16 @@ namespace ps {
 		//void Step();
 		void Step();
 		void Move();
-		const double Distance(const Particle &);
+		const float Distance(const Particle &);
 		const bool Cross(const Particle &);
 		const bool CrossBurn(const Particle &);
 
 		State state = State::OK;
 		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
-		double x, z, speed;
-		double burn_radius = 0;
-		double burn_radius_2 = burn_radius*burn_radius;
+		float x, z, speed;
+		float burn_radius = 0;
+		float burn_radius_2 = burn_radius*burn_radius;
 		//unsigned seg_x, seg_z;
 	};
 
