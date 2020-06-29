@@ -127,6 +127,7 @@ namespace P {
 
 	extern double burn_radius;
 	extern double burn_radius_2;
+	extern double burn_radius_2_cross;
 
 	extern double(*stream_function)(double);
 
@@ -164,7 +165,7 @@ namespace P {
 	extern int sage_time;
 
 	//num of points in the front line
-	const int front_line_steps = 200;
+	const int front_line_steps = 300;
 
 	//area that includes points from which we get the point of the front line 
 	const double front_line_window = area_size / 25;

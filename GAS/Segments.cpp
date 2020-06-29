@@ -89,9 +89,9 @@ namespace ps {
 
 		std::string output;
 
-		output += "#base_particles " + std::to_string(P::base_particles);
+		//output += "#base_particles " + std::to_string(P::base_particles);
 
-		output += "\nx,z,burn";
+		output += "x,z,burn";
 		for (auto& particle : all_list) {
 			output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
 
@@ -166,17 +166,15 @@ namespace ps {
 
 	void Segments::Fill_Grid() {
 
-		double x_cord = P::area_beg, x_dist = particles_dist;
-
 		for (int i = 0; i < fill_grid_count; i++)
 		{
+			double x_cord = P::area_beg + particles_dist/2 + particles_dist*i;
 			double p_speed = P::particle_speed(x_cord);
 			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
 			{
 				all_list.emplace_front(x_cord, z_cord, p_speed, burn_radius);
 				last_particles[i] = z_cord;
 			}
-			x_cord += x_dist;
 			last_particles[i]+= p_speed;
 		}
 
@@ -569,7 +567,7 @@ namespace ps {
 
 			prev_it = particle_it;
 
-			if (particle_it->burn_counter == 1 || particle_it->state == Particle::State::WARM)
+			if (particle_it->burn_counter == 1)
 			{
 				all_will_burn.push_back(&*particle_it);
 			}

@@ -19,6 +19,7 @@ namespace ps {
 
 	void Particle::setBurn() {
 		state = State::WARM;
+		burn_counter = 1;
 	}
 
 
@@ -31,7 +32,7 @@ namespace ps {
 			if (++warm_counter >= P::iterations)
 			{
 				state = State::BURN;
-				++burn_counter;
+				//++burn_counter;
 			}
 			break;
 
@@ -39,8 +40,7 @@ namespace ps {
 
 			if (++burn_counter >= P::burn_time)
 			{
-				state = State::SAGE;
-				++sage_counter;
+				state = P::sage_time ? State::SAGE : State::DIED;
 			}
 			break;
 
@@ -68,11 +68,11 @@ namespace ps {
 
 
 
-	const float Particle::_x() {
+	const double Particle::_x() {
 		return x;
 	}
 
-	const float Particle::_z() {
+	const double Particle::_z() {
 		return z;
 	}
 
@@ -80,16 +80,16 @@ namespace ps {
 		return state;
 	}
 
-	inline const float Particle::Distance(const Particle &p)
+	inline const double Particle::Distance(const Particle &p)
 	{
 		return (x - p.x)*(x - p.x) + (z - p.z)*(z - p.z);
 
 	}
 	const bool Particle::Cross(const Particle &p) {
-		return Distance(p) < P::burn_radius_2;
+		return Distance(p) <= P::burn_radius_2_cross;
 	}
 	const bool Particle::CrossBurn(const Particle &burn_particle) {
-		return Distance(burn_particle) < burn_particle.burn_radius_2;
+		return Distance(burn_particle) <= P::burn_radius_2_cross;
 	}
 
 } /* namespace ps */

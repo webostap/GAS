@@ -14,6 +14,7 @@ namespace P {
 	//////
 	double burn_radius = 5 * DSR; 
 	double burn_radius_2 = burn_radius * burn_radius;
+	double burn_radius_2_cross = burn_radius_2;
 	//////
 
 
@@ -32,22 +33,23 @@ namespace P {
 
 	double particles_dist = burn_radius * 0.5;
 
-	int burn_time = 5 * iterations;
-	int sage_time = 2 * iterations;
+	int burn_time = 2 * iterations;
+	int sage_time = 0 * iterations;
 	
 	
 	
 	void read_params() {
 		nlohmann::json j = nlohmann::json::parse(H::file_to_string("params.json"));
 
-		burn_radius = j["burn_radius"] * DSR; 
+		burn_radius = (double)j["burn_radius"] * DSR;
 		burn_radius_2 = burn_radius * burn_radius;
+		burn_radius_2_cross = burn_radius_2 * (1+(double)j["burn_fix"]);
 
 		base_particles = j["base_particles"];
 
 		particles_dist = burn_radius / j["particles_dist"];
 
-		base_speed = j["base_speed"];
+		base_speed = (double)j["base_speed"];
 		base_speed*= burn_radius;
 
 		burn_speed = j["burn_speed"];
@@ -55,7 +57,7 @@ namespace P {
 		//burn_speed/= scale/10/10;
 
 		const_speed = j["const_speed"];
-		const_speed*= DSR;
+		const_speed*= burn_radius;
 
 		iterations = j["iterations"];
 

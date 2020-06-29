@@ -16,6 +16,7 @@ namespace ps {
 		void Init(int steps, double window, double area_start, double area_end);
 
 		void Calc(const std::vector <Particle*>& particle_list);
+		void Calc2(const std::vector <Particle*>& particle_list);
 		void FivePointStencil();
 		void Print(unsigned num);
 
@@ -32,11 +33,14 @@ namespace ps {
 
 		int steps;
 		unsigned h;
+		double area_start, area_end;
 		double radius;
 		double steps_start;
 		double steps_end;
 		double steps_area;
 		double step_size;
+
+		double w_percent;
 
 	public:
 		~FrontLine() {

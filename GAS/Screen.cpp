@@ -126,24 +126,29 @@ namespace ps {
         SDL_RenderPresent(m_renderer);
     }
 
-
-    void Screen::load_swarm(std::forward_list <Particle>& particle_list) {
-
+    void Screen::clear() {
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
             m_main_buffer[i] = 0;
         }
+    }
+
+
+    void Screen::load_swarm(std::forward_list <Particle>& particle_list) {
 
         int red = 0, green = 0, blue = 0;
 
         for (auto& particle : particle_list) {
             if (particle._x() > SCREEN_WIDTH) continue;
 
+            int x = x_to_pixel(particle.x);
+            int y = y_to_pixel(particle.z);
+
 
             switch (particle.getState())
             {
 
             case Particle::State::OK:
-                red = 80, green = 80, blue = 200;
+                red = 100, green = 100, blue = 255;
                 break;
             case Particle::State::WARM:
                 red = 255; green = 255, blue = 255;
@@ -153,6 +158,7 @@ namespace ps {
                 if (particle.burn_counter == 1) {
                     red = 255; green = 255, blue = 255;
                 } else {
+                    //draw_circle(particle.x, particle.z, P::burn_radius, 40, get_uint32_color(50, 200, 50));
                     red = 200; green = 100, blue = 100;
                 }
                 break;
@@ -164,14 +170,41 @@ namespace ps {
                 break;
             }
 
+            Uint32 color = get_uint32_color(red, green, blue);
+            set_pixel_color(x, y, color);
+            //draw_plus(x, y, color);
 
 
-            int x = static_cast<int>((particle.x - P::area_beg) * P::screen_proportion);
-            int y = SCREEN_HEIGHT - P::screen_bottom_gap - static_cast<int>(particle.z * P::screen_proportion);
 
-            set_pixel_color(x, y, red, green, blue);
 
         }
+
+
+    }
+
+    void Screen::draw_circles(std::vector <Particle*>& particle_list) {
+
+
+        int red = 200, green = 100, blue = 100;
+
+
+        for (auto& particle : particle_list) {
+            if (particle->_x() > SCREEN_WIDTH) continue;
+
+            int x = x_to_pixel(particle->x);
+            int y = y_to_pixel(particle->z);
+
+
+            Uint32 color = get_uint32_color(red, green, blue);
+            set_pixel_color(x, y, color);
+            //draw_plus(x, y, color);
+            draw_circle(particle->x, particle->z, P::burn_radius, 100, get_uint32_color(50, 200, 50));
+
+
+        }
+
+
+
 
     }
 
@@ -223,12 +256,46 @@ namespace ps {
         blue = static_cast<Uint8>(blue_total / 9);
     }
 
+    void Screen::draw_circle(double x0, double y0, double r, int steps, Uint32 color)
+    {
+        float deg = 0, deg_step = M_PI * 2 / steps;
+        float x, y;
+        
+        for (int i = 0; i < steps; i++)
+        {
+            x = x0 + r*sin(deg);
+            y = y0 + r*cos(deg);
 
-    void Screen::set_pixel_color(int x, int y, Uint8 red, Uint8 green, Uint8 blue) {
+            set_pixel_color(x_to_pixel(x), y_to_pixel(y), color);
+            
+            deg+= deg_step;
+        }
 
-        // Ignore particles with coordinates outside the boundaries of the SDL window
-        if (x < 0 || x >= ps::Screen::SCREEN_WIDTH || y < 0 || y >= ps::Screen::SCREEN_HEIGHT)
-            return;
+    }
+
+    void Screen::draw_grid(int x_count, int y_count)
+    {
+        auto color = get_uint32_color(10, 10, 20);
+        
+        for (int i = 1; i < x_count; i++)
+        {
+            int x = (int)round(SCREEN_WIDTH / (double)x_count * i);
+            for (int j = 0; j < SCREEN_HEIGHT; j++)
+            {
+                set_pixel_color(x, j, color);
+            }
+        }
+        for (int i = 1; i < y_count; i++)
+        {
+            int y = (int)round(SCREEN_HEIGHT / (double)y_count * i);
+            for (int j = 0; j < SCREEN_WIDTH; j++)
+            {
+                set_pixel_color(j, y, color);
+            }
+        }
+    }
+
+    Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue) {
 
         Uint32 color{ 0 };
 
@@ -239,11 +306,28 @@ namespace ps {
         color <<= 8;
         color += blue;
         color <<= 8;
-        color += 0xFF;   // Alpha channel set to opaque
+        color += 0xFF;
 
-        m_main_buffer[x + (y * SCREEN_WIDTH)] = color;
+        return color;
+    }
 
-        /*if (x > 0) {
+    int Screen::x_to_pixel(double x)
+    {
+        return static_cast<int>((x - P::area_beg) * P::screen_proportion);
+    }
+
+    int Screen::y_to_pixel(double y)
+    {
+        return SCREEN_HEIGHT - P::screen_bottom_gap - static_cast<int>(y * P::screen_proportion);
+    }
+
+
+    void Screen::draw_plus(int x, int y, Uint32 color) {
+
+        if (x < 0 || x >= ps::Screen::SCREEN_WIDTH || y < 0 || y >= ps::Screen::SCREEN_HEIGHT)
+            return;
+
+        if (x > 0) {
             m_main_buffer[(x - 1) + (y * SCREEN_WIDTH)] = color;
         }
         if (x < SCREEN_WIDTH - 2) {
@@ -254,7 +338,31 @@ namespace ps {
         }
         if (y < SCREEN_HEIGHT - 2) {
             m_main_buffer[x + ((y + 1) * SCREEN_WIDTH)] = color;
-        }*/
+        }
+    }
+
+
+    void Screen::set_pixel_color(int x, int y, Uint32 color) {
+
+        // Ignore particles with coordinates outside the boundaries of the SDL window
+        if (x < 0 || x >= ps::Screen::SCREEN_WIDTH || y < 0 || y >= ps::Screen::SCREEN_HEIGHT)
+            return;
+
+        m_main_buffer[x + (y * SCREEN_WIDTH)] = color;
+
+    }
+
+
+    void Screen::set_pixel_color(int x, int y, Uint8 red, Uint8 green, Uint8 blue) {
+
+        // Ignore particles with coordinates outside the boundaries of the SDL window
+        if (x < 0 || x >= ps::Screen::SCREEN_WIDTH || y < 0 || y >= ps::Screen::SCREEN_HEIGHT)
+            return;
+
+
+        Uint32 color = get_uint32_color(red, green, blue);
+        set_pixel_color(x, y, color);
+        
     }
 
 

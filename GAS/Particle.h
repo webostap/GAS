@@ -21,8 +21,8 @@ namespace ps {
 		virtual ~Particle() {};
 
 		//get coordinates
-		const float _x();
-		const float _z();
+		const double _x();
+		const double _z();
 
 		//get state
 		const State getState();
@@ -33,7 +33,7 @@ namespace ps {
 		//void Step();
 		void Step();
 		void Move();
-		const float Distance(const Particle &);
+		const double Distance(const Particle &);
 		const bool Cross(const Particle &);
 		const bool CrossBurn(const Particle &);
 

@@ -15,6 +15,8 @@ void print_speed() {
 	std::cout << P::stream_function(P::area_center) * P::base_speed << " - base speed\n";
 	std::cout << P::particle_speed(P::area_center) << " - max delta\n";
 	std::cout << P::burn_radius << " - burn radius\n";
+	std::cout << P::burn_radius_2 << " - burn radius 2\n";
+	std::cout << P::burn_radius_2_cross << " - burn radius 2 fix\n";
 	std::cout << P::burn_speed << " - burn speed\n";
 }
 
@@ -82,7 +84,7 @@ int main() {
 
 	std::ifstream check_file;
 	for (;;) {
-		check_file.open((P::csv_folder + "gas.csv." + std::to_string(print_step_counter)).c_str());
+		check_file.open((P::csv_folder + "line.csv." + std::to_string(print_step_counter)).c_str());
 		if (check_file.fail()) break;
 		check_file.close();
 		++print_step_counter;
@@ -105,7 +107,7 @@ int main() {
 	/* ---- */
 
 
-
+	bool even = false;
 	
 	while (!Input.sdl_quit) {
 
@@ -203,6 +205,14 @@ int main() {
 
 		if (!State.pause || State.pause && Input.step)
 		{
+			if (0&&(even = !even) ){
+
+				screen.draw_circles(main_swarm.all_will_burn);
+				screen.update();
+			}
+
+		else {
+
 
 			for (int iterate = P::iterations; iterate/* == P::iterations*/; --iterate)
 			{
@@ -228,13 +238,18 @@ int main() {
 				main_swarm.ClearParticleList();*/
 			}
 
+			screen.clear();
+
+			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			screen.load_swarm(main_swarm.all_list);
+			//screen.box_blur();
+
 			screen.update();
 
 			/* Apply gaussian blur effect. */
-			//screen.box_blur();
 
+		}
 		}
 
 		if (Input.clear_csv)
