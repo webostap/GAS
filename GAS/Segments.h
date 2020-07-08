@@ -7,6 +7,8 @@
 #include <vector>
 #include <fstream>
 
+typedef std::forward_list <ps::Particle> ParticleList;
+
 namespace ps {
 
 	class Segments {
@@ -24,8 +26,8 @@ namespace ps {
 		double area_beg = P::area_beg, area_end = P::area_end;
 
 
-		double burn_radius = P::burn_radius;
-		double burn_radius_2 = P::burn_radius * P::burn_radius;
+		double burn_radius = P::burn_radius_cross;
+		double burn_radius_2 = P::burn_radius_2_cross;
 
 		int grid_count_x, grid_count_z, grid_count;
 		double grid_count_x_percent, grid_count_z_percent;
@@ -111,7 +113,7 @@ namespace ps {
 
 
 
-		std::forward_list <Particle> all_list;
+		ParticleList all_list;
 		//std::list <Particle*> all_burn;
 		std::vector <Particle*> all_will_burn;
 

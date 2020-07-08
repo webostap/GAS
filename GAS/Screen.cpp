@@ -275,6 +275,8 @@ namespace ps {
 
     void Screen::draw_grid(int x_count, int y_count)
     {
+        //auto color = get_uint32_color(255,255,255);
+        //auto color = get_uint32_color(40,200,40);
         auto color = get_uint32_color(10, 10, 20);
         
         for (int i = 1; i < x_count; i++)

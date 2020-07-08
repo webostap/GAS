@@ -127,6 +127,7 @@ namespace P {
 
 	extern double burn_radius;
 	extern double burn_radius_2;
+	extern double burn_radius_cross;
 	extern double burn_radius_2_cross;
 
 	extern double(*stream_function)(double);

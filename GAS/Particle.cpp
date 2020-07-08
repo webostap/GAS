@@ -1,15 +1,13 @@
 #include "Particle.h"
 
-#include <iostream>
-
 namespace ps {
 
 	
-	Particle::Particle(float _x, float _z, float _speed) : 
+	Particle::Particle(coord_t _x, coord_t _z, coord_t _speed) : 
 		x(_x), z(_z), speed(_speed){}
 
-	Particle::Particle(float _x, float _z, float _speed, float _burn_radius) : 
-		x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
+	//Particle::Particle(coord_t _x, coord_t _z, coord_t _speed, coord_t _burn_radius) : 
+		//x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
 
 
 
@@ -38,7 +36,7 @@ namespace ps {
 
 		case State::BURN:
 
-			if (++burn_counter >= P::burn_time)
+			if (++burn_counter > P::burn_time)
 			{
 				state = P::sage_time ? State::SAGE : State::DIED;
 			}
@@ -55,10 +53,8 @@ namespace ps {
 		default:
 			break;
 		}
-
-
-
 	}
+
 	void Particle::Move() {
 
 		z+= speed;
@@ -67,12 +63,11 @@ namespace ps {
 	}
 
 
-
-	const double Particle::_x() {
+	const coord_t Particle::_x() {
 		return x;
 	}
 
-	const double Particle::_z() {
+	const coord_t Particle::_z() {
 		return z;
 	}
 
@@ -80,10 +75,9 @@ namespace ps {
 		return state;
 	}
 
-	inline const double Particle::Distance(const Particle &p)
+	inline const coord_t Particle::Distance(const Particle &p)
 	{
-		return (x - p.x)*(x - p.x) + (z - p.z)*(z - p.z);
-
+		return (x - p.x) * (x - p.x) + (z - p.z) * (z - p.z);
 	}
 	const bool Particle::Cross(const Particle &p) {
 		return Distance(p) <= P::burn_radius_2_cross;

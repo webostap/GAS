@@ -1,15 +1,14 @@
 {
-    "area_beg": -1,
-    "area_end":  1,
 
-    "burn_radius": 15,
-    "burn_fix":  0.04,
+    "burn_radius": 20,
+    "burn_fix": -0.6715,
 
-    "base_particles": 250,
-    "base_speed": 3,
+    "base_particles": 1000,
+    "base_speed": 2,
     "burn_speed": 1.14,
     "const_speed": 0,
     "particles_dist": 16,
 
-    "iterations": 3
+    "iterations": 1
+
 }

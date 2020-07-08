@@ -13,7 +13,7 @@ namespace ps {
 	{
 		//UpdateParams();
 
-		SetGrid(P::burn_radius);
+		SetGrid(P::burn_radius_cross);
 		SetFillGrid(P::particles_dist);
 		Toggle_Fill();
 
@@ -172,7 +172,7 @@ namespace ps {
 			double p_speed = P::particle_speed(x_cord);
 			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
 			{
-				all_list.emplace_front(x_cord, z_cord, p_speed, burn_radius);
+				all_list.emplace_front(x_cord, z_cord, p_speed);
 				last_particles[i] = z_cord;
 			}
 			last_particles[i]+= p_speed;
@@ -196,7 +196,7 @@ namespace ps {
 			p_speed = P::particle_speed(p_x_cord);
 
 			if (p_z_cord < p_speed) {
-				all_list.emplace_front(p_x_cord, p_z_cord, p_speed, burn_radius);
+				all_list.emplace_front(p_x_cord, p_z_cord, p_speed);
 			}
 		}
 

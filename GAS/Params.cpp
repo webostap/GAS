@@ -5,15 +5,17 @@
 
 namespace P {
 
-	const double area_beg =  -1;
-	const double area_end =   1;
+	const double area_beg = -1;
+	const double area_end =  1;
 
 	const double scale = 400;
 	const double DSR = L / scale;
 
 	//////
-	double burn_radius = 5 * DSR; 
+	double burn_radius = 5 * DSR;
 	double burn_radius_2 = burn_radius * burn_radius;
+
+	double burn_radius_cross = burn_radius;
 	double burn_radius_2_cross = burn_radius_2;
 	//////
 
@@ -43,11 +45,15 @@ namespace P {
 
 		burn_radius = (double)j["burn_radius"] * DSR;
 		burn_radius_2 = burn_radius * burn_radius;
-		burn_radius_2_cross = burn_radius_2 * (1+(double)j["burn_fix"]);
 
 		base_particles = j["base_particles"];
-
 		particles_dist = burn_radius / j["particles_dist"];
+
+		//burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];
+		burn_radius_cross = burn_radius;
+		burn_radius_cross+= burn_radius * (pow(base_particles, (double)j["burn_fix"]));
+		burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
+
 
 		base_speed = (double)j["base_speed"];
 		base_speed*= burn_radius;
@@ -59,13 +65,13 @@ namespace P {
 		const_speed = j["const_speed"];
 		const_speed*= burn_radius;
 
-		iterations = j["iterations"];
+		iterations = (int)j["iterations"];
 
 		iterate_speed = base_speed / iterations;
 		iterate_const = const_speed / iterations;
 		iterate_particles = (int)round(base_particles * P::particle_speed(P::area_center) / burn_radius_2 / M_PI * L);
 
-		burn_time = 2 * iterations;
+		burn_time = 1 * iterations;
 		sage_time = 0 * iterations;
 	}
 	

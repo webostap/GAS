@@ -163,14 +163,14 @@ int main() {
 						break;
 					case SDLK_u: 
 						P::read_params();
-						main_swarm.SetBurnRadius(P::burn_radius);
+						main_swarm.SetBurnRadius(P::burn_radius_cross);
 						main_swarm.SetFillGrid(P::particles_dist);
 						print_speed();
 						//std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
 						//std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
 						//std::cout << P::area_size / P::burn_radius << " - must be\n";
 						//std::cout << main_swarm.Line_Count() << " - line\n";
-						//std::cout << main_swarm.all_list.size() << " - size\n";
+						//std::cout << main_swarm.size << " - size\n";
 						//main_swarm.LoadParams(swarm_params);
 						break;
 				}
@@ -205,16 +205,17 @@ int main() {
 
 		if (!State.pause || State.pause && Input.step)
 		{
-			if (0&&(even = !even) ){
+			/*if (0&&(even = !even) ){
 
 				screen.draw_circles(main_swarm.all_will_burn);
 				screen.update();
 			}
 
-		else {
+		else */
+			{
 
 
-			for (int iterate = P::iterations; iterate/* == P::iterations*/; --iterate)
+			for (int iterate = P::iterations; iterate == P::iterations; --iterate)
 			{
 				main_swarm.UpdateSegments();
 
@@ -222,7 +223,9 @@ int main() {
 				if (Input.lights_out) main_swarm.LightsOut();
 
 				main_swarm.CrossParticles();
+
 				main_swarm.FinalLoop(State.move);
+
 				if (State.move) main_swarm.Fill();
 
 
@@ -240,10 +243,11 @@ int main() {
 
 			screen.clear();
 
-			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			screen.load_swarm(main_swarm.all_list);
 			//screen.box_blur();
+
+			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			screen.update();
 
@@ -274,7 +278,7 @@ int main() {
 
 		if (Input.print_step)
 		{
-			//main_swarm.PrintStep(print_step_counter);
+			main_swarm.PrintStep(print_step_counter);
 
 			main_swarm.PrintLine(print_step_counter);
 
