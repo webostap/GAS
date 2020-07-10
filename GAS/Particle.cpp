@@ -3,11 +3,11 @@
 namespace ps {
 
 	
-	Particle::Particle(coord_t _x, coord_t _z, coord_t _speed) : 
-		x(_x), z(_z), speed(_speed){}
+	/*Particle::Particle(coord_t _x, coord_t _z, coord_t _speed) : 
+		x(_x), z(_z), speed(_speed){}*/
 
-	//Particle::Particle(coord_t _x, coord_t _z, coord_t _speed, coord_t _burn_radius) : 
-		//x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
+	Particle::Particle(coord_t _x, coord_t _z, coord_t _speed, coord_t _burn_radius) : 
+		x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
 
 
 
@@ -80,10 +80,10 @@ namespace ps {
 		return (x - p.x) * (x - p.x) + (z - p.z) * (z - p.z);
 	}
 	const bool Particle::Cross(const Particle &p) {
-		return Distance(p) <= P::burn_radius_2_cross;
+		return Distance(p) <= burn_radius_2;
 	}
 	const bool Particle::CrossBurn(const Particle &burn_particle) {
-		return Distance(burn_particle) <= P::burn_radius_2_cross;
+		return Distance(burn_particle) <= burn_radius_2;
 	}
 
 } /* namespace ps */

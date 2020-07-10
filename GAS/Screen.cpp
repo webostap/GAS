@@ -164,9 +164,15 @@ namespace ps {
                 break;
 
             case Particle::State::SAGE:
-                red = 200 - particle.sage_counter * 10;
-                green = 100 - particle.sage_counter * 5;
-                blue = 100 - particle.sage_counter * 5;
+                red = 200 - particle.sage_counter * 20;
+                green = 100 - particle.sage_counter * 10;
+                blue = 100 - particle.sage_counter * 10;
+
+                int lim = 40;
+
+                red = red < lim ? lim : red;
+                green = green < lim ? lim : green,
+                blue = blue < lim ? lim : blue;
                 break;
             }
 

@@ -165,6 +165,7 @@ int main() {
 						P::read_params();
 						main_swarm.SetBurnRadius(P::burn_radius_cross);
 						main_swarm.SetFillGrid(P::particles_dist);
+						main_swarm.m_front_line.Init();
 						print_speed();
 						//std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
 						//std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
@@ -215,7 +216,7 @@ int main() {
 			{
 
 
-			for (int iterate = P::iterations; iterate == P::iterations; --iterate)
+			for (int iterate = P::iterations; iterate; --iterate)
 			{
 				main_swarm.UpdateSegments();
 
@@ -243,11 +244,11 @@ int main() {
 
 			screen.clear();
 
+			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			screen.load_swarm(main_swarm.all_list);
 			//screen.box_blur();
 
-			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			screen.update();
 
@@ -278,7 +279,7 @@ int main() {
 
 		if (Input.print_step)
 		{
-			main_swarm.PrintStep(print_step_counter);
+			//main_swarm.PrintStep(print_step_counter);
 
 			main_swarm.PrintLine(print_step_counter);
 

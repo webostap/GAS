@@ -7,6 +7,9 @@ namespace ps {
 		Init(steps, window, area_start, area_end);
 	}
 		
+	void FrontLine::Init() {
+		Init(P::front_line_steps, P::front_line_window, P::area_beg, P::area_end);
+	}
 	void FrontLine::Init(int a_steps, double window, double _area_start, double _area_end) {
 		area_start = _area_start; 
 		area_end = _area_end;
@@ -19,6 +22,7 @@ namespace ps {
 
 		w_percent = steps / (area_end - area_start);
 
+		delete[]front_line_points;
 		front_line_points = new front_line_point[steps];
 
 		for (int i = 0; i < steps; ++i) {
@@ -26,6 +30,8 @@ namespace ps {
 		}
 
 		///////////
+		delete[]Vx;
+		delete[]Vx2;
 		Vx = new double[steps];
 		Vx2 = new double[steps];
 

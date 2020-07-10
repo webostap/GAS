@@ -3,12 +3,17 @@
     "burn_radius": 20,
     "burn_fix": -0.6715,
 
-    "base_particles": 1000,
-    "base_speed": 2,
+    "base_particles": 250,
+    "base_speed": 1,
     "burn_speed": 1.14,
     "const_speed": 0,
     "particles_dist": 16,
 
-    "iterations": 1
+    "iterations": 1,
+
+
+    "front_line_steps": 200,
+    "front_line_window": 20,
+    "front_line_h": 10
 
 }

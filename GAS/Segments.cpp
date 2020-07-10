@@ -12,8 +12,8 @@ namespace ps {
 	Segments::Segments()
 	{
 		//UpdateParams();
-
-		SetGrid(P::burn_radius_cross);
+		SetBurnRadius(P::burn_radius_cross);
+		//SetGrid(P::burn_radius_cross);
 		SetFillGrid(P::particles_dist);
 		Toggle_Fill();
 
@@ -35,6 +35,7 @@ namespace ps {
 	void Segments::SetBurnRadius(double _burn_radius)
 	{
 		burn_radius = _burn_radius;
+		burn_radius_center = burn_radius * 2;
 		SetGrid(burn_radius);
 	}
 
@@ -172,7 +173,7 @@ namespace ps {
 			double p_speed = P::particle_speed(x_cord);
 			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
 			{
-				all_list.emplace_front(x_cord, z_cord, p_speed);
+				all_list.emplace_front(x_cord, z_cord, p_speed, P::burn_radius_cross);
 				last_particles[i] = z_cord;
 			}
 			last_particles[i]+= p_speed;
@@ -187,7 +188,7 @@ namespace ps {
 		std::random_device rd;
 		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, P::particle_speed(P::area_center));
 
-		double p_x_cord, p_z_cord, p_speed;
+		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x;
 
 		for (int pi = P::iterate_particles; pi; --pi)
 		{
@@ -195,8 +196,10 @@ namespace ps {
 			p_z_cord = dist_z(rd);
 			p_speed = P::particle_speed(p_x_cord);
 
+			fabs_x = fabs(p_x_cord);
 			if (p_z_cord < p_speed) {
-				all_list.emplace_front(p_x_cord, p_z_cord, p_speed);
+				p_burn_radius = 0 && fabs_x < 2 ? burn_radius*(1 + pow(2 - fabs_x, 2)/4) : burn_radius;
+				all_list.emplace_front(p_x_cord, p_z_cord, p_speed, p_burn_radius);
 			}
 		}
 

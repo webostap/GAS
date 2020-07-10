@@ -5,10 +5,10 @@
 
 namespace P {
 
-	const double area_beg = -1;
-	const double area_end =  1;
+	const double area_beg = -10;
+	const double area_end =  10;
 
-	const double scale = 400;
+	const double scale = 500;
 	const double DSR = L / scale;
 
 	//////
@@ -37,6 +37,11 @@ namespace P {
 
 	int burn_time = 2 * iterations;
 	int sage_time = 0 * iterations;
+
+
+	int front_line_steps = 300;
+	double front_line_window = area_size / 25;
+	int front_line_h = 10;
 	
 	
 	
@@ -71,8 +76,12 @@ namespace P {
 		iterate_const = const_speed / iterations;
 		iterate_particles = (int)round(base_particles * P::particle_speed(P::area_center) / burn_radius_2 / M_PI * L);
 
-		burn_time = 1 * iterations;
+		burn_time = 2 * iterations;
 		sage_time = 0 * iterations;
+
+		front_line_steps = (int)j["front_line_steps"];
+		front_line_window = area_size / (int)j["front_line_window"];
+		front_line_h = (int)j["front_line_h"];
 	}
 	
 }

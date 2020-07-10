@@ -14,6 +14,7 @@ namespace ps {
 	public:
 		FrontLine(int steps, double window, double area_start, double area_end);
 		void Init(int steps, double window, double area_start, double area_end);
+		void Init();
 
 		void Calc(const std::vector <Particle*>& particle_list);
 		void Calc2(const std::vector <Particle*>& particle_list);
@@ -27,9 +28,9 @@ namespace ps {
 			unsigned count = 0;
 		};
 
-		front_line_point* front_line_points;
+		front_line_point* front_line_points{0};
 
-		double* Vx, * Vx2;
+		double *Vx{0}, *Vx2{0};
 
 		int steps;
 		unsigned h;

@@ -18,8 +18,8 @@ namespace ps {
 
 		enum class State { OK, WARM, BURN, SAGE, DIED };
 
-		Particle(coord_t x, coord_t z, coord_t speed);
-		//Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
+		//Particle(coord_t x, coord_t z, coord_t speed);
+		Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
 		virtual ~Particle() {};
 
 		//get coordinates
@@ -43,8 +43,8 @@ namespace ps {
 		unsigned burn_counter = 0, warm_counter = 0, sage_counter = 0;
 
 		coord_t x, z, speed;
-		//coord_t burn_radius = 0;
-		//coord_t burn_radius_2 = burn_radius*burn_radius;
+		coord_t burn_radius = 0;
+		coord_t burn_radius_2 = burn_radius*burn_radius;
 		//unsigned seg_x, seg_z;
 	};
 

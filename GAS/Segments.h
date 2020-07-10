@@ -29,6 +29,8 @@ namespace ps {
 		double burn_radius = P::burn_radius_cross;
 		double burn_radius_2 = P::burn_radius_2_cross;
 
+		double burn_radius_center = 0, burn_radius_center_2 = 0;
+
 		int grid_count_x, grid_count_z, grid_count;
 		double grid_count_x_percent, grid_count_z_percent;
 
