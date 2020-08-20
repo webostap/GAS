@@ -1,18 +1,28 @@
 {
+    "area_size": 1,
 
-    "burn_radius": 20,
-    "burn_fix": -0.6715,
+    "refract_coef": -0.5,
+    "refract_offset": 1,
 
-    "base_particles": 250,
-    "base_speed": 1,
-    "burn_speed": 1.14,
-    "const_speed": 0,
+
+    "burn_radius": 50,
+    "burn_fix": -0.672,
+
+    "base_particles": 500,
     "particles_dist": 16,
+    "base_speed": 2,
+    "const_speed": 0.9,
+    "burn_speed": 1.14,
+
+    "emitter_begin": 0,
 
     "iterations": 1,
 
+    "burn_time": 1,
+    "sage_time": 0,
 
-    "front_line_steps": 200,
+
+    "front_line_steps": 100,
     "front_line_window": 20,
     "front_line_h": 10
 

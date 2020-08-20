@@ -35,8 +35,16 @@ namespace ps {
 	void Segments::SetBurnRadius(double _burn_radius)
 	{
 		burn_radius = _burn_radius;
-		burn_radius_center = burn_radius * 2;
+		//burn_radius_center = burn_radius * 2;
 		SetGrid(burn_radius);
+		//SetGrid(burn_radius_center);
+	}
+
+	void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
+		double p_burn_radius = burn_radius;
+		//if (fabs(x_cord) < 2) p_burn_radius *= 1 + pow(1 - fabs(x_cord) / 2, 3);
+		all_list.emplace_front(x_cord, z_cord, p_speed, p_burn_radius);
+		++size;
 	}
 
 	void Segments::SetGrid(double seg_size)
@@ -111,12 +119,16 @@ namespace ps {
 		m_front_line.Print(num);*/
 
 	}
+
+	const void Segments::CalcLine()
+	{
+		m_front_line.Calc(all_will_burn);
+	}
+
 	const void Segments::PrintLine(int num)
 	{
-
-		m_front_line.Calc(all_will_burn);
+		CalcLine();
 		m_front_line.Print(num);
-
 	}
 
 
@@ -173,7 +185,7 @@ namespace ps {
 			double p_speed = P::particle_speed(x_cord);
 			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
 			{
-				all_list.emplace_front(x_cord, z_cord, p_speed, P::burn_radius_cross);
+				CreateParticle(x_cord, z_cord, p_speed);
 				last_particles[i] = z_cord;
 			}
 			last_particles[i]+= p_speed;
@@ -186,7 +198,7 @@ namespace ps {
 	void Segments::Fill_Sampling() {
 
 		std::random_device rd;
-		std::uniform_real_distribution<double> dist_x(P::area_beg, P::area_end), dist_z(0, P::particle_speed(P::area_center));
+		std::uniform_real_distribution<double> dist_x(P::stream_beg, P::stream_end), dist_z(0, P::particle_speed(P::area_center));
 
 		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x;
 
@@ -196,10 +208,8 @@ namespace ps {
 			p_z_cord = dist_z(rd);
 			p_speed = P::particle_speed(p_x_cord);
 
-			fabs_x = fabs(p_x_cord);
 			if (p_z_cord < p_speed) {
-				p_burn_radius = 0 && fabs_x < 2 ? burn_radius*(1 + pow(2 - fabs_x, 2)/4) : burn_radius;
-				all_list.emplace_front(p_x_cord, p_z_cord, p_speed, p_burn_radius);
+				CreateParticle(p_x_cord, p_z_cord, p_speed);
 			}
 		}
 
@@ -224,7 +234,7 @@ namespace ps {
 
 		if (!is_burn) return;
 
-		all_will_burn.clear();
+		//all_will_burn.clear();
 
 		for (int zi = 0; zi < grid_count_z; zi++)
 		{
@@ -263,11 +273,12 @@ namespace ps {
 
 	void Segments::ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z)
 	{
-		for (int i = seg_x ? seg_x - 1 : 0; i < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); i++)
+		//int xi = seg_x;
+		for (int xi = seg_x ? seg_x - 1 : 0; xi < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); xi++)
 		{
 			for (int zi = seg_z ? seg_z - 1 : 0; zi < (seg_z < grid_count_z - 1 ? seg_z + 2 : grid_count_z); zi++)
 			{
-				if (grid[i][zi].has_burn) for (auto& burn_i : grid[i][zi].burn_list)
+				if (grid[xi][zi].has_burn) for (auto& burn_i : grid[xi][zi].burn_list)
 				{
 					if (particle->CrossBurn(*burn_i))
 					{
@@ -400,6 +411,7 @@ namespace ps {
 
 
 	void Segments::LightsOut() {
+		all_will_burn.clear();
 		for (auto& p : all_list) {
 			if (p.state != Particle::State::OK)
 			{
@@ -550,7 +562,7 @@ namespace ps {
 		Fill_Sampling();
 	}
 
-	void Segments::FinalLoop(bool move) {
+	void Segments::FinalLoop() {
 
 		all_will_burn.clear();
 
@@ -565,18 +577,18 @@ namespace ps {
 			if (particle_it->state == Particle::State::DIED) {
 				++particle_it;
 				all_list.erase_after(prev_it);
+				--size;
 				continue;
 			}
 
-			prev_it = particle_it;
 
+			//if (particle_it->state == Particle::State::WARM)
 			if (particle_it->burn_counter == 1)
 			{
 				all_will_burn.push_back(&*particle_it);
 			}
 
-			if (move) particle_it->Move();
-
+			prev_it = particle_it;
 			++particle_it;
 		} // endLoop
 

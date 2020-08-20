@@ -13,7 +13,10 @@ namespace ps {
 
 	class Segments {
 
+
 	public:
+
+		int size = 0;
 
 		/*struct Params {
 			int base_particles;
@@ -44,7 +47,7 @@ namespace ps {
 		//void UpdateParams();
 		
 		void Step();
-		void FinalLoop(bool move = true);
+		void FinalLoop();
 
 		//void Fill_Ziggurat();
 		void Fill_Sampling();
@@ -55,6 +58,7 @@ namespace ps {
 		double particles_dist, *last_particles = 0;
 		int fill_grid_count;
 
+		void CreateParticle(double x_cord, double z_cord, double p_speed);
 
 		void (Segments::*fill_func)(void) = 0;
 		void Fill();
@@ -74,6 +78,7 @@ namespace ps {
 
 		const void PrintStep(int);
 		const void PrintLine(int);
+		const void CalcLine();
 
 		void LightsOut();
 

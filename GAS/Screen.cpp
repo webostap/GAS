@@ -1,7 +1,3 @@
-//
-// Created by Andrei Vasilev on 1/12/17.
-//
-
 #include "Screen.h"
 
 namespace ps {
@@ -70,6 +66,7 @@ namespace ps {
             SDL_DestroyWindow(m_window);
             exit(3);
         }
+
     }
 
 
@@ -106,6 +103,8 @@ namespace ps {
 
     void Screen::update() {
 
+        SDL_RenderPresent(m_renderer);
+
         // Updates the texture containing the pixel data.
         SDL_UpdateTexture(
             m_texture,                      // Texture to be updated.
@@ -123,17 +122,32 @@ namespace ps {
         );
 
         // Loads the renderer to the SDL window.
-        SDL_RenderPresent(m_renderer);
+        //draw_frontline();
+        //SDL_RenderPresent(m_renderer);
     }
 
     void Screen::clear() {
+        //auto background = get_uint32_color(255, 255, 255);
+        auto background = get_uint32_color(0, 0, 0);
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
-            m_main_buffer[i] = 0;
+            m_main_buffer[i] = background;
         }
+
     }
 
 
+
+
+
+
     void Screen::load_swarm(std::forward_list <Particle>& particle_list) {
+        Uint32 red_color = get_uint32_color(125, 50, 50);
+        Uint32 sage_color = get_uint32_color(60, 60, 60);
+        Uint32 blue_color = get_uint32_color(50, 50, 125);
+        Uint32 white_color = get_uint32_color(125, 125, 125);
+        Uint32 color = white_color;
+
+
 
         int red = 0, green = 0, blue = 0;
 
@@ -149,21 +163,28 @@ namespace ps {
 
             case Particle::State::OK:
                 red = 100, green = 100, blue = 255;
+                color = blue_color;
                 break;
+
             case Particle::State::WARM:
-                red = 255; green = 255, blue = 255;
+                red = 255; green = 100; blue = 100;
+                color = red_color;
+                color = white_color;
+                //color = blue_color;
                 break;
 
             case Particle::State::BURN:
-                if (particle.burn_counter == 1) {
-                    red = 255; green = 255, blue = 255;
-                } else {
-                    //draw_circle(particle.x, particle.z, P::burn_radius, 40, get_uint32_color(50, 200, 50));
-                    red = 200; green = 100, blue = 100;
-                }
+                red = 255; green = 100; blue = 100;
+                color = red_color;
+                //color = white_color;
+                //draw_circle(particle.x, particle.z, P::burn_radius, 40, get_uint32_color(50, 200, 50));
+                    
                 break;
 
             case Particle::State::SAGE:
+                color = sage_color;
+                break;
+                //if (P::sage_time == 0) continue;
                 red = 200 - particle.sage_counter * 20;
                 green = 100 - particle.sage_counter * 10;
                 blue = 100 - particle.sage_counter * 10;
@@ -176,16 +197,79 @@ namespace ps {
                 break;
             }
 
-            Uint32 color = get_uint32_color(red, green, blue);
+
+            if (particle.burn_counter == 1) {
+                /*red = 255; green = 255, blue = 255;
+                color = white_color;*/
+            }
+
+            /*if (particle.burn_counter > 1) {
+                continue;
+            }*/
+
+            //SDL_SetRenderDrawColor(m_renderer, red, green, blue, SDL_ALPHA_OPAQUE);
+            //SDL_RenderDrawPoint(m_renderer, x, y);
+
+            //color = get_uint32_color(red, green, blue);
             set_pixel_color(x, y, color);
-            //draw_plus(x, y, color);
+            if(P::sdl_draw_plus) draw_plus(x, y, color);
 
+        }
+        //SDL_RenderPresent(m_renderer);
+    }
 
+    void Screen::calc_refract_points() {
 
+        for (int i = 0; i < refract_points_count; i++)
+        {
+            double x_cord = P::area_beg + P::area_size * i / refract_points_count;
+            refract_points[i].x = x_to_pixel(x_cord);
+            refract_points[i].y = y_to_pixel(P::rafract_func(x_cord));
+        }
+    }
+
+    void Screen::draw_refract_line()
+    {
+        thickLineRGBA(m_renderer,
+            x_to_pixel(P::area_beg),
+            y_to_pixel(P::rafract_func(P::area_beg)),
+            x_to_pixel(P::area_end),
+            y_to_pixel(P::rafract_func(P::area_end)),
+             3, 255,255,255,255 );
+
+        //SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        //SDL_RenderDrawLines(m_renderer, refract_points, refract_points_count);
+
+    }
+
+    void Screen::draw_frontline(const FrontLine::front_line_point* front_line_points, int points_count)
+    {
+        //double bias = P::front_line_bias;
+
+        SDL_Point* sdl_points = new SDL_Point[points_count];
+        int sdl_points_count = 0;
+
+        for (int i = 0; i < points_count; i++)
+        {
+            if (front_line_points[i].z > 0)
+            {
+                sdl_points[sdl_points_count].x = x_to_pixel(front_line_points[i].x);
+                sdl_points[sdl_points_count].y = y_to_pixel(front_line_points[i].z);
+                sdl_points_count++;
+
+            }
 
         }
 
+        SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
 
+        //aacircleColor(m_renderer, 300, 400, 100, get_uint32_color(255, 255, 255));
+        //circleColor(m_renderer, 300, 550, 100, get_uint32_color(255, 255, 255));
+        /*circleRGBA(m_renderer, 300, 500, 100, 255,255,255,100);
+        circleRGBA(m_renderer, 300, 550, 100, 255,255,255,100);
+        circleRGBA(m_renderer, 300, 600, 100, 255,255,255,100);*/
+        //SDL_RenderPresent(m_renderer);
     }
 
     void Screen::draw_circles(std::vector <Particle*>& particle_list) {
@@ -264,8 +348,8 @@ namespace ps {
 
     void Screen::draw_circle(double x0, double y0, double r, int steps, Uint32 color)
     {
-        float deg = 0, deg_step = M_PI * 2 / steps;
-        float x, y;
+        double deg = 0, deg_step = M_PI * 2 / steps;
+        double x, y;
         
         for (int i = 0; i < steps; i++)
         {
@@ -281,9 +365,25 @@ namespace ps {
 
     void Screen::draw_grid(int x_count, int y_count)
     {
+        //auto color = get_uint32_color(0, 0, 255, 100); 
+        
+        for (int i = 1; i < x_count; i++)
+        {
+            int x = (int)round(SCREEN_WIDTH / (double)x_count * i);
+            vlineRGBA(m_renderer, x, 0, SCREEN_HEIGHT, 60,60,90,100);
+        }
+        for (int i = 1; i < y_count; i++)
+        {
+            int y = (int)round(SCREEN_HEIGHT / (double)y_count * i);
+            hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y, 60, 60, 90, 100);
+        }
+    }
+    void Screen::draw_grid2(int x_count, int y_count)
+    {
         //auto color = get_uint32_color(255,255,255);
         //auto color = get_uint32_color(40,200,40);
-        auto color = get_uint32_color(10, 10, 20);
+        //auto color = get_uint32_color(15, 15, 30);
+        auto color = get_uint32_color(30, 30, 45);
         
         for (int i = 1; i < x_count; i++)
         {
@@ -303,7 +403,7 @@ namespace ps {
         }
     }
 
-    Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue) {
+    Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
 
         Uint32 color{ 0 };
 
@@ -314,7 +414,7 @@ namespace ps {
         color <<= 8;
         color += blue;
         color <<= 8;
-        color += 0xFF;
+        color += alpha;
 
         return color;
     }

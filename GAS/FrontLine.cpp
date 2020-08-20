@@ -13,20 +13,23 @@ namespace ps {
 	void FrontLine::Init(int a_steps, double window, double _area_start, double _area_end) {
 		area_start = _area_start; 
 		area_end = _area_end;
-		steps = a_steps;
 		radius = window / 2;
 		steps_start = area_start + radius;
 		steps_end = area_end - radius;
 		steps_area = steps_end - steps_start;
-		step_size = steps_area / (steps - 1.);
+		step_size = steps_area / (a_steps - 1.);
 
-		w_percent = steps / (area_end - area_start);
+		w_percent = a_steps / (area_end - area_start);
 
-		delete[]front_line_points;
-		front_line_points = new front_line_point[steps];
 
-		for (int i = 0; i < steps; ++i) {
-			front_line_points[i].x = steps_start + step_size * i;
+		if (a_steps && steps != a_steps) {
+			steps = a_steps;
+			delete[]front_line_points;
+			front_line_points = new front_line_point[steps];
+
+			for (int i = 0; i < steps; ++i) {
+				front_line_points[i].x = steps_start + step_size * i;
+			}
 		}
 
 		///////////
@@ -35,21 +38,33 @@ namespace ps {
 		Vx = new double[steps];
 		Vx2 = new double[steps];
 
+
+		for (int i = 0; i < steps; ++i) {
+			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
+			Vx2[i] = Vx[i] * Vx[i];
+		}
+
 		/*for (size_t i = 0; i < steps; i++)
 		{
 			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
 			Vx2[i] = Vx[i] * Vx[i];
 		}*/
 
+
 	}
 
 
 	void FrontLine::Calc(const std::vector <Particle*>& particle_list) {
 
+		double const_speed = 0;
+		const_speed = P::system_speed(P::area_beg);
+
 		for (int i = 0; i < steps; ++i) {
-			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
-			Vx2[i] = Vx[i] * Vx[i];
-			front_line_points[i].sum = front_line_points[i].count = 0;
+			//Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
+			//Vx2[i] = Vx[i] * Vx[i];
+			front_line_points[i].sum = front_line_points[i].count = front_line_points[i].z = 0;
+			front_line_points[i].z -= P::front_line_bias;
+			front_line_points[i].z -= (P::system_speed(front_line_points[i].x) - const_speed) / 2;
 		}
 
 		for (const auto& particle : particle_list) {
@@ -68,7 +83,11 @@ namespace ps {
 		}
 
 		for (int i = 0; i < steps; ++i) {
-			front_line_points[i].z = front_line_points[i].sum / front_line_points[i].count;
+			if (!front_line_points[i].count) {
+				front_line_points[i].z = 0;
+				continue;
+			}
+			front_line_points[i].z+= front_line_points[i].sum / front_line_points[i].count;
 		}
 
 		FivePointStencil();
@@ -77,10 +96,10 @@ namespace ps {
 	void FrontLine::Calc2(const std::vector <Particle*>& particle_list) {
 
 		for (int i = 0; i < steps; ++i) {
-			Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
-			Vx2[i] = Vx[i] * Vx[i];
+			//Vx[i] = P::system_speed(front_line_points[i].x) * P::burn_speed;
+			//Vx2[i] = Vx[i] * Vx[i];
 			front_line_points[i].sum = front_line_points[i].count = 0;
-			front_line_points[i].z = P::area_height;
+			front_line_points[i].z = 0;
 		}
 
 		for (const auto& particle : particle_list) {

@@ -21,18 +21,18 @@ namespace ps {
 		void FivePointStencil();
 		void Print(unsigned num);
 
-	private:
-
 		struct front_line_point {
-			double x, z, div = 0, sum = 0, diff2 = 0, div2 = 0;
+			double x=0, z=0, div = 0, sum = 0, diff2 = 0, div2 = 0;
 			unsigned count = 0;
 		};
+
+
 
 		front_line_point* front_line_points{0};
 
 		double *Vx{0}, *Vx2{0};
 
-		int steps;
+		int steps = 0;
 		unsigned h;
 		double area_start, area_end;
 		double radius;

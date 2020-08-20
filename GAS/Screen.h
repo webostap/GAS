@@ -5,8 +5,9 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-//#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include "Particle.h"
+#include "Frontline.h"
 #include <iostream>
 #include <vector>
 #include <forward_list>
@@ -21,6 +22,14 @@ namespace ps {
         void box_blur();
         void draw_circles(std::vector <Particle*>& particle_list);
         void load_swarm(std::forward_list <Particle>& particle_list);
+
+        void calc_refract_points();
+        void draw_refract_line();
+        const int refract_points_count = 100;
+        SDL_Point refract_points[100] = {0};
+
+        void draw_frontline(const FrontLine::front_line_point*, int size);
+        void foreach_particles(std::forward_list <Particle>& particle_list);
         bool quit_program();
 
         void SetTitle(const char*);
@@ -31,6 +40,7 @@ namespace ps {
 
         void clear();
         void draw_grid(int x_count, int y_count);
+        void draw_grid2(int x_count, int y_count);
 
     private:
         void init_SDL();
@@ -38,7 +48,7 @@ namespace ps {
         void init_renderer();
         void init_texture();
         void init_buffers();
-        Uint32 get_uint32_color(Uint8, Uint8, Uint8);
+        Uint32 get_uint32_color(Uint8, Uint8, Uint8, Uint8 = 255);
         int x_to_pixel(double);
         int y_to_pixel(double);
         void draw_plus(int, int, Uint32);

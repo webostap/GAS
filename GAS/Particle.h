@@ -16,10 +16,10 @@ namespace ps {
 	public:
 
 
-		enum class State { OK, WARM, BURN, SAGE, DIED };
+		enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
 
 		//Particle(coord_t x, coord_t z, coord_t speed);
-		Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
+		Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius = P::burn_radius_cross);
 		virtual ~Particle() {};
 
 		//get coordinates

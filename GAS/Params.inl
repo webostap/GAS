@@ -43,6 +43,9 @@ namespace P {
 	const int screen_height = 900;
 	const int screen_bottom_gap = 0;
 
+	extern bool sdl_draw_plus;
+	extern double front_line_bias;
+
 
 
 	//const int steps = 100;
@@ -57,12 +60,14 @@ namespace P {
 
 	extern const double area_beg;
 	extern const double area_end;
-	const double area_size = area_end - area_beg;
-	const double area_center = area_size / 2 + area_beg;
+	extern const double area_size;
+	extern const double stream_beg;
+	extern const double stream_end;
+	extern const double area_center;
+	extern const double L;
 
 	const double area_height = area_size / screen_width * screen_height;
 
-	const double L = area_size;
 	extern const double scale;
 	extern const double DSR;
 
@@ -73,8 +78,8 @@ namespace P {
 
 	const double screen_proportion = screen_width / P::area_size;
 
-	const double stream_radius = area_size / 2;
-	const double stream_width = stream_radius * 2;
+	const double stream_width = stream_end - stream_beg;
+	const double stream_radius = stream_width / 2;
 
 	const double screen_x_proportion = area_size / screen_width;
 	const double screen_y_proportion = area_height / screen_height;
@@ -145,6 +150,8 @@ namespace P {
 
 	extern double particles_dist;
 
+	extern double emitter_begin;
+
 
 
 
@@ -202,6 +209,16 @@ namespace P {
 	}
 	static double particle_speed (const double x) {
 		return iterate_speed * stream_function(x) + iterate_const;
+	}
+	static double profile_speed (const double x) {
+		return iterate_speed * stream_function(x);
+	}
+
+
+	extern double refract_coef;
+	extern double refract_offset;
+	static double rafract_func(const double x) {
+		return x * refract_coef + refract_offset;
 	}
 
 
