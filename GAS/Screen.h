@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "Params.hpp"
 #include "Particle.h"
 #include "Frontline.h"
 #include <iostream>
@@ -15,13 +16,14 @@
 namespace ps {
 
     class Screen {
+        const Params* P;
     public:
-        Screen();
+        Screen(const Params&);
         virtual ~Screen();
         void update();
         void box_blur();
         void draw_circles(std::vector <Particle*>& particle_list);
-        void load_swarm(std::forward_list <Particle>& particle_list);
+        void load_swarm(std::forward_list <Particle>& particle_list, bool sdl_draw_plus = false);
 
         void calc_refract_points();
         void draw_refract_line();
@@ -29,7 +31,7 @@ namespace ps {
         SDL_Point refract_points[100] = {0};
 
         void draw_frontline(const FrontLine::front_line_point*, int size);
-        void foreach_particles(std::forward_list <Particle>& particle_list);
+        //void foreach_particles(std::forward_list <Particle>& particle_list);
         bool quit_program();
 
         void SetTitle(const char*);
@@ -59,8 +61,8 @@ namespace ps {
 
 
     private:
-        const static int SCREEN_WIDTH{ P::screen_width };
-        const static int SCREEN_HEIGHT{ P::screen_height };
+        const int SCREEN_WIDTH{ P->screen_width };
+        const int SCREEN_HEIGHT{ P->screen_height };
         SDL_Window* m_window{ nullptr };
         SDL_Renderer* m_renderer{ nullptr };
         SDL_Texture* m_texture{ nullptr };

@@ -61,8 +61,8 @@ namespace P {
 	extern const double area_beg;
 	extern const double area_end;
 	extern const double area_size;
-	extern const double stream_beg;
-	extern const double stream_end;
+	extern double stream_beg;
+	extern double stream_end;
 	extern const double area_center;
 	extern const double L;
 
@@ -171,6 +171,7 @@ namespace P {
 
 	extern int burn_time;
 	extern int sage_time;
+	extern int wave_time;
 
 
 	extern int front_line_steps;
@@ -217,7 +218,7 @@ namespace P {
 
 	extern double refract_coef;
 	extern double refract_offset;
-	static double rafract_func(const double x) {
+	static double refract_func(const double x) {
 		return x * refract_coef + refract_offset;
 	}
 

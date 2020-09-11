@@ -8,13 +8,12 @@
 
 namespace ps {
 
-	//Segments::Segments(const Params& aParams) : params(aParams)
-	Segments::Segments()
+	Segments::Segments(const Params& aParams) : P(&aParams)
 	{
 		//UpdateParams();
-		SetBurnRadius(P::burn_radius_cross);
-		//SetGrid(P::burn_radius_cross);
-		SetFillGrid(P::particles_dist);
+		SetBurnRadius(P->burn_radius_cross);
+		//SetGrid(P->burn_radius_cross);
+		SetFillGrid(P->particles_dist);
 		Toggle_Fill();
 
 		/*for (int i = 0; i < P::grid_count_x; i++) {
@@ -49,12 +48,12 @@ namespace ps {
 
 	void Segments::SetGrid(double seg_size)
 	{
-		grid_count_x = (int)floor(P::area_size / seg_size);
-		grid_count_z = (int)floor(P::area_height / seg_size);
+		grid_count_x = (int)floor(P->area_size / seg_size);
+		grid_count_z = (int)floor(P->area_height / seg_size);
 		grid_count = grid_count_x * grid_count_z;
 
-		grid_count_x_percent = grid_count_x / P::area_size;
-		grid_count_z_percent = grid_count_z / P::area_height;
+		grid_count_x_percent = grid_count_x / P->area_size;
+		grid_count_z_percent = grid_count_z / P->area_height;
 
 		delete[]grid;
 		delete[]grid_mem;
@@ -69,7 +68,7 @@ namespace ps {
 	}
 	void Segments::SetFillGrid(double dist) {
 		particles_dist = dist;
-		fill_grid_count = (int)floor(P::area_size / particles_dist);
+		fill_grid_count = (int)floor(P->stream_width / particles_dist);
 		delete[]last_particles;
 		last_particles = new double[fill_grid_count];
 		for (int i = 0; i < fill_grid_count; i++) {
@@ -77,19 +76,9 @@ namespace ps {
 		}
 	}
 
-	/*void Segments::LoadParams(const Params& aParams)
-	{
-		params = aParams;
-		UpdateParams();
-	}
-	void Segments::UpdateParams()
-	{
-		iterate_speed = params.base_speed / params.iterations;
-		iterate_particles = params.base_particles / params.iterations;
-	}*/
 
 	const double Segments::particle_speed(const double x) {
-		return P::iterate_speed * P::stream_function(x);
+		return P->iterate_speed * P->stream_function(x);
 	}
 
 	const void Segments::PrintStep(int num)
@@ -98,7 +87,7 @@ namespace ps {
 
 		std::string output;
 
-		//output += "#base_particles " + std::to_string(P::base_particles);
+		//output += "#base_particles " + std::to_string(P->base_particles);
 
 		output += "x,z,burn";
 		for (auto& particle : all_list) {
@@ -110,7 +99,7 @@ namespace ps {
 			}*/
 		}
 
-		std::ofstream csv(P::csv_folder + "gas.csv." + std::to_string(num));
+		std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
 		csv << output;
 		csv.close();
 
@@ -132,57 +121,12 @@ namespace ps {
 	}
 
 
-
-	/*void Segments::Fill_Ziggurat() {
-
-		std::random_device rd;
-		std::uniform_real_distribution<double> x_dist, z_dist;
-
-		double particles_double; 
-		int particles_at_step;
-
-		double window_beg = P::area_beg;
-		double window_end = P::area_beg + P::segment_size;
-		double p_x_cord, p_z_cord, p_speed;
-
-		for (int si = 0; si < P::segment_count; si++)
-		{
-
-			particles_double = P::particle_count(window_beg + P::segment_size/2.);
-			particles_at_step = round(particles_double);
-
-			x_dist = std::uniform_real_distribution<double> (window_beg, window_end);
-
-			for (int pi = 0; pi < particles_at_step; ++pi) {
-
-				p_x_cord = x_dist(rd);
-
-				p_speed = P::particle_speed(p_x_cord);
-
-				z_dist = std::uniform_real_distribution<double> (0, p_speed);
-				p_z_cord = z_dist(rd);
-				
-				all_list.emplace_back(p_x_cord, p_z_cord, p_speed);
-
-				//if (P::edge_burners && (si == 0 || si == P::segment_count - 1)) {
-					//BurnParticle(all_list.back());
-				//}
-			}
-
-			window_beg += P::segment_size;
-			window_end += P::segment_size;
-
-			
-		}
-
-	}*/
-
 	void Segments::Fill_Grid() {
 
 		for (int i = 0; i < fill_grid_count; i++)
 		{
-			double x_cord = P::area_beg + particles_dist/2 + particles_dist*i;
-			double p_speed = P::particle_speed(x_cord);
+			double x_cord = P->stream_beg + particles_dist/2 + particles_dist*i;
+			double p_speed = P->particle_speed(x_cord);
 			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
 			{
 				CreateParticle(x_cord, z_cord, p_speed);
@@ -198,15 +142,15 @@ namespace ps {
 	void Segments::Fill_Sampling() {
 
 		std::random_device rd;
-		std::uniform_real_distribution<double> dist_x(P::stream_beg, P::stream_end), dist_z(0, P::particle_speed(P::area_center));
+		std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
 		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x;
 
-		for (int pi = P::iterate_particles; pi; --pi)
+		for (int pi = P->iterate_particles; pi; --pi)
 		{
 			p_x_cord = dist_x(rd);
 			p_z_cord = dist_z(rd);
-			p_speed = P::particle_speed(p_x_cord);
+			p_speed = P->particle_speed(p_x_cord);
 
 			if (p_z_cord < p_speed) {
 				CreateParticle(p_x_cord, p_z_cord, p_speed);
@@ -232,7 +176,7 @@ namespace ps {
 	void Segments::CrossParticles()
 	{
 
-		if (!is_burn) return;
+		//if (!is_burn) return;
 
 		//all_will_burn.clear();
 
@@ -293,17 +237,13 @@ namespace ps {
 	void Segments::StepParticles()
 	{
 		for (auto& particle_i : all_list) { 
-
-			particle_i.Step();
-			//particle_i.Move();
+			StepParticle(&particle_i);
 		}
 	}
 	void Segments::MoveParticles()
 	{
 		for (auto& particle_i : all_list) { 
-
-			//particle_i.Step();
-			particle_i.Move();
+			MoveParticle(&particle_i);
 		}
 	}
 
@@ -349,7 +289,7 @@ namespace ps {
 
 	int Segments::GetSegmentX(const double x)
 	{
-		return (int)floor((x - P::area_beg) * grid_count_x_percent);
+		return (int)floor((x - P->area_beg) * grid_count_x_percent);
 	}
 	int Segments::GetSegmentZ(const double z)
 	{
@@ -400,7 +340,7 @@ namespace ps {
 
 
 	//void Segments::Lighter() {
-	//	int i = 0, limit = P::particles_sum;
+	//	int i = 0, limit = P->particles_sum;
 	//	for (auto& particle_i : all_list) {
 	//		BurnParticle(&particle_i);
 	//		if (++i == limit) break;
@@ -429,6 +369,13 @@ namespace ps {
 			segment->burn_list.clear();
 		}
 	}
+	void Segments::Clear() {
+
+		all_will_burn.clear(); 
+		for (auto& p : all_list) {
+			p.state = Particle::State::SAGE;
+		}
+	}
 	const void Segments::Density_Grid()
 	{
 		std::string output = "count";
@@ -445,7 +392,7 @@ namespace ps {
 			}
 		}
 
-		std::ofstream csv(P::csv_folder + "d_grid.csv");
+		std::ofstream csv(P->csv_folder + "d_grid.csv");
 		csv << output;
 		csv.close();
 	}
@@ -479,7 +426,7 @@ namespace ps {
 			}
 		}
 
-		std::ofstream csv(P::csv_folder + "d_radius.csv");
+		std::ofstream csv(P->csv_folder + "d_radius.csv");
 		csv << output;
 		csv.close();
 	}
@@ -503,7 +450,7 @@ namespace ps {
 								if (particle_1->Cross(*particle_2))
 								{
 									distance = particle_1->Distance(*particle_2);
-									if (distance < P::burn_radius_2 && distance > max)
+									if (distance < P->burn_radius_2 && distance > max)
 									{
 										max = distance;
 									}
@@ -517,7 +464,7 @@ namespace ps {
 			}
 		}
 
-		std::ofstream csv(P::csv_folder + "d_distance.csv");
+		std::ofstream csv(P->csv_folder + "d_distance.csv");
 		csv << output;
 		csv.close();
 	}
@@ -536,10 +483,41 @@ namespace ps {
 		}
 	}*/
 
+	void Segments::MoveParticle(Particle* p) {
+		p->Move();
+		if (p->z >= P->area_height) p->state = Particle::State::DIED;
+	}
+
+	void Segments::StepParticle(Particle* p) {
+
+		if (p->state == Particle::State::WAVE && 
+			++p->wave_counter >= P->wave_time)
+		{
+			p->state = Particle::State::DIED;
+		}
+		else if (p->state == Particle::State::WARM && 
+			++p->warm_counter >= P->iterations)
+		{
+			p->state = Particle::State::BURN;
+			//++burn_counter;
+		}
+		else if (p->state == Particle::State::BURN && 
+			++p->burn_counter > P->burn_time)
+		{
+			p->state = P->sage_time ? Particle::State::SAGE : Particle::State::DIED;
+		}
+
+		else if (p->state == Particle::State::SAGE && 
+			++p->sage_counter >= P->sage_time)
+		{
+			p->state = Particle::State::DIED;
+		}
+	}
 	void Segments::BurnParticle(Particle* particle) {
 		particle->setBurn();
 		//all_will_burn.push_back(particle);
 	}
+
 
 	void Segments::BurnSegment(Segment* segment) {
 		for (auto& particle : segment->ok_list) {
@@ -572,7 +550,8 @@ namespace ps {
 
 		while (particle_it != end) {
 
-			particle_it->Step();
+			StepParticle(&*particle_it);
+			//particle_it->Step();
 
 			if (particle_it->state == Particle::State::DIED) {
 				++particle_it;
@@ -594,37 +573,19 @@ namespace ps {
 
 
 	}
-	/*void Segments::FinalLoop(bool move) {
 
-		all_will_burn.clear();
+	void Segments::RefractParticles()
+	{
+		for (auto& p : all_list) {
 
-		auto particle_it = all_list.begin();
-		const auto end = all_list.end();
-		auto died_it = particle_it;
-
-		while (particle_it != end) {
-
-			particle_it->Step();
-
-			if (particle_it->state == Particle::State::DIED) {
-				died_it = particle_it;
-				++particle_it;
-				all_list.erase(died_it);
-				continue;
+			if (p.state == Particle::State::OK && p.z >= P->refract_func(p.x)) {
+				p.state = Particle::State::WAVE;
 			}
+			StepParticle(&p);
+			//p.Step();
 
-			if (particle_it->burn_counter == 1 || particle_it->state == Particle::State::WARM)
-			{
-				all_will_burn.push_back(&*particle_it);
-			}
-
-			if (move) particle_it->Move();
-
-			++particle_it;
-		} // endLoop
-
-
-	}*/
+		}
+	}
 
 
 }

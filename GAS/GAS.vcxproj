@@ -156,7 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="FrontLine.h" />
-    <ClInclude Include="Params.inl" />
+    <ClInclude Include="Params.hpp" />
+    <ClInclude Include="Parametrs.inl" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Segments.h" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="FrontLine.cpp" />
     <ClCompile Include="GAS.cpp" />
+    <ClCompile Include="Parametrs.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Screen.cpp" />

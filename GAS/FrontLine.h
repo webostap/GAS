@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Params.hpp"
 #include "Particle.h"
 #include <list>
+#include <vector>
 #include <string>
 #include <fmt/format.h>
 #include <fstream>
@@ -11,8 +13,9 @@ namespace ps {
 
 	class FrontLine
 	{
+		const Params* P;
 	public:
-		FrontLine(int steps, double window, double area_start, double area_end);
+		FrontLine(const Params* P_) : P(P_) { Init(); }
 		void Init(int steps, double window, double area_start, double area_end);
 		void Init();
 
@@ -33,6 +36,7 @@ namespace ps {
 		double *Vx{0}, *Vx2{0};
 
 		int steps = 0;
+		double window = 0;
 		unsigned h;
 		double area_start, area_end;
 		double radius;

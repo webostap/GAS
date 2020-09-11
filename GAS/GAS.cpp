@@ -4,8 +4,11 @@
 #include <ctime> 
 #include <cstdlib>
 
+#include "Parametrs.inl"
+#include "Params.hpp"
 #include "Screen.h"
 #include "Segments.h"
+#include "FrontLine.h"
 
 
 
@@ -18,6 +21,7 @@ void print_speed() {
 	std::cout << P::burn_radius_2 << " - burn radius 2\n";
 	std::cout << P::burn_radius_2_cross << " - burn radius 2 fix\n";
 	std::cout << P::burn_speed << " - burn speed\n";
+	std::cout << P::area_height << " - area_height\n";
 }
 
 void clear_csv_files();
@@ -31,6 +35,7 @@ public:
 	bool sdl_quit = 0,
 		set_burn = 0,
 		lights_out = 0,
+		clear = 0,
 		pause = 0,
 		step = 0,
 		toggle_fill = 0,
@@ -44,13 +49,20 @@ private:
 
 #undef main
 int main() {
+	
+	ps::Params params;
+
+
+
+
+	//return 0;
 
 
 	P::read_params();
 	P::front_line_bias = P::burn_radius / 2;
 	print_speed();
 
-	ps::Segments main_swarm;
+	ps::Segments main_swarm(params);
 
 
 	struct {
@@ -58,6 +70,7 @@ int main() {
 			pause = false,
 			display_swarm = true,
 			display_line = true,
+			bold_points = false,
 			update_line = true;
 			
 	} State;
@@ -79,7 +92,7 @@ int main() {
 
 	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
 
-	ps::Screen screen;
+	ps::Screen screen(params);
 	screen.calc_refract_points();
 
 
@@ -158,19 +171,21 @@ int main() {
 				key_pressed = true;
 				switch (e.key.keysym.sym)
 				{
-					case SDLK_1: P::stream_function = P::linear_stream;
+					case SDLK_1: params.SetStream(1);
 						P::read_params();
 						break;
-					case SDLK_2: P::stream_function = P::log_stream;
+					case SDLK_2: params.SetStream(2);
 						P::read_params();
 						break;
-					case SDLK_3: P::stream_function = P::x2_stream;
+					case SDLK_3: params.SetStream(3);
 						P::read_params();
 						break;
-					case SDLK_4: P::stream_function = P::const_stream;
+					case SDLK_4: params.SetStream(4);
 						P::read_params();
 						break;
 					case SDLK_SPACE: Input.lights_out = true;
+						break;
+					case SDLK_DELETE: Input.clear = true;
 						break;
 					case SDLK_p: State.pause = !State.pause;
 						std::cout << (State.pause ? "\n- Pause" : "\n- Play");
@@ -178,7 +193,7 @@ int main() {
 					case SDLK_s: Input.step = true;
 						even = !even;
 						break;
-					case SDLK_q: P::sdl_draw_plus = !P::sdl_draw_plus;
+					case SDLK_q: State.bold_points = !State.bold_points;
 						break;
 					case SDLK_m: State.move = !State.move;
 						std::cout << (State.move ? "\n- Move" : "\n- Freeze");
@@ -200,9 +215,10 @@ int main() {
 					case SDLK_x: Input.clear_csv = true;
 						break;
 					case SDLK_u: 
+						params.Read();
 						P::read_params();
-						main_swarm.SetBurnRadius(P::burn_radius_cross);
-						main_swarm.SetFillGrid(P::particles_dist);
+						main_swarm.SetBurnRadius(params.burn_radius_cross);
+						main_swarm.SetFillGrid(params.particles_dist);
 						main_swarm.m_front_line.Init(); 
 
 						screen.calc_refract_points();
@@ -269,24 +285,27 @@ int main() {
 							main_swarm.Fill();
 						}
 
-						//main_swarm.UpdateSegments();
+						main_swarm.UpdateSegments();
 					}
 
 				} 
 				if (!even || !State.pause) {
 
-					if (!State.pause || Input.step) main_swarm.UpdateSegments();
+					//if (!State.pause || Input.step) main_swarm.UpdateSegments();
 
 					//if (iterate == P::iterations) 
 					{
 						if (Input.set_burn) main_swarm.BurnSegment(segment);
 						if (Input.lights_out) main_swarm.LightsOut();
+						if (Input.clear) main_swarm.Clear();
 					}
 
 					if (!State.pause || Input.step)
 					{
 
 						main_swarm.CrossParticles();
+
+						//main_swarm.RefractParticles();
 
 						main_swarm.FinalLoop();
 					}
@@ -312,7 +331,7 @@ int main() {
 			screen.clear();
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
-			if (State.display_swarm) screen.load_swarm(main_swarm.all_list); 
+			if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
 			//screen.box_blur();
 
 			if (!even && State.update_line) main_swarm.CalcLine();

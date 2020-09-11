@@ -1,11 +1,13 @@
 #pragma once
-//#include "Params.inl"
+#include "Params.hpp"
+//#include "Parametrs.inl"
 //#include "Particle.h"
 #include "FrontLine.h"
 #include <forward_list>
 //#include <list>
 #include <vector>
 #include <fstream>
+#include <random>
 
 typedef std::forward_list <ps::Particle> ParticleList;
 
@@ -16,21 +18,18 @@ namespace ps {
 
 	public:
 
+		const Params* P;
+		Segments(const Params&);
+
+
+
 		int size = 0;
 
-		/*struct Params {
-			int base_particles;
-			double base_speed;
-			double burn_radius;
-
-			int iterations;	
-		};*/
-
-		double area_beg = P::area_beg, area_end = P::area_end;
+		double area_beg = P->area_beg, area_end = P->area_end;
 
 
-		double burn_radius = P::burn_radius_cross;
-		double burn_radius_2 = P::burn_radius_2_cross;
+		double burn_radius = P->burn_radius_cross;
+		double burn_radius_2 = P->burn_radius_2_cross;
 
 		double burn_radius_center = 0, burn_radius_center_2 = 0;
 
@@ -40,9 +39,6 @@ namespace ps {
 
 	public:
 		bool is_burn = false;
-
-		Segments();
-		//Segments(const Params&);
 		//void LoadParams(const Params&);
 		//void UpdateParams();
 		
@@ -58,7 +54,6 @@ namespace ps {
 		double particles_dist, *last_particles = 0;
 		int fill_grid_count;
 
-		void CreateParticle(double x_cord, double z_cord, double p_speed);
 
 		void (Segments::*fill_func)(void) = 0;
 		void Fill();
@@ -73,7 +68,12 @@ namespace ps {
 		void MoveParticles();
 		void ClearParticleList();
 
+		void CreateParticle(double x_cord, double z_cord, double p_speed);
+		void MoveParticle(Particle *p);
+		void StepParticle(Particle *p);
 		void BurnParticle(Particle *p);
+
+		void RefractParticles();
 
 
 		const void PrintStep(int);
@@ -81,6 +81,7 @@ namespace ps {
 		const void CalcLine();
 
 		void LightsOut();
+		void Clear();
 
 		const void Density_Grid();
 		const void Density_Radius();
@@ -97,7 +98,7 @@ namespace ps {
 
 		struct Segment {
 			//double beg, end;
-			bool has_burn = false;
+			bool has_burn = false, refract = false;
 			std::vector<Particle*> ok_list, burn_list;
 		};
 
@@ -133,7 +134,7 @@ namespace ps {
 
 
 
-		FrontLine m_front_line = FrontLine(P::front_line_steps, P::front_line_window, P::area_beg, P::area_end);
+		FrontLine m_front_line = FrontLine(P);
 	};
 
 
