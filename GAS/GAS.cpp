@@ -3,8 +3,9 @@
 #include <string>
 #include <ctime> 
 #include <cstdlib>
+#include <unordered_map>
 
-#include "Parametrs.inl"
+//#include "Parametrs.inl"
 #include "Params.hpp"
 #include "Screen.h"
 #include "Segments.h"
@@ -13,25 +14,11 @@
 
 
 
-void print_speed() {
-	std::cout << "\n-------------\n";
-	std::cout << P::stream_function(P::area_center) * P::base_speed << " - base speed\n";
-	std::cout << P::particle_speed(P::area_center) << " - max delta\n";
-	std::cout << P::burn_radius << " - burn radius\n";
-	std::cout << P::burn_radius_2 << " - burn radius 2\n";
-	std::cout << P::burn_radius_2_cross << " - burn radius 2 fix\n";
-	std::cout << P::burn_speed << " - burn speed\n";
-	std::cout << P::area_height << " - area_height\n";
-}
-
-void clear_csv_files();
+void clear_csv_files(const ps::Params & P);
 
 
 
-class input : public H::Singleton<input>
-{ friend class Singleton<input>;
-
-public:
+struct input {
 	bool sdl_quit = 0,
 		set_burn = 0,
 		lights_out = 0,
@@ -42,8 +29,6 @@ public:
 		print_step = 0,
 		print_denisty = 0,
 		clear_csv = 0;
-private:
-	input() {}
 };
 
 
@@ -51,18 +36,10 @@ private:
 int main() {
 	
 	ps::Params params;
-
-
-
-
-	//return 0;
-
-
-	P::read_params();
-	P::front_line_bias = P::burn_radius / 2;
-	print_speed();
+	params.Print();
 
 	ps::Segments main_swarm(params);
+
 
 
 	struct {
@@ -76,7 +53,7 @@ int main() {
 	} State;
 
 
-	input Input = input::instance();
+	input Input;
 
 
 	Uint32 startTime = 0;
@@ -101,7 +78,7 @@ int main() {
 
 	std::ifstream check_file;
 	for (;;) {
-		check_file.open((P::csv_folder + "line.csv." + std::to_string(print_step_counter)).c_str());
+		check_file.open((params.csv_folder + "line.csv." + std::to_string(print_step_counter)).c_str());
 		if (check_file.fail()) break;
 		check_file.close();
 		++print_step_counter;
@@ -111,17 +88,6 @@ int main() {
 	int mouse_x, mouse_y;
 	double burn_x, burn_y;
 
-	/*----- HELP ------*/
-
-	/*std::ifstream help_file("help.txt");
-	std::string help_text((std::istreambuf_iterator<char>(help_file)),
-		std::istreambuf_iterator<char>());
-	help_file.close();*/
-
-	std::string help_text = H::file_to_string("help.txt");
-	//std::cout << help_text;
-
-	/* ---- */
 
 
 	bool even = false;
@@ -157,7 +123,7 @@ int main() {
 
 		/*----- INPUT EVENTS ------*/
 
-		Input = input::instance();
+		Input = input();
 		key_pressed = false;
 
 		while (SDL_PollEvent(&e))
@@ -172,16 +138,12 @@ int main() {
 				switch (e.key.keysym.sym)
 				{
 					case SDLK_1: params.SetStream(1);
-						P::read_params();
 						break;
 					case SDLK_2: params.SetStream(2);
-						P::read_params();
 						break;
 					case SDLK_3: params.SetStream(3);
-						P::read_params();
 						break;
 					case SDLK_4: params.SetStream(4);
-						P::read_params();
 						break;
 					case SDLK_SPACE: Input.lights_out = true;
 						break;
@@ -203,7 +165,6 @@ int main() {
 					case SDLK_e: State.display_line = !State.display_line;
 						break;
 					case SDLK_l: State.update_line = !State.update_line;
-						P::front_line_bias = P::burn_radius / 2;
 						break;
 					case SDLK_f: main_swarm.Toggle_Fill();
 						std::cout << "\n- Toggle Fill";
@@ -216,25 +177,15 @@ int main() {
 						break;
 					case SDLK_u: 
 						params.Read();
-						P::read_params();
+						params.Print();
 						main_swarm.SetBurnRadius(params.burn_radius_cross);
 						main_swarm.SetFillGrid(params.particles_dist);
 						main_swarm.m_front_line.Init(); 
 
 						screen.calc_refract_points();
-
-						if (State.update_line) P::front_line_bias = P::burn_radius / 2;
-						print_speed();
-						//std::cout << P::area_size / main_swarm.Line_Count() << " - L / N\n";
-						//std::cout << P::burn_radius / P::area_size * main_swarm.Line_Count() << " - r / d\n";
-						//std::cout << P::area_size / P::burn_radius << " - must be\n";
-						//std::cout << main_swarm.Line_Count() << " - line\n";
 						std::cout << main_swarm.size << " - size\n";
-						//main_swarm.LoadParams(swarm_params);
 						break;
 				}
-
-				//P::read_params();
 				break;
 				
 			break;
@@ -252,8 +203,8 @@ int main() {
 		if (SDL_BUTTON(SDL_BUTTON_LEFT) && SDL_GetMouseState(&mouse_x, &mouse_y)) {
 
 			Input.set_burn = true;
-			burn_x = P::screen_to_area_x(mouse_x);
-			burn_y = P::screen_to_area_y(mouse_y);
+			burn_x = params.screen_to_area_x(mouse_x);
+			burn_y = params.screen_to_area_y(mouse_y);
 			//printf("\n%i\t%i", mouse_x, mouse_y);
 			//printf("\n%f\t%f", burn_x, burn_y);
 			segment = main_swarm.GetSegment(burn_x, burn_y);
@@ -271,7 +222,7 @@ int main() {
 			} else*/
 
 
-			//for (int iterate = P::iterations; iterate; --iterate)
+			//for (int iterate = params.iterations; iterate; --iterate)
 			{
 				if (even || !State.pause)
 				{
@@ -293,7 +244,7 @@ int main() {
 
 					//if (!State.pause || Input.step) main_swarm.UpdateSegments();
 
-					//if (iterate == P::iterations) 
+					//if (iterate == params.iterations) 
 					{
 						if (Input.set_burn) main_swarm.BurnSegment(segment);
 						if (Input.lights_out) main_swarm.LightsOut();
@@ -334,7 +285,7 @@ int main() {
 			if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
 			//screen.box_blur();
 
-			if (!even && State.update_line) main_swarm.CalcLine();
+			if (State.update_line && !State.pause || !even ) main_swarm.CalcLine();
 			if (State.display_line) screen.draw_frontline(main_swarm.m_front_line.front_line_points, main_swarm.m_front_line.steps);
 			screen.draw_refract_line();
 			screen.update();
@@ -345,7 +296,7 @@ int main() {
 
 		if (Input.clear_csv)
 		{
-			clear_csv_files();
+			clear_csv_files(params);
 			print_step_counter = 0;
 			std::cout << "\nclear files";
 		}
@@ -414,15 +365,15 @@ int main() {
 //	swarm.PrintStep(num);
 //}
 
-void clear_csv_files() {
+void clear_csv_files(const ps::Params& P) {
 	bool gas_out = 0, line_out = 0;
 
 	for (int i = 0;; ++i)
 	{
-		if (!gas_out && std::remove((P::csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
+		if (!gas_out && std::remove((P.csv_folder + "gas.csv." + std::to_string(i)).c_str()) != 0) {
 			gas_out = 1;
 		}
-		if (!line_out && std::remove((P::csv_folder + "line.csv." + std::to_string(i)).c_str()) != 0) {
+		if (!line_out && std::remove((P.csv_folder + "line.csv." + std::to_string(i)).c_str()) != 0) {
 			line_out = 1;
 		}
 

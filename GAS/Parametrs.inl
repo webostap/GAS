@@ -28,8 +28,6 @@ namespace H {
 	protected:
 		Singleton() {};
 	};
-
-
 }
 
 namespace P {

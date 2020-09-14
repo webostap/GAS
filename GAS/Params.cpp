@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <iostream>
 #include <fstream>
 
 
@@ -79,5 +80,17 @@ void ps::Params::Read()
 	refract_coef = (double)j["refract_coef"];
 	refract_offset = (double)j["refract_offset"];
 
+}
+
+void ps::Params::Print()
+{
+	std::cout << "\n-------------\n";
+	std::cout << stream_function(area_center) * base_speed << " - base speed\n";
+	std::cout << particle_speed(area_center) << " - max delta\n";
+	std::cout << burn_radius << " - burn radius\n";
+	std::cout << burn_radius_2 << " - burn radius 2\n";
+	std::cout << burn_radius_2_cross << " - burn radius 2 fix\n";
+	std::cout << burn_speed << " - burn speed\n";
+	std::cout << area_height << " - area_height\n";
 }
 
