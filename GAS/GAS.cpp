@@ -207,12 +207,6 @@ int main() {
 
 		if (!State.pause || Input.step || key_pressed)
 		{
-			if (key_pressed) {
-				std::cout << State.bold_points;
-			}
-			if (Input.lights_out) {
-				std::cout << "\n light out\n";
-			}
 
 			screen.clear();
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
@@ -266,10 +260,12 @@ int main() {
 
 		endTime = SDL_GetTicks();
 		delta = endTime - startTime;
+
 		startTime = endTime;
 
 		if (delta < timePerFrame) {
 			SDL_Delay(timePerFrame - delta);
+			fps = 30;
 		}
 		else fps = 1000 / delta;
 
@@ -278,6 +274,7 @@ int main() {
 		{
 			sprintf_s(buffer, "FPS: %d", fps);
 			screen.SetTitle(buffer);
+			std::cout << buffer;
 		}
 
 

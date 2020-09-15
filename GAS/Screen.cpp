@@ -104,8 +104,6 @@ namespace ps {
 
     void Screen::update() {
 
-        std::cout << " UPDATE \n";
-
         SDL_RenderPresent(m_renderer);
 
         // Updates the texture containing the pixel data.
