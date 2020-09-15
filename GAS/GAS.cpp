@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <unordered_map>
 
-//#include "Parametrs.inl"
 #include "Params.hpp"
 #include "Screen.h"
 #include "Segments.h"
@@ -49,12 +48,18 @@ int main() {
 	params.Print();
 
 	ps::Segments main_swarm(params);
+	ps::FrontLine front_line(params);
+	ps::Screen screen(params);
+
+	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
+
 
 
 
 
 	state State;
 	input Input;
+	bool key_pressed = false;
 
 
 	Uint32 startTime = 0;
@@ -68,10 +73,6 @@ int main() {
 	char buffer[] = "FPS: 00";
 
 
-	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
-
-	ps::Screen screen(params);
-	screen.calc_refract_points();
 
 
 		
@@ -91,39 +92,18 @@ int main() {
 
 
 
-	bool even = false;
 	
-	int ii = 0;
-
+	int ii = -1;
 	while (!Input.sdl_quit) {
-
 		++ii;
-
-
-
-		endTime = SDL_GetTicks();
-		delta = endTime - startTime;
-		startTime = endTime;
-
-		if (delta < timePerFrame) {
-			SDL_Delay(timePerFrame - delta);
-		} else fps = 1000 / delta;
-
-
-		if (ii % 10 == 0)
-		{
-			sprintf_s(buffer, "FPS: %d", fps);
-			screen.SetTitle(buffer);
-		}
-
-
-
+		startTime = SDL_GetTicks();
 
 
 
 		/*----- INPUT EVENTS ------*/
 
-		Input = input();
+		Input = input(); 
+		key_pressed = false;
 
 		while (SDL_PollEvent(&e))
 		{
@@ -135,35 +115,23 @@ int main() {
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym)
 				{
-					case SDLK_1: params.SetStream(1);
-						break;
-					case SDLK_2: params.SetStream(2);
-						break;
-					case SDLK_3: params.SetStream(3);
-						break;
-					case SDLK_4: params.SetStream(4);
-						break;
-					case SDLK_SPACE: Input.lights_out = true;
-						break;
-					case SDLK_DELETE: Input.clear = true;
-						break;
+					case SDLK_1: params.SetStream(1); break;
+					case SDLK_2: params.SetStream(2); break;
+					case SDLK_3: params.SetStream(3); break;
+					case SDLK_4: params.SetStream(4); break;
+					case SDLK_SPACE: Input.lights_out = true; key_pressed = 1; break;
+					case SDLK_DELETE: Input.clear = true; key_pressed = 1; break;
 					case SDLK_p: State.pause = !State.pause;
 						std::cout << (State.pause ? "\n- Pause" : "\n- Play");
 						break;
-					case SDLK_s: Input.step = true;
-						even = !even;
-						break;
-					case SDLK_q: State.bold_points = !State.bold_points;
-						break;
+					case SDLK_s: Input.step = true; key_pressed = 1; break;
+					case SDLK_q: State.bold_points = !State.bold_points; key_pressed = 1; break;
 					case SDLK_m: State.move = !State.move;
 						std::cout << (State.move ? "\n- Move" : "\n- Freeze");
 						break;
-					case SDLK_w: State.display_swarm = !State.display_swarm;
-						break;
-					case SDLK_e: State.display_line = !State.display_line;
-						break;
-					case SDLK_l: State.update_line = !State.update_line;
-						break;
+					case SDLK_w: State.display_swarm = !State.display_swarm; key_pressed = 1; break;
+					case SDLK_e: State.display_line = !State.display_line; key_pressed = 1; break;
+					case SDLK_l: State.update_line = !State.update_line; key_pressed = 1; break;
 					case SDLK_f: main_swarm.Toggle_Fill();
 						std::cout << "\n- Toggle Fill";
 						break;
@@ -176,10 +144,7 @@ int main() {
 					case SDLK_u: 
 						params.Read();
 						params.Print();
-						main_swarm.SetBurnRadius(params.burn_radius_cross);
-						main_swarm.SetFillGrid(params.particles_dist);
-						main_swarm.m_front_line.Init(); 
-
+						main_swarm.Update();
 						screen.calc_refract_points();
 						std::cout << main_swarm.size() << " - size\n";
 						break;
@@ -199,93 +164,71 @@ int main() {
 
 
 		if (SDL_BUTTON(SDL_BUTTON_LEFT) && SDL_GetMouseState(&mouse_x, &mouse_y)) {
-
+			key_pressed = true;
 			Input.set_burn = true;
 			burn_x = params.screen_to_area_x(mouse_x);
 			burn_y = params.screen_to_area_y(mouse_y);
-			//printf("\n%i\t%i", mouse_x, mouse_y);
-			//printf("\n%f\t%f", burn_x, burn_y);
 			segment = main_swarm.GetSegment(burn_x, burn_y);
 
 		}
 
 		/* --- MAIN ACTION --- */
 
-		//if (!State.pause || Input.step)
+		
+		
+		/*if (even = !even){
+
+			screen.draw_circles(main_swarm.all_will_burn);
+			screen.update();
+		} else*/
+
+		//for (int iterate = params.iterations; iterate; --iterate)
 		{
-			/*if (even = !even){
 
-				screen.draw_circles(main_swarm.all_will_burn);
-				screen.update();
-			} else*/
-
-
-			//for (int iterate = params.iterations; iterate; --iterate)
-			{
-				if (even || !State.pause)
-				{
-
-
-					if (!State.pause || Input.step)
-					{
-
-						if (State.move) {
-							main_swarm.MoveParticles();
-							main_swarm.Fill();
-						}
-
-						main_swarm.UpdateSegments();
-					}
-
-				} 
-				if (!even || !State.pause) {
-
-					//if (!State.pause || Input.step) main_swarm.UpdateSegments();
-
-					//if (iterate == params.iterations) 
-					{
-						if (Input.set_burn) main_swarm.BurnSegment(segment);
-						if (Input.lights_out) main_swarm.LightsOut();
-						if (Input.clear) main_swarm.Clear();
-					}
-
-					if (!State.pause || Input.step)
-					{
-
-						main_swarm.CrossParticles();
-
-						//main_swarm.RefractParticles();
-
-						main_swarm.FinalLoop();
-					}
-
-				}
-
-
-				/*main_swarm.CrossParticles();
-				main_swarm.StepParticles();
-
-				if (State.move)
-				{
-					main_swarm.MoveParticles();
-					main_swarm.Fill_Sampling();
-				}
-
-				main_swarm.ClearParticleList();*/
+			if ((!State.pause || Input.step) && State.move) {
+				main_swarm.MoveParticles();
+				main_swarm.Fill();
 			}
+			if (!State.pause || Input.step || Input.set_burn || Input.lights_out || Input.clear) {
 
+				main_swarm.UpdateSegments();
+				if (Input.set_burn) main_swarm.BurnSegment(segment);
+				if (Input.lights_out) main_swarm.LightsOut();
+				if (Input.clear) main_swarm.Clear();
+			}
+			if (!State.pause || Input.step) {
+				main_swarm.CrossParticles();
+				main_swarm.FinalLoop();
+			}
 		}
 
-		if (!State.pause || Input.step) {
+
+
+
+		if (!State.pause || Input.step || key_pressed)
+		{
+			if (key_pressed) {
+				std::cout << State.bold_points;
+			}
+			if (Input.lights_out) {
+				std::cout << "\n light out\n";
+			}
+
 			screen.clear();
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 			if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
-			//screen.box_blur();
 
-			if (State.update_line && !State.pause || !even ) main_swarm.CalcLine();
-			if (State.display_line) screen.draw_frontline(main_swarm.m_front_line.front_line_points, main_swarm.m_front_line.steps);
-			screen.draw_refract_line();
+			if (State.bold_points) {
+				screen.box_blur();
+			}
+
+			if (State.display_line) {
+				if (State.update_line) front_line.Calc(main_swarm.all_will_burn);
+				screen.draw_frontline(front_line.front_line_points, front_line.steps);
+			}
+
+			//screen.draw_refract_line();
 			screen.update();
 		}
 
@@ -300,15 +243,11 @@ int main() {
 		}
 
 
-		if (Input.print_denisty)
-		{
-
+		if (Input.print_denisty) {
 			main_swarm.Density_Grid();
 			main_swarm.Density_Radius();
 			main_swarm.Max_Radius();
-
 			std::cout << "\nprint - denisty";
-
 		}
 
 
@@ -316,7 +255,7 @@ int main() {
 		{
 			//main_swarm.PrintStep(print_step_counter);
 
-			main_swarm.PrintLine(print_step_counter);
+			front_line.Print(print_step_counter);
 
 			std::cout << "\nprint - " << print_step_counter;
 
@@ -324,6 +263,22 @@ int main() {
 		}
 
 		/* --- END OF MAIN ACTION --- */
+
+		endTime = SDL_GetTicks();
+		delta = endTime - startTime;
+		startTime = endTime;
+
+		if (delta < timePerFrame) {
+			SDL_Delay(timePerFrame - delta);
+		}
+		else fps = 1000 / delta;
+
+
+		if (ii % 10 == 0)
+		{
+			sprintf_s(buffer, "FPS: %d", fps);
+			screen.SetTitle(buffer);
+		}
 
 
 	}

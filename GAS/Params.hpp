@@ -16,8 +16,8 @@ public:
 	void Read();
 	void Print();
 
-	const int screen_width = 500;
-	const int screen_height = 600;
+	const int screen_width = 750;
+	const int screen_height = 900;
 	const int screen_bottom_gap = 0;
 
 	std::string csv_folder;

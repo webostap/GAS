@@ -19,8 +19,8 @@
 
     "base_particles": 300,
     "particles_dist": 16,
-    "base_speed": 2,
-    "const_speed": 0.9,
+    "base_speed": 4,
+    "const_speed": 0,
     "burn_speed": 1.14,
 
     "emitter_begin": 0,

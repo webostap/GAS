@@ -3,6 +3,7 @@
 namespace ps {
 
     Screen::Screen(const Params &P_) : P(&P_) {
+        calc_refract_points();
         // Initialize all required SDL functionality and create SDL objects.
         init_SDL();
         init_window();
@@ -102,6 +103,8 @@ namespace ps {
 
 
     void Screen::update() {
+
+        std::cout << " UPDATE \n";
 
         SDL_RenderPresent(m_renderer);
 

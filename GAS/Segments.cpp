@@ -10,44 +10,36 @@ namespace ps {
 
 	Segments::Segments(const Params& aParams) : P(&aParams)
 	{
-		//UpdateParams();
-		SetBurnRadius(P->burn_radius_cross);
-		//SetGrid(P->burn_radius_cross);
-		SetFillGrid(P->particles_dist);
-		Toggle_Fill();
-
-		/*for (int i = 0; i < P::grid_count_x; i++) {
-			grid[i] = (grid_mem + i * P::grid_count_z);
-		}*/
-
+		SetSegmentsGrid();
+		ResetFillGrid();
+	}
+	void Segments::Update()
+	{
+		SetSegmentsGrid();
+		ResetFillGrid();
 	}
 
-	void Segments::Toggle_Fill() {
 
-		fill_func = (_fill_one = !_fill_one) ? &Segments::Fill_Sampling : &Segments::Fill_Grid;
+	void Segments::Toggle_Fill() {
+		_fill_one = !_fill_one;
 	}
 
 	void Segments::Fill() {
-		(this->*fill_func)();
+		_fill_one ? Fill_Sampling() : Fill_Grid();
 	}
 
-	void Segments::SetBurnRadius(double _burn_radius)
-	{
-		burn_radius = _burn_radius;
-		//burn_radius_center = burn_radius * 2;
-		SetGrid(burn_radius);
-		//SetGrid(burn_radius_center);
-	}
+
 
 	void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
-		double p_burn_radius = burn_radius;
+		double p_burn_radius = P->burn_radius_cross;
 		//if (fabs(x_cord) < 2) p_burn_radius *= 1 + pow(1 - fabs(x_cord) / 2, 3);
 		all_list.emplace_front(x_cord, z_cord, p_speed, p_burn_radius);
 		++particles_count;
 	}
 
-	void Segments::SetGrid(double seg_size)
+	void Segments::SetSegmentsGrid()
 	{
+		double seg_size = P->burn_radius_cross;
 		grid_count_x = (int)floor(P->area_size / seg_size);
 		grid_count_z = (int)floor(P->area_height / seg_size);
 		grid_count = grid_count_x * grid_count_z;
@@ -66,9 +58,9 @@ namespace ps {
 		}
 
 	}
-	void Segments::SetFillGrid(double dist) {
-		particles_dist = dist;
-		fill_grid_count = (int)floor(P->stream_width / particles_dist);
+	void Segments::ResetFillGrid() {
+
+		fill_grid_count = (int)floor(P->stream_width / P->particles_dist);
 		delete[]last_particles;
 		last_particles = new double[fill_grid_count];
 		for (int i = 0; i < fill_grid_count; i++) {
@@ -77,9 +69,6 @@ namespace ps {
 	}
 
 
-	const double Segments::particle_speed(const double x) {
-		return P->iterate_speed * P->stream_function(x);
-	}
 
 	const void Segments::PrintStep(int num)
 	{
@@ -104,30 +93,18 @@ namespace ps {
 		csv.close();
 
 
-		/*m_front_line.Calc(all_will_burn);
-		m_front_line.Print(num);*/
 
 	}
 
-	const void Segments::CalcLine()
-	{
-		m_front_line.Calc(all_will_burn);
-	}
-
-	const void Segments::PrintLine(int num)
-	{
-		CalcLine();
-		m_front_line.Print(num);
-	}
 
 
 	void Segments::Fill_Grid() {
 
 		for (int i = 0; i < fill_grid_count; i++)
 		{
-			double x_cord = P->stream_beg + particles_dist/2 + particles_dist*i;
+			double x_cord = P->stream_beg + P->particles_dist / 2 + P->particles_dist*i;
 			double p_speed = P->particle_speed(x_cord);
-			for (double z_cord = last_particles[i] - particles_dist; z_cord >= 0; z_cord -= particles_dist)
+			for (double z_cord = last_particles[i] - P->particles_dist; z_cord >= 0; z_cord -= P->particles_dist)
 			{
 				CreateParticle(x_cord, z_cord, p_speed);
 				last_particles[i] = z_cord;
@@ -176,7 +153,6 @@ namespace ps {
 	void Segments::CrossParticles()
 	{
 
-		//if (!is_burn) return;
 
 		//all_will_burn.clear();
 
@@ -314,7 +290,6 @@ namespace ps {
 
 	void Segments::UpdateSegments()
 	{
-		is_burn = false;
 		burn_segments.clear();
 		ClearSegments();
 
@@ -327,7 +302,6 @@ namespace ps {
 
 			if (p.state == Particle::State::BURN) {
 				burn_segments.emplace_back(seg_x, seg_z);
-				is_burn = 1;
 				segment->has_burn = 1;
 				segment->burn_list.push_back(&p);
 			}
@@ -338,15 +312,6 @@ namespace ps {
 	}
 
 
-
-	//void Segments::Lighter() {
-	//	int i = 0, limit = P->particles_sum;
-	//	for (auto& particle_i : all_list) {
-	//		BurnParticle(&particle_i);
-	//		if (++i == limit) break;
-	//	}
-
-	//}
 
 
 
@@ -468,20 +433,7 @@ namespace ps {
 		csv << output;
 		csv.close();
 	}
-	/*void Segments::LightsOut_OLD()
-	{
-		//all_will_burn.clear();
-		is_burn = false;
-		for (auto& xz : burn_segments)
-		{
-			Segment* segment = &grid[xz.first][xz.second];
-			for (auto& particle : segment->burn_list)
-			{
-				particle->state = Particle::State::SAGE;
-			}
-			segment->burn_list.clear();
-		}
-	}*/
+
 
 	void Segments::MoveParticle(Particle* p) {
 		p->Move();
@@ -525,20 +477,6 @@ namespace ps {
 		}
 	}
 
-	
-
-	void Segments::Step() {
-
-		UpdateSegments();
-
-		CrossParticles();
-
-		MoveParticles();
-
-		ClearParticleList();
-
-		Fill_Sampling();
-	}
 
 	void Segments::FinalLoop() {
 
@@ -551,7 +489,6 @@ namespace ps {
 		while (particle_it != end) {
 
 			StepParticle(&*particle_it);
-			//particle_it->Step();
 
 			if (particle_it->state == Particle::State::DIED) {
 				++particle_it;
@@ -582,7 +519,6 @@ namespace ps {
 				p.state = Particle::State::WAVE;
 			}
 			StepParticle(&p);
-			//p.Step();
 
 		}
 	}

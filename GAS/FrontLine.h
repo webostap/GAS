@@ -15,7 +15,7 @@ namespace ps {
 	{
 		const Params* P;
 	public:
-		FrontLine(const Params* P_) : P(P_) { Init(); }
+		FrontLine(const Params& P_) : P(&P_) { Init(); }
 		void Init(int steps, double window, double area_start, double area_end);
 		void Init();
 
