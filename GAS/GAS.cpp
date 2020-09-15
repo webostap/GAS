@@ -31,6 +31,16 @@ struct input {
 		clear_csv = 0;
 };
 
+struct state {
+	bool move = true,
+		pause = false,
+		display_swarm = true,
+		display_line = true,
+		bold_points = false,
+		update_line = true;
+
+};
+
 
 #undef main
 int main() {
@@ -42,17 +52,8 @@ int main() {
 
 
 
-	struct {
-		bool move = true,
-			pause = false,
-			display_swarm = true,
-			display_line = true,
-			bold_points = false,
-			update_line = true;
-			
-	} State;
 
-
+	state State;
 	input Input;
 
 
@@ -91,7 +92,6 @@ int main() {
 
 
 	bool even = false;
-	bool key_pressed = false;
 	
 	int ii = 0;
 
@@ -124,7 +124,6 @@ int main() {
 		/*----- INPUT EVENTS ------*/
 
 		Input = input();
-		key_pressed = false;
 
 		while (SDL_PollEvent(&e))
 		{
@@ -134,7 +133,6 @@ int main() {
 				break;
 
 			case SDL_KEYDOWN:
-				key_pressed = true;
 				switch (e.key.keysym.sym)
 				{
 					case SDLK_1: params.SetStream(1);
@@ -183,7 +181,7 @@ int main() {
 						main_swarm.m_front_line.Init(); 
 
 						screen.calc_refract_points();
-						std::cout << main_swarm.size << " - size\n";
+						std::cout << main_swarm.size() << " - size\n";
 						break;
 				}
 				break;
@@ -278,7 +276,7 @@ int main() {
 
 		}
 
-		if (!State.pause || Input.step || key_pressed) {
+		if (!State.pause || Input.step) {
 			screen.clear();
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 

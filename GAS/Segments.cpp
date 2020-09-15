@@ -43,7 +43,7 @@ namespace ps {
 		double p_burn_radius = burn_radius;
 		//if (fabs(x_cord) < 2) p_burn_radius *= 1 + pow(1 - fabs(x_cord) / 2, 3);
 		all_list.emplace_front(x_cord, z_cord, p_speed, p_burn_radius);
-		++size;
+		++particles_count;
 	}
 
 	void Segments::SetGrid(double seg_size)
@@ -556,7 +556,7 @@ namespace ps {
 			if (particle_it->state == Particle::State::DIED) {
 				++particle_it;
 				all_list.erase_after(prev_it);
-				--size;
+				--particles_count;
 				continue;
 			}
 

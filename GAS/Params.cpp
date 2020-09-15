@@ -18,6 +18,7 @@ void ps::Params::Read()
 	std::string json((std::istreambuf_iterator<char>(file)),
 		std::istreambuf_iterator<char>());
 
+
 	nlohmann::json j = nlohmann::json::parse(json);
 
 	csv_folder = to_string(j["csv_folder"]);

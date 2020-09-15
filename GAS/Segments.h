@@ -15,15 +15,18 @@ namespace ps {
 
 	class Segments {
 
+		int particles_count = 0;
 
 	public:
 
 		const Params* P;
 		Segments(const Params&);
 
+		int size() const {
+			return particles_count;
+		}
 
-
-		int size = 0;
+		
 
 		double area_beg = P->area_beg, area_end = P->area_end;
 
