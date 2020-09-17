@@ -1,9 +1,8 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
-#include <ctime> 
-#include <cstdlib>
-#include <unordered_map>
+//#include <ctime> 
+//#include <cstdlib>
 
 #include "Params.hpp"
 #include "Screen.h"
@@ -230,7 +229,6 @@ int main() {
 		}
 
 
-		//}
 
 		if (Input.clear_csv)
 		{
