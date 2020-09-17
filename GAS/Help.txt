@@ -1,9 +1,0 @@
-left click - burn
-space - extinguish
-1,2,3,4 - change stream
------------------
-P - toggle pause
-S - step one frame
-M - toggle particles movement
-C - print state to csv
-X - clear all csv from directory
