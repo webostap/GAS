@@ -32,10 +32,11 @@ struct input {
 
 struct state {
 	bool move = true,
-		pause = false,
+		pause = 0,
 		display_swarm = true,
 		display_line = true,
 		bold_points = false,
+		blur = false,
 		update_line = true;
 
 };
@@ -45,7 +46,6 @@ struct state {
 int main() {
 	
 	ps::Params params;
-	params.Print();
 
 	ps::Segments main_swarm(params);
 	ps::FrontLine front_line(params);
@@ -53,6 +53,7 @@ int main() {
 
 	ps::Segments::Segment* segment = main_swarm.GetSegment(0, 0);
 
+	params.Print();
 
 
 
@@ -71,8 +72,6 @@ int main() {
 	//const Uint8* key_state;
 
 	char buffer[] = "FPS: 00";
-
-
 
 
 		
@@ -126,6 +125,7 @@ int main() {
 						break;
 					case SDLK_s: Input.step = true; key_pressed = 1; break;
 					case SDLK_q: State.bold_points = !State.bold_points; key_pressed = 1; break;
+					case SDLK_b: State.blur = !State.blur; key_pressed = 1; break;
 					case SDLK_m: State.move = !State.move;
 						std::cout << (State.move ? "\n- Move" : "\n- Freeze");
 						break;
@@ -142,9 +142,11 @@ int main() {
 					case SDLK_x: Input.clear_csv = true;
 						break;
 					case SDLK_u: 
+						key_pressed = 1;
 						params.Read();
 						params.Print();
 						main_swarm.Update();
+						front_line.Init();
 						screen.calc_refract_points();
 						std::cout << main_swarm.size() << " - size\n";
 						break;
@@ -185,23 +187,25 @@ int main() {
 		//for (int iterate = params.iterations; iterate; --iterate)
 		{
 
-			if ((!State.pause || Input.step) && State.move) {
-				main_swarm.MoveParticles();
-				main_swarm.Fill();
-			}
-			if (!State.pause || Input.step || Input.set_burn || Input.lights_out || Input.clear) {
-
+			
+			if (!State.pause || Input.step ) {
+				if (State.move) {
+					main_swarm.MoveParticles();
+					main_swarm.Fill();
+				}
 				main_swarm.UpdateSegments();
-				if (Input.set_burn) main_swarm.BurnSegment(segment);
-				if (Input.lights_out) main_swarm.LightsOut();
-				if (Input.clear) main_swarm.Clear();
 			}
+
+			if (Input.set_burn) main_swarm.BurnSegment(segment);
+			if (Input.lights_out) main_swarm.LightsOut();
+			if (Input.clear) main_swarm.Clear();
+
 			if (!State.pause || Input.step) {
 				main_swarm.CrossParticles();
 				main_swarm.FinalLoop();
 			}
-		}
 
+		}
 
 
 
@@ -209,13 +213,12 @@ int main() {
 		{
 
 			screen.clear();
+			if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
+			if (State.blur) screen.box_blur();
+			screen.UpdateTexture();
+
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
-			if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
-
-			if (State.bold_points) {
-				screen.box_blur();
-			}
 
 			if (State.display_line) {
 				if (State.update_line) front_line.Calc(main_swarm.all_will_burn);
@@ -223,7 +226,7 @@ int main() {
 			}
 
 			//screen.draw_refract_line();
-			screen.update();
+			screen.Render();
 		}
 
 
@@ -247,12 +250,9 @@ int main() {
 
 		if (Input.print_step)
 		{
-			//main_swarm.PrintStep(print_step_counter);
-
+			main_swarm.Print(print_step_counter);
 			front_line.Print(print_step_counter);
-
 			std::cout << "\nprint - " << print_step_counter;
-
 			++print_step_counter;
 		}
 
@@ -274,7 +274,7 @@ int main() {
 		{
 			sprintf_s(buffer, "FPS: %d", fps);
 			screen.SetTitle(buffer);
-			std::cout << buffer;
+			//std::cout << buffer;
 		}
 
 
@@ -283,37 +283,8 @@ int main() {
 	return 0;
 
 
-	
-
 }
 
-//void print_files(ps::Segments &swarm) {
-//
-//	for (int i = 0; i < P::steps; i++)
-//	{
-//
-//		if (i == P::burn_at_step) swarm.Lighter();
-//
-//		swarm.Step();
-//
-//		if (i % 10 == 0)
-//		{
-//			swarm.PrintStep(i / 10);
-//			//main_swarm.PrintStep(i);
-//		}
-//
-//		std::cout << i << ")\t" << swarm.all_list.size() << '\n';
-//	}
-//}
-//void print_final(ps::Segments &swarm, int num = 0) {
-//
-//	for (int i = 0; i < P::steps; i++)
-//	{
-//		if (i == P::burn_at_step) swarm.Lighter();
-//		swarm.Step();
-//	}
-//	swarm.PrintStep(num);
-//}
 
 void clear_csv_files(const ps::Params& P) {
 	bool gas_out = 0, line_out = 0;

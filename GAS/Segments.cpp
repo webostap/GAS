@@ -70,7 +70,7 @@ namespace ps {
 
 
 
-	const void Segments::PrintStep(int num)
+	const void Segments::Print(int num)
 	{
 		//all_will_burn.clear();
 

@@ -46,7 +46,7 @@ namespace ps {
 		void FinalLoop();
 
 
-		const void PrintStep(int);
+		const void Print(int);
 
 
 		int Line_Count();

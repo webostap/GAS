@@ -20,7 +20,8 @@ namespace ps {
     public:
         Screen(const Params&);
         virtual ~Screen();
-        void update();
+        void UpdateTexture();
+        void Render();
         void box_blur();
         void draw_circles(std::vector <Particle*>& particle_list);
         void load_swarm(std::forward_list <Particle>& particle_list, bool sdl_draw_plus = false);
@@ -66,6 +67,7 @@ namespace ps {
         SDL_Window* m_window{ nullptr };
         SDL_Renderer* m_renderer{ nullptr };
         SDL_Texture* m_texture{ nullptr };
+        SDL_Color* SDL_Color_buffer{ nullptr };
         Uint32* m_main_buffer{ nullptr };
         Uint32* m_blur_buffer{ nullptr };
         SDL_Event m_event;

@@ -99,14 +99,12 @@ namespace ps {
 
         m_blur_buffer = new Uint32[SCREEN_HEIGHT * SCREEN_WIDTH];
         memset(m_blur_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(Uint32));
+
+        SDL_Color_buffer = new SDL_Color[SCREEN_HEIGHT * SCREEN_WIDTH];
+        memset(SDL_Color_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(SDL_Color));
     }
 
-
-    void Screen::update() {
-
-        SDL_RenderPresent(m_renderer);
-
-        // Updates the texture containing the pixel data.
+    void Screen::UpdateTexture() {
         SDL_UpdateTexture(
             m_texture,                      // Texture to be updated.
             NULL,                           // Area in texture to update, NULL for entire area.
@@ -121,15 +119,17 @@ namespace ps {
             NULL,          // Amount of texture to be copied, NULL for entire texture.
             NULL           // Amount of renderer to be updated, NULL for entire renderer.
         );
+    }
 
-        // Loads the renderer to the SDL window.
-        //draw_frontline();
-        //SDL_RenderPresent(m_renderer);
+
+    void Screen::Render() {
+        SDL_RenderPresent(m_renderer);
     }
 
     void Screen::clear() {
         //auto background = get_uint32_color(255, 255, 255);
-        auto background = get_uint32_color(0, 0, 0);
+        auto background = get_uint32_color(0, 0, 0, 100);
+        //auto background = SDL_Color{0,0,0,0};
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
             m_main_buffer[i] = background;
         }
