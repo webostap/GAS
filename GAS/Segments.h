@@ -59,17 +59,15 @@ namespace ps {
 
 
 
-	
+
+		void Fill_Sampling();
+		void Fill_Grid();
 	private:
 
-		bool _fill_one = 1;
+		bool _fill_one = 0;
 		//void (Segments::* fill_func)() = 0;
 
 
-		void Fill_Sampling();
-
-
-		void Fill_Grid();
 		void ResetFillGrid();
 		double* last_particles = 0;
 		int fill_grid_count;
@@ -109,7 +107,7 @@ namespace ps {
 
 
 
-		void SetSegmentsGrid();
+		void SetSegmentsGrid(double);
 		void ClearSegments();
 
 		int GetSegmentX(const double x);

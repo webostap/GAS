@@ -16,7 +16,7 @@ public:
 	void Read();
 	void Print();
 
-	const int screen_width = 750;
+	const int screen_width = 600;
 	const int screen_height = 900;
 	const int screen_bottom_gap = 0;
 

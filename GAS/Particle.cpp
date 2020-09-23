@@ -42,10 +42,10 @@ namespace ps {
 		return (x - p.x) * (x - p.x) + (z - p.z) * (z - p.z);
 	}
 	bool Particle::Cross(const Particle &p) const {
-		return Distance(p) <= burn_radius_2;
+		return Distance(p) < burn_radius_2;
 	}
 	bool Particle::CrossBurn(const Particle &burn_particle) const {
-		return Distance(burn_particle) <= burn_radius_2;
+		return Distance(burn_particle) < burn_radius_2;
 	}
 
 } /* namespace ps */

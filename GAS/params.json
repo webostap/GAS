@@ -1,5 +1,5 @@
 {
-    "csv_folder": "z:/csv/",
+    "csv_folder": "Z:/csv/",
 
     "area_beg": -1,
     "area_end": 1,
@@ -14,14 +14,14 @@
     "wave_time": 75,
 
 
-    "burn_radius": 20,
+    "burn_radius": 1,
     "burn_fix": -0.672,
 
     "base_particles": 500,
-    "particles_dist": 16,
-    "base_speed": 2,
+    "particles_dist": 25,
+    "base_speed": 3,
     "const_speed": 0.9,
-    "burn_speed": 1.14,
+    "burn_speed": 1.1,
 
     "emitter_begin": 0,
 
@@ -31,8 +31,8 @@
     "sage_time": 0,
 
 
-    "front_line_steps": 100,
-    "front_line_window": 25,
-    "front_line_h": 10
+    "front_line_steps": 200,
+    "front_line_window": 50,
+    "front_line_h": 2
 
 }

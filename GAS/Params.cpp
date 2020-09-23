@@ -21,7 +21,7 @@ void ps::Params::Read()
 
 	nlohmann::json j = nlohmann::json::parse(json);
 
-	csv_folder = to_string(j["csv_folder"]);
+	csv_folder = j["csv_folder"];
 
 	area_beg = j["area_beg"]; 
 	area_end = j["area_end"]; 

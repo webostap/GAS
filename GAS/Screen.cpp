@@ -100,8 +100,6 @@ namespace ps {
         m_blur_buffer = new Uint32[SCREEN_HEIGHT * SCREEN_WIDTH];
         memset(m_blur_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(Uint32));
 
-        SDL_Color_buffer = new SDL_Color[SCREEN_HEIGHT * SCREEN_WIDTH];
-        memset(SDL_Color_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(SDL_Color));
     }
 
     void Screen::UpdateTexture() {
@@ -169,8 +167,8 @@ namespace ps {
 
             case Particle::State::WAVE:
 
-                filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 255);
-                draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, 100, get_uint32_color(200, 200, 200));
+                //filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
+                draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, get_uint32_color(200, 200, 200));
                 /*aacircleRGBA(m_renderer, x, y, 
                     P->screen_proportion * P->burn_radius * particle.wave_counter / P->iterations / 5,
                     255, 255, 255, 255);*/
@@ -187,8 +185,9 @@ namespace ps {
             case Particle::State::BURN:
                 red = 255; green = 100; blue = 100;
                 color = red_color;
+
                 //color = white_color;
-                //draw_circle(particle.x, particle.z, P->burn_radius, 40, get_uint32_color(50, 200, 50));
+                //draw_circle(particle.x, particle.z, P->burn_radius, get_uint32_color(50, 200, 50));
                     
                 break;
 
@@ -227,6 +226,11 @@ namespace ps {
 
         }
         //SDL_RenderPresent(m_renderer);
+    }
+
+    void Screen::Resize(int w, int h)
+    {
+        SDL_SetWindowSize(m_window, w, h);
     }
 
     void Screen::calc_refract_points() {
@@ -299,7 +303,7 @@ namespace ps {
             Uint32 color = get_uint32_color(red, green, blue);
             set_pixel_color(x, y, color);
             //draw_plus(x, y, color);
-            draw_circle(particle->x, particle->z, P->burn_radius, 100, get_uint32_color(50, 200, 50));
+            draw_circle(particle->x, particle->z, P->burn_radius, get_uint32_color(50, 200, 50));
 
 
         }
@@ -357,9 +361,9 @@ namespace ps {
         blue = static_cast<Uint8>(blue_total / 9);
     }
 
-    void Screen::draw_circle(double x0, double y0, double r, int steps, Uint32 color)
+    void Screen::draw_circle(double x0, double y0, double r, Uint32 color)
     {
-        steps = ceil(r * P->screen_proportion * M_PI / 2 );
+        int steps = ceil(r * P->screen_proportion * M_PI );
         double deg = 0, deg_step = M_PI * 2 / steps;
         double x, y;
         

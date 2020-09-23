@@ -64,7 +64,6 @@ namespace ps {
 			//Vx[i] = P->system_speed(front_line_points[i].x) * P->burn_speed;
 			//Vx2[i] = Vx[i] * Vx[i];
 			front_line_points[i].sum = front_line_points[i].count = front_line_points[i].z = 0;
-			front_line_points[i].z -= P->system_speed(front_line_points[i].x) / 2;
 		}
 
 		for (const auto& particle : particle_list) {
@@ -83,11 +82,10 @@ namespace ps {
 		}
 
 		for (int i = 0; i < steps; ++i) {
-			if (!front_line_points[i].count) {
-				front_line_points[i].z = 0;
-				continue;
+			if (front_line_points[i].count) {
+				front_line_points[i].z += front_line_points[i].sum / front_line_points[i].count;
+				front_line_points[i].z -= P->system_speed(front_line_points[i].x) / 2;
 			}
-			front_line_points[i].z+= front_line_points[i].sum / front_line_points[i].count;
 		}
 
 		FivePointStencil();
@@ -123,6 +121,9 @@ namespace ps {
 
 	void FrontLine::Print(unsigned num) {
 		std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
+		if (!csv) {
+			std::cout << "sheeet";
+		}
 
 		std::string output = "x,z,div,div2,V";
 
@@ -156,6 +157,8 @@ namespace ps {
 			for (int j = i - h_div *2; j <= i + h_div *2; j+= h_div) {
 				if (!front_line_points[j].count) {
 					no_neighbors = true;
+					front_line_points[i].div = front_line_points[i].div2 = front_line_points[i].diff2 = 0;
+					break;
 				}
 			}
 			if (no_neighbors) continue;

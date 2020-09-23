@@ -248,7 +248,7 @@ int main() {
 
 		if (Input.print_step)
 		{
-			main_swarm.Print(print_step_counter);
+			//main_swarm.Print(print_step_counter);
 			front_line.Print(print_step_counter);
 			std::cout << "\nprint - " << print_step_counter;
 			++print_step_counter;

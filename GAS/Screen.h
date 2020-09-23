@@ -25,6 +25,7 @@ namespace ps {
         void box_blur();
         void draw_circles(std::vector <Particle*>& particle_list);
         void load_swarm(std::forward_list <Particle>& particle_list, bool sdl_draw_plus = false);
+        void Resize(int w, int h);
 
         void calc_refract_points();
         void draw_refract_line();
@@ -58,7 +59,7 @@ namespace ps {
         void set_pixel_color(int, int, Uint32);
         void set_pixel_color(int, int, Uint8, Uint8, Uint8);
         void get_avg_color(int, int, Uint8&, Uint8&, Uint8&);
-        void draw_circle(double x, double y, double r, int steps, Uint32 color);
+        void draw_circle(double x, double y, double r, Uint32 color);
 
 
     private:
