@@ -22,20 +22,19 @@ namespace ps {
 		if (steps != a_steps) 
 		{
 			steps = a_steps;
+
+			delete[]points;
+			points = new point[steps];
+
 			delete[]front_line_points;
 			front_line_points = new front_line_point[steps];
 
-
-			delete[]Vx;
-			delete[]Vx2;
-			Vx = new double[steps];
-			Vx2 = new double[steps];
 		}
 
 
 		if (steps != a_steps || window != _window) {
 			for (int i = 0; i < steps; ++i) {
-				front_line_points[i].x = steps_start + step_size * i;
+				points[i].x = steps_start + step_size * i;
 			}
 		}
 
@@ -43,8 +42,8 @@ namespace ps {
 
 
 		for (int i = 0; i < steps; ++i) {
-			Vx[i] = P->system_speed(front_line_points[i].x) * P->burn_speed;
-			Vx2[i] = Vx[i] * Vx[i];
+			points[i].Vx = P->system_speed(points[i].x) * P->burn_speed;
+			points[i].Vx2 = points[i].Vx * points[i].Vx;
 		}
 
 		/*for (size_t i = 0; i < steps; i++)
@@ -61,9 +60,8 @@ namespace ps {
 
 
 		for (int i = 0; i < steps; ++i) {
-			//Vx[i] = P->system_speed(front_line_points[i].x) * P->burn_speed;
-			//Vx2[i] = Vx[i] * Vx[i];
-			front_line_points[i].sum = front_line_points[i].count = front_line_points[i].z = 0;
+			front_line_points[i] = {};
+			front_line_points[i].x = points[i].x;
 		}
 
 		for (const auto& particle : particle_list) {
@@ -71,8 +69,9 @@ namespace ps {
 
 			int beg_i = (int) ceil((particle->_x() - steps_start - radius) / step_size);
 			int end_i =	(int)floor((particle->_x() - steps_start + radius) / step_size);
-			if (beg_i < 0) beg_i = 0;
-			if (end_i > steps - 1) end_i = steps - 1;
+			beg_i *= beg_i > 0;
+			end_i = end_i * (end_i < steps) + (end_i > steps - 1) * (steps - 1);
+			//if (end_i > steps - 1) end_i = steps - 1;
 
 			for (int i = beg_i; i <= end_i; ++i) {
 				front_line_points[i].sum += particle->_z();
@@ -84,7 +83,7 @@ namespace ps {
 		for (int i = 0; i < steps; ++i) {
 			if (front_line_points[i].count) {
 				front_line_points[i].z += front_line_points[i].sum / front_line_points[i].count;
-				front_line_points[i].z -= P->system_speed(front_line_points[i].x) / 2;
+				front_line_points[i].z -= P->system_speed(points[i].x) / 2;
 			}
 		}
 
@@ -125,11 +124,11 @@ namespace ps {
 			std::cout << "sheeet";
 		}
 
-		std::string output = "x,z,div,div2,V";
+		std::string output = "x,z,div,div2,Vx2,diff2";
 
 		for (int i = 0; i < steps; ++i) {
 			if (front_line_points[i].count) {
-				output += fmt::format("\n{},{},{},{},{}", front_line_points[i].x, front_line_points[i].z, front_line_points[i].div, front_line_points[i].div2, Vx[i]);
+				output += fmt::format("\n{},{},{},{},{},{}", points[i].x, front_line_points[i].z, front_line_points[i].div, front_line_points[i].div2, points[i].Vx2, front_line_points[i].diff2);
 				//output+= '\n' + std::to_string(front_line_points[i].x) + ',' + std::to_string(front_line_points[i].y) + ',' + std::to_string(front_line_points[i].div);
 			}
 		}
@@ -165,12 +164,18 @@ namespace ps {
 
 			front_line_points[i].div = front_line_points[i - h_div *2].z - front_line_points[i+ h_div *2].z +
 				8 * (front_line_points[i+ h_div].z - front_line_points[i- h_div].z);
-
 			front_line_points[i].div /= h_div * step_size * 12;
+			front_line_points[i].div2 = front_line_points[i].div * front_line_points[i].div + 1;
 
-			front_line_points[i].div2 = fabs(front_line_points[i].div) + .5;
+			front_line_points[i].diff2 = (
+				- front_line_points[i + h_div * 2].z
+				+ 16 * front_line_points[i + h_div].z
+				- 30 * front_line_points[i].z
+				+ 16 * front_line_points[i - h_div].z
+				- front_line_points[i - h_div * 2].z
+			) / (12 * h_div * h_div * step_size * step_size);
 
-			front_line_points[i].diff2 = front_line_points[i].div * front_line_points[i].div+1;
+
 
 		}
 

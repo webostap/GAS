@@ -8,6 +8,7 @@
 #include "Screen.h"
 #include "Segments.h"
 #include "FrontLine.h"
+#include <array>
 
 
 

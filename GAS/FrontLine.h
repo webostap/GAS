@@ -24,16 +24,19 @@ namespace ps {
 		void FivePointStencil();
 		void Print(unsigned num);
 
+		struct point {
+			double x, Vx, Vx2;
+		};
+		point* points{ 0 };
+
 		struct front_line_point {
 			double x=0, z=0, div = 0, sum = 0, diff2 = 0, div2 = 0;
 			unsigned count = 0;
 		};
 
-
-
 		front_line_point* front_line_points{0};
 
-		double *Vx{0}, *Vx2{0};
+		//double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };
 
 		int steps = 0;
 		double window = 0;
@@ -49,8 +52,7 @@ namespace ps {
 
 	public:
 		~FrontLine() {
-			delete[]Vx;
-			delete[]Vx2;
+			delete[]points;
 			delete[]front_line_points;
 		}
 	};

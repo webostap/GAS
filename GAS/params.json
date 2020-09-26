@@ -14,14 +14,14 @@
     "wave_time": 75,
 
 
-    "burn_radius": 1,
+    "burn_radius": 10,
     "burn_fix": -0.672,
 
-    "base_particles": 500,
+    "base_particles": 2000,
     "particles_dist": 25,
-    "base_speed": 3,
+    "base_speed": 2,
     "const_speed": 0.9,
-    "burn_speed": 1.1,
+    "burn_speed": 1,
 
     "emitter_begin": 0,
 

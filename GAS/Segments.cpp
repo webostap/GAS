@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 #include <cmath>
 #include <iostream>
+#include <cassert>
 
 
 
@@ -285,13 +286,15 @@ namespace ps {
 
 	
 
-	int Segments::GetSegmentX(const double x)
+	int Segments::GetSegmentX(const double x_cord)
 	{
-		return (int)floor((x - P->area_beg) * grid_count_x_percent);
+		int x = ceil((x_cord - P->area_beg) * grid_count_x_percent) - 1;
+		return x * (x > 0);
 	}
-	int Segments::GetSegmentZ(const double z)
+	int Segments::GetSegmentZ(const double z_cord)
 	{
-		return (int)floor(z * grid_count_z_percent);
+		int z = ceil(z_cord * grid_count_z_percent) - 1;
+		return z * (z > 0);
 	}
 	Segments::Segment* Segments::GetSegment(const double x, const double z)
 	{
