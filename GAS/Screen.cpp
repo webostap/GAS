@@ -103,6 +103,7 @@ namespace ps {
     }
 
     void Screen::UpdateTexture() {
+        SDL_RenderPresent(m_renderer);
         SDL_UpdateTexture(
             m_texture,                      // Texture to be updated.
             NULL,                           // Area in texture to update, NULL for entire area.
@@ -167,7 +168,7 @@ namespace ps {
 
             case Particle::State::WAVE:
 
-                //filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
+                filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
                 draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, get_uint32_color(200, 200, 200));
                 /*aacircleRGBA(m_renderer, x, y, 
                     P->screen_proportion * P->burn_radius * particle.wave_counter / P->iterations / 5,
@@ -417,6 +418,11 @@ namespace ps {
                 set_pixel_color(j, y, color);
             }
         }
+    }
+
+    void Screen::draw_hline(double y, int r, int g, int b)
+    {
+        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
     }
 
     Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {

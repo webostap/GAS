@@ -16,10 +16,14 @@ namespace ps {
 		const Params* P;
 	public:
 		FrontLine(const Params& P_) : P(&P_) { Init(); }
-		void Init(int steps, double window, double area_start, double area_end);
+		void Init(int steps, double window, double 
+			tart, double area_end);
 		void Init();
 
+
 		void Calc(const std::vector <Particle*>& particle_list);
+		void CalcError();
+
 		void Calc2(const std::vector <Particle*>& particle_list);
 		void FivePointStencil();
 		void Print(unsigned num);
@@ -49,6 +53,9 @@ namespace ps {
 		double step_size;
 
 		double w_percent;
+
+		double avg = 0, _avg = 0;
+		double deviation = 0, error = 0;
 
 	public:
 		~FrontLine() {

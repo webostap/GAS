@@ -1,38 +1,40 @@
 {
     "csv_folder": "Z:/csv/",
 
-    "area_beg": -1,
-    "area_end": 1,
+    "area_beg": -10,
+    "area_end": 10,
     "scale": 500,
-    "stream_beg": -1,
-    "stream_end": 1,
+    "stream_beg": -8,
+    "stream_end": -2,
 
 
 
-    "refract_coef": 0,
-    "refract_offset": -1,
-    "wave_time": 75,
+    "refract_coef": -1,
+    "refract_offset": 2,
+    "wave_time": 100,
 
 
-    "burn_radius": 10,
-    "burn_fix": -0.672,
+    "burn_radius": 100,
+    "burn_fix": -1,
+    "burn_fix_a": 1,
+    "burn_fix_b": 0.67177772,
 
-    "base_particles": 2000,
-    "particles_dist": 25,
-    "base_speed": 2,
-    "const_speed": 0.9,
-    "burn_speed": 1,
+    "base_particles": 1000,
+    "particles_dist": 1,
+    "const_speed": 0.5,
+    "base_speed": 0,
+    "burn_speed": 0.99,
 
     "emitter_begin": 0,
 
-    "iterations": 1,
+    "iterations": 5,
 
     "burn_time": 1,
     "sage_time": 0,
 
 
-    "front_line_steps": 200,
-    "front_line_window": 50,
-    "front_line_h": 2
+    "front_line_steps": 100,
+    "front_line_window": 2,
+    "front_line_h": 1
 
 }

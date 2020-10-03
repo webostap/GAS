@@ -37,7 +37,8 @@ struct state {
 		display_line = true,
 		bold_points = false,
 		blur = false,
-		update_line = true;
+		update_line = true,
+		test = false;
 
 };
 
@@ -66,7 +67,7 @@ int main() {
 	Uint32 startTime = 0;
 	Uint32 endTime = 0;
 	Uint32 delta = 0;
-	short fps = 30;
+	short fps = 60;
 	short timePerFrame = 1000 / fps; // miliseconds
 	SDL_Event e;
 	//const Uint8* key_state;
@@ -90,6 +91,26 @@ int main() {
 	double burn_x, burn_y;
 
 
+	double avg = 0, _avg = 0;
+	double stay_counter = 0;
+	double step = 0.001;
+	bool increase = 0;
+	double stand_pos = 0;
+	double stand_err = 0;
+	double is_stand = false;
+
+	json p = params.GetFromFile();
+	double speed = p["const_speed"];
+
+	json calc_speed;
+	std::ifstream i("speed.json");
+	i >> calc_speed;
+	////double speed = calc_speed[fmt::format("{}",params.base_particles)];
+	//double speed = 0.995;
+	//if (calc_speed.find(fmt::format("{}", (int)params.base_particles)) != calc_speed.end()) {
+	//	speed = calc_speed[fmt::format("{}", (int)params.base_particles)];
+	//}
+	i.close();
 
 	
 	int ii = -1;
@@ -126,6 +147,9 @@ int main() {
 					case SDLK_s: Input.step = true; key_pressed = 1; break;
 					case SDLK_q: State.bold_points = !State.bold_points; key_pressed = 1; break;
 					case SDLK_b: State.blur = !State.blur; key_pressed = 1; break;
+
+					case SDLK_t: State.test = !State.test; break;
+
 					case SDLK_m: State.move = !State.move;
 						std::cout << (State.move ? "\n- Move" : "\n- Freeze");
 						break;
@@ -149,6 +173,7 @@ int main() {
 						front_line.Init();
 						screen.calc_refract_points();
 						std::cout << main_swarm.size() << " - size\n";
+						std::cout << front_line.error << " - error\n";
 						break;
 				}
 				break;
@@ -201,11 +226,60 @@ int main() {
 			if (Input.clear) main_swarm.Clear();
 
 			if (!State.pause || Input.step) {
-				main_swarm.CrossParticles();
+				//main_swarm.CrossParticles();
+				main_swarm.RefractParticles();
 				main_swarm.FinalLoop();
 			}
 
 		}
+
+		if (State.update_line) {
+			front_line.Calc(main_swarm.all_will_burn);
+		}
+
+		is_stand = State.test && is_stand;
+		if (State.test && ii % 10 == 0) {
+
+			if (!is_stand) {
+				stay_counter = 0;
+				stand_pos = front_line.avg;
+				stand_err = params.burn_radius/8 + front_line.deviation * 100;
+				is_stand = true;
+			}
+			else {
+				if (front_line.avg > stand_pos + stand_err || front_line.avg < stand_pos - stand_err)
+				{
+					is_stand = false;
+					if (front_line.avg > stand_pos + stand_err) {
+						std::cout << "Detect Increase\n";
+						step *= 1 - !increase * 0.5;
+						speed -= step;
+						increase = true;
+					}
+					else if (front_line.avg < stand_pos - stand_err) {
+						std::cout << "Detect Decrease\n";
+						step *= 1 - increase * 0.5;
+						speed += step;
+						increase = false;
+					}
+					auto j = params.GetFromFile();
+					j["const_speed"] = speed;
+					params.Load(j);
+					std::cout << speed << '\n';
+				}
+				else {
+					if (++stay_counter == 50 && stand_pos) {
+						calc_speed[fmt::format("{}", (int)params.base_particles)] = speed;
+						std::ofstream o("speed.json");
+						o << calc_speed.dump(4) << std::endl;
+						o.close();
+						std::cout << "Speed Out\n";
+					}
+				}
+			}
+
+		}
+		
 
 
 
@@ -220,12 +294,17 @@ int main() {
 			screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 
-			if (State.display_line) {
-				if (State.update_line) front_line.Calc(main_swarm.all_will_burn);
-				screen.draw_frontline(front_line.front_line_points, front_line.steps);
+			if (State.display_line) screen.draw_frontline(front_line.front_line_points, front_line.steps);
+
+			if (State.test)
+			{
+				screen.draw_hline(front_line.avg);
+				//screen.draw_hline(stand_pos);
+				screen.draw_hline(stand_pos + stand_err, 255, 0, 255);
+				screen.draw_hline(stand_pos - stand_err, 255, 0, 255);
 			}
 
-			//screen.draw_refract_line();
+			screen.draw_refract_line();
 			screen.Render();
 		}
 
@@ -264,7 +343,7 @@ int main() {
 
 		if (delta < timePerFrame) {
 			SDL_Delay(timePerFrame - delta);
-			fps = 30;
+			fps = 60;
 		}
 		else fps = 1000 / delta;
 

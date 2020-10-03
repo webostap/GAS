@@ -123,9 +123,9 @@ namespace ps {
 		std::random_device rd; 
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<double> dist;
-		std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
+		std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->stream_center));
 
-		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->area_center);
+		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->stream_center);
 
 		for (int pi = P->iterate_particles; pi; --pi)
 		{

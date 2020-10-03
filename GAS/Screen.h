@@ -45,6 +45,7 @@ namespace ps {
         void clear();
         void draw_grid(int x_count, int y_count);
         void draw_grid2(int x_count, int y_count);
+        void draw_hline(double y, int r = 255, int g = 255, int b = 255);
 
     private:
         void init_SDL();

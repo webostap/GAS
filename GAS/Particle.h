@@ -15,7 +15,7 @@ namespace ps {
 		enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
 		State state = State::OK;
 
-		unsigned char burn_counter = 0, warm_counter = 0, wave_counter = 0, sage_counter = 0;
+		unsigned short burn_counter = 0, warm_counter = 0, wave_counter = 0, sage_counter = 0;
 
 		coord_t x, z, speed;
 		coord_t burn_radius = 0;

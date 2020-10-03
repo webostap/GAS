@@ -3,10 +3,14 @@
 #define M_PI 3.14159265358979323846
 #include <cmath>
 #include <string>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <cassert>
 namespace ps {
 	class Params;
 }
+
+using json = nlohmann::json;
 
 class ps::Params {
 
@@ -14,6 +18,8 @@ public:
 
 	Params();
 	void Read();
+	void Load(json j);
+	json GetFromFile();
 	void Print();
 
 	const int screen_width = 600;
@@ -46,14 +52,15 @@ public:
 	int burn_time, sage_time, wave_time;
 
 
-	int front_line_steps, front_line_h;
+	int front_line_steps, front_line_h, front_line_windows;
 	double front_line_window;
 
 
 	double refract_coef, refract_offset;
 
 
-
+	//std::string swarm_params() const;
+	std::string frontline_params() const;
 
 
 
@@ -74,14 +81,13 @@ private:
 		&Params::linear_stream,
 		&Params::log_stream,
 		&Params::x2_stream,
-		&Params::const_stream
+		&Params::const_stream,
 	};
-	stream stream_function_p = streams[3];
+	stream stream_function_p = &Params::x2_stream;
 
 	double linear_stream(const double x) const {
 		return 1 - fabs(from_center(x)) / stream_radius;
 	}
-
 	double log_stream(const double x) const {
 		return log(stream_radius + 1 - fabs(from_center(x))) / log(stream_radius + 1);
 	}
@@ -90,6 +96,9 @@ private:
 	}
 	double const_stream(const double x) const  {
 		return .5;
+	}
+	double rising_stream(const double x) const {
+		return burn_speed * burn_radius + (x - stream_beg) / stream_width;
 	}
 
 

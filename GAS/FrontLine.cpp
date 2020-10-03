@@ -64,6 +64,9 @@ namespace ps {
 			front_line_points[i].x = points[i].x;
 		}
 
+		double sum = 0;
+		int active = 0;
+
 		for (const auto& particle : particle_list) {
 			//auto particle = *particle_it;
 
@@ -84,10 +87,29 @@ namespace ps {
 			if (front_line_points[i].count) {
 				front_line_points[i].z += front_line_points[i].sum / front_line_points[i].count;
 				front_line_points[i].z -= P->system_speed(points[i].x) / 2;
+				sum += front_line_points[i].z;
+				++active;
 			}
 		}
 
+		avg = sum / (double)(active + !active);
+		CalcError();
 		FivePointStencil();
+	}
+	void FrontLine::CalcError()
+	{
+		int active = 0;
+		deviation = 0;
+		double d;
+		for (int i = 0; i < steps; ++i) {
+			if (front_line_points[i].count) {
+				d = front_line_points[i].z - avg;
+				deviation += d * d;
+				++active;
+			}
+		}
+		deviation /= (double)(active - 1);
+		error = sqrt(deviation) / P->stream_width;
 	}
 
 	void FrontLine::Calc2(const std::vector <Particle*>& particle_list) {
@@ -120,10 +142,8 @@ namespace ps {
 
 	void FrontLine::Print(unsigned num) {
 		std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
-		if (!csv) {
-			std::cout << "sheeet";
-		}
 
+		//std::string output = P->frontline_params();
 		std::string output = "x,z,div,div2,Vx2,diff2";
 
 		for (int i = 0; i < steps; ++i) {

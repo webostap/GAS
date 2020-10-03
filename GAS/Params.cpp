@@ -1,6 +1,5 @@
 #include "Params.hpp"
 
-#include <nlohmann/json.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -10,16 +9,28 @@ ps::Params::Params() {
 	Read();
 }
 
-
 void ps::Params::Read()
 {
+	Load(GetFromFile());
+}
+
+
+json ps::Params::GetFromFile() {
 	std::ifstream file("params.json");
 	assert(file);
-	std::string json((std::istreambuf_iterator<char>(file)),
-		std::istreambuf_iterator<char>());
+
+	nlohmann::json j;
+	file >> j;
+	file.close();
+
+	return j;
+}
 
 
-	nlohmann::json j = nlohmann::json::parse(json);
+
+
+void ps::Params::Load(json j)
+{
 
 	csv_folder = j["csv_folder"];
 
@@ -52,7 +63,8 @@ void ps::Params::Read()
 	particles_dist = burn_radius / (int)j["particles_dist"];
 
 	//burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];
-	burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
+	//burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
+	burn_radius_cross = burn_radius / (1 - (double)j["burn_fix_a"] / pow(base_particles, (double)j["burn_fix_b"]));
 	burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
 
 	emitter_begin = (double)j["emitter_begin"] * burn_radius;
@@ -75,13 +87,15 @@ void ps::Params::Read()
 	wave_time = (int)j["wave_time"] * iterations;
 
 	front_line_steps = (int)j["front_line_steps"];
-	front_line_window = area_size / (int)j["front_line_window"];
+	front_line_windows = (int)j["front_line_window"];
+	front_line_window = stream_width / front_line_steps * (int)j["front_line_window"];
 	front_line_h = (int)j["front_line_h"];
 
 	refract_coef = (double)j["refract_coef"];
 	refract_offset = (double)j["refract_offset"];
 
 }
+
 
 void ps::Params::Print()
 {
@@ -94,4 +108,10 @@ void ps::Params::Print()
 	std::cout << burn_speed << " - burn speed\n";
 	std::cout << area_height << " - area_height\n";
 }
+
+std::string ps::Params::frontline_params() const
+{
+	return fmt::format("#steps {}\n#window 1/{}\n#h {}\n", front_line_steps, front_line_windows, front_line_h);
+}
+
 
