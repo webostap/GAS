@@ -91,7 +91,7 @@ namespace ps {
 			std::vector<Particle*> ok_list, burn_list;
 		};
 		
-		Segment* GetSegment(const double x, const double z);
+		Segment* GetSegment(double x, double z) const;
 		void BurnSegment(Segment*);
 		void UpdateSegments();
 
@@ -110,8 +110,8 @@ namespace ps {
 		void SetSegmentsGrid(double);
 		void ClearSegments();
 
-		int GetSegmentX(const double x);
-		int GetSegmentZ(const double z);
+		int GetSegmentX(double x) const;
+		int GetSegmentZ(double z) const;
 
 		void ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z);
 		bool CheckSegmentBurn(int seg_x, int seg_z);

@@ -1,12 +1,11 @@
 {
     "csv_folder": "Z:/csv/",
 
-    "area_beg": -10,
-    "area_end": 10,
+    "area_beg": -1,
+    "area_end": 1,
     "scale": 500,
-    "stream_beg": -8,
-    "stream_end": -2,
-
+    "stream_beg": -1,
+    "stream_end": 1,
 
 
     "refract_coef": -1,
@@ -14,20 +13,20 @@
     "wave_time": 100,
 
 
-    "burn_radius": 100,
+    "burn_radius": 50,
     "burn_fix": -1,
     "burn_fix_a": 1,
-    "burn_fix_b": 0.67177772,
+    "burn_fix_b": 0.671,
 
-    "base_particles": 1000,
+    "base_particles": 5000,
     "particles_dist": 1,
-    "const_speed": 0.5,
-    "base_speed": 0,
+    "const_speed": 0,
+    "base_speed": 2,
     "burn_speed": 0.99,
 
     "emitter_begin": 0,
 
-    "iterations": 5,
+    "iterations": 1,
 
     "burn_time": 1,
     "sage_time": 0,

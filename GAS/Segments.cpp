@@ -123,9 +123,9 @@ namespace ps {
 		std::random_device rd; 
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<double> dist;
-		std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->stream_center));
+		//std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
-		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->stream_center);
+		double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->area_center);
 
 		for (int pi = P->iterate_particles; pi; --pi)
 		{
@@ -286,17 +286,17 @@ namespace ps {
 
 	
 
-	int Segments::GetSegmentX(const double x_cord)
+	inline int Segments::GetSegmentX(double x_cord) const
 	{
 		int x = ceil((x_cord - P->area_beg) * grid_count_x_percent) - 1;
 		return x * (x > 0);
 	}
-	int Segments::GetSegmentZ(const double z_cord)
+	inline int Segments::GetSegmentZ(double z_cord) const
 	{
 		int z = ceil(z_cord * grid_count_z_percent) - 1;
 		return z * (z > 0);
 	}
-	Segments::Segment* Segments::GetSegment(const double x, const double z)
+	Segments::Segment* Segments::GetSegment(double x, double z) const
 	{
 		return &grid[GetSegmentX(x)][GetSegmentZ(z)];
 	}
@@ -388,8 +388,9 @@ namespace ps {
 	}
 	const void Segments::Density_Radius()
 	{
-		std::string output = "count";
+		std::string output = "radius_count, particles_count";
 		int crossed = 0;
+		std::unordered_map <int, int> denisty_radius;
 		for (int zi = 1; zi < grid_count_z-1; zi++)
 		{
 			for (int xi = 1; xi < grid_count_x-1; xi++)
@@ -410,10 +411,14 @@ namespace ps {
 							}
 						}
 					}
-					output+= fmt::format("\n{}", crossed);
+					denisty_radius[crossed] += 1; 
+					//output += fmt::format("\n{}", crossed);
 				}
 				
 			}
+		}
+		for (auto const& [key, val] : denisty_radius) {
+			output += fmt::format("\n{},{}", val, key);
 		}
 
 		std::ofstream csv(P->csv_folder + "d_radius.csv");

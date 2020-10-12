@@ -226,8 +226,8 @@ int main() {
 			if (Input.clear) main_swarm.Clear();
 
 			if (!State.pause || Input.step) {
-				//main_swarm.CrossParticles();
-				main_swarm.RefractParticles();
+				main_swarm.CrossParticles();
+				//main_swarm.RefractParticles();
 				main_swarm.FinalLoop();
 			}
 
@@ -243,7 +243,7 @@ int main() {
 			if (!is_stand) {
 				stay_counter = 0;
 				stand_pos = front_line.avg;
-				stand_err = params.burn_radius/8 + front_line.deviation * 100;
+				stand_err = params.burn_radius/4 + front_line.deviation * 100;
 				is_stand = true;
 			}
 			else {
@@ -304,7 +304,7 @@ int main() {
 				screen.draw_hline(stand_pos - stand_err, 255, 0, 255);
 			}
 
-			screen.draw_refract_line();
+			//screen.draw_refract_line();
 			screen.Render();
 		}
 
@@ -321,7 +321,7 @@ int main() {
 		if (Input.print_denisty) {
 			main_swarm.Density_Grid();
 			main_swarm.Density_Radius();
-			main_swarm.Max_Radius();
+			//main_swarm.Max_Radius();
 			std::cout << "\nprint - denisty";
 		}
 

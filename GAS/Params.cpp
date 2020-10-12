@@ -80,7 +80,7 @@ void ps::Params::Load(json j)
 
 	iterate_speed = base_speed / iterations;
 	iterate_const = const_speed / iterations;
-	iterate_particles = (int)round(base_particles * particle_speed(area_center) / burn_radius_2 / M_PI * L);
+	iterate_particles = (int)floor(base_particles * particle_speed(area_center) / burn_radius_2_cross / M_PI * L);
 
 	burn_time = (int)j["burn_time"] * iterations;
 	sage_time = (int)j["sage_time"] * iterations;

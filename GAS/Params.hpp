@@ -31,7 +31,7 @@ public:
 	double screen_proportion, screen_x_proportion, screen_y_proportion;
 
 	double area_beg, area_end, area_size, area_center, area_height;
-	double stream_beg, stream_end, stream_width, stream_center, stream_radius;
+	double stream_beg, stream_end, stream_width, stream_radius;
 	double L, scale, DSR;
 
 
